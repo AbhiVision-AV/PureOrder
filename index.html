@@ -585,14 +585,7 @@ onAuthStateChanged(auth, async (user) => {
 
 // ── REDIRECT ──
 function redirectToDashboard(role) {
-  const pages = {
-    customer: 'customer.html',
-    owner: 'owner.html',
-    delivery: 'delivery.html',
-    admin: 'admin.html'
-  };
-  window.location.href = pages[role] || 'customer.html';
-}
+  alert('Login successful! Role: ' + role);
 
 // ── GOOGLE LOGIN ──
 window.loginWithGoogle = async () => {
