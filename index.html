@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>PureOrder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #FFC529;
+  --orange: #FE724C;
+  --dark: #1C1C1E;
+  --gray: #6B7280;
+  --light: #F5F5F7;
+  --border: #E5E7EB;
+  --white: #FFFFFF;
+  --green: #34C759;
+  --red: #FF3B30;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--dark);
+  min-height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ── LOADING ── */
+#loadingScreen {
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+}
+.loader-logo {
+  font-family: 'Sora', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+.loader-logo span { color: var(--orange); }
+.loader-bar {
+  width: 120px; height: 3px;
+  background: var(--light);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 24px;
+}
+.loader-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--yellow), var(--orange));
+  border-radius: 2px;
+  animation: load 1.5s ease forwards;
+}
+@keyframes load { from{width:0} to{width:100%} }
+
+/* ── LOGIN (CUSTOMER) ── */
+#loginScreen { background: var(--white); padding: 0; }
+
+.login-hero {
+  background: linear-gradient(160deg, #FFF9EC 0%, #FFF3D6 100%);
+  padding: 60px 28px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.login-hero::before {
+  content: '';
+  position: absolute;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(255,197,41,0.3) 0%, transparent 70%);
+  top: -40px; right: -40px;
+  border-radius: 50%;
+}
+.login-hero::after {
+  content: '';
+  position: absolute;
+  width: 150px; height: 150px;
+  background: radial-gradient(circle, rgba(254,114,76,0.2) 0%, transparent 70%);
+  bottom: -30px; left: -30px;
+  border-radius: 50%;
+}
+
+.brand {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 32px;
+  position: relative; z-index: 1;
+}
+.brand-icon {
+  width: 48px; height: 48px;
+  background: var(--yellow);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 4px 12px rgba(255,197,41,0.4);
+}
+.brand-name {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.brand-name span { color: var(--orange); }
+
+.hero-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  position: relative; z-index: 1;
+}
+.hero-sub {
+  font-size: 15px;
+  color: var(--gray);
+  line-height: 1.5;
+  position: relative; z-index: 1;
+}
+
+.login-body { padding: 32px 24px; flex: 1; }
+
+.btn-google {
+  width: 100%;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dark);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.btn-google:active { transform: scale(0.98); box-shadow: none; }
+.btn-google img { width: 20px; height: 20px; }
+
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 24px 0;
+  color: #9CA3AF;
+  font-size: 13px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1;
+  height: 1px; background: var(--border);
+}
+
+.other-roles {
+  text-align: center;
+  padding: 16px;
+  background: var(--light);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.other-roles:active { background: #EBEBED; }
+.other-roles p {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 4px;
+}
+.other-roles strong {
+  font-size: 15px;
+  color: var(--dark);
+  font-weight: 600;
+}
+
+.terms {
+  text-align: center;
+  font-size: 12px;
+  color: #9CA3AF;
+  margin-top: 24px;
+  line-height: 1.6;
+}
+
+/* ── ROLE SELECTION ── */
+#roleScreen {
+  background: var(--white);
+  padding: 0;
+  justify-content: flex-end;
+}
+.role-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+}
+.role-sheet {
+  background: var(--white);
+  border-radius: 28px 28px 0 0;
+  padding: 20px 24px 48px;
+  position: relative; z-index: 1;
+  animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: #E5E7EB;
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+.role-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.role-sub { font-size: 14px; color: var(--gray); margin-bottom: 24px; }
+
+.role-option {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1.5px solid var(--border);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.role-option:active { border-color: var(--yellow); background: #FFFBF0; }
+.role-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.role-icon.owner { background: #FFF3E0; }
+.role-icon.delivery { background: #E8F5E9; }
+.role-icon.admin { background: #EDE7F6; }
+.role-info {}
+.role-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.role-desc { font-size: 12px; color: var(--gray); }
+.role-arrow { margin-left: auto; color: #9CA3AF; font-size: 18px; }
+
+.btn-back {
+  width: 100%;
+  background: var(--light);
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+/* ── ROLE LOGIN ── */
+#roleLoginScreen { background: var(--white); }
+
+.role-login-header {
+  padding: 56px 24px 24px;
+  background: var(--light);
+}
+.back-btn {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 14px;
+  color: var(--gray);
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 24px;
+  width: fit-content;
+}
+.role-login-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+.role-login-icon.owner { background: #FFF3E0; }
+.role-login-icon.delivery { background: #E8F5E9; }
+.role-login-icon.admin { background: #EDE7F6; }
+
+.role-login-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+.role-login-sub { font-size: 14px; color: var(--gray); }
+
+.role-login-body { padding: 28px 24px; flex: 1; }
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.field input {
+  width: 100%;
+  background: var(--light);
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--dark);
+  outline: none;
+  transition: all 0.2s;
+}
+.field input:focus { background: var(--white); border-color: var(--yellow); }
+.field input::placeholder { color: #9CA3AF; }
+
+.btn-primary {
+  width: 100%;
+  background: var(--dark);
+  color: var(--white);
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary.loading { opacity: 0.7; pointer-events: none; }
+
+.error-box {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--red);
+  margin-top: 12px;
+  display: none;
+  text-align: center;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--dark);
+  color: var(--white);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 9999;
+  white-space: nowrap;
+  pointer-events: none;
+  max-width: 320px;
+  text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+/* ── SPINNER ── */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen" class="screen active">
+  <div class="loader-logo">Pure<span>Order</span></div>
+  <p style="font-size:13px;color:#9CA3AF;">Fresh food, delivered fast 🍽️</p>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- CUSTOMER LOGIN -->
+<div id="loginScreen" class="screen">
+  <div class="login-hero">
+    <div class="brand">
+      <div class="brand-icon">🍽️</div>
+      <div class="brand-name">Pure<span>Order</span></div>
+    </div>
+    <div class="hero-title">Hungry? We've<br>got you covered.</div>
+    <div class="hero-sub">Order fresh food from local restaurants in Kesinga.</div>
+  </div>
+
+  <div class="login-body">
+    <button class="btn-google" onclick="loginWithGoogle()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Continue with Google
+    </button>
+
+    <div class="divider">or</div>
+
+    <div class="other-roles" onclick="showRoleScreen()">
+      <p>Are you a business user?</p>
+      <strong>Owner / Delivery Partner / Admin →</strong>
+    </div>
+
+    <p class="terms">By continuing, you agree to our Terms of Service and Privacy Policy.</p>
+  </div>
+</div>
+
+<!-- ROLE SELECTION -->
+<div id="roleScreen" class="screen">
+  <div class="role-backdrop" onclick="showLoginScreen()"></div>
+  <div class="role-sheet">
+    <div class="sheet-handle"></div>
+    <div class="role-title">Select Your Role</div>
+    <div class="role-sub">Choose how you use PureOrder</div>
+
+    <div class="role-option" onclick="showRoleLogin('owner')">
+      <div class="role-icon owner">🏪</div>
+      <div class="role-info">
+        <div class="role-name">Restaurant Owner</div>
+        <div class="role-desc">Manage menu, orders & delivery</div>
+      </div>
+      <div class="role-arrow">›</div>
+    </div>
+
+    <div class="role-option" onclick="showRoleLogin('delivery')">
+      <div class="role-icon delivery">🛵</div>
+      <div class="role-info">
+        <div class="role-name">Delivery Partner</div>
+        <div class="role-desc">View & deliver assigned orders</div>
+      </div>
+      <div class="role-arrow">›</div>
+    </div>
+
+    <div class="role-option" onclick="showRoleLogin('admin')">
+      <div class="role-icon admin">⚙️</div>
+      <div class="role-info">
+        <div class="role-name">Admin</div>
+        <div class="role-desc">Platform control & management</div>
+      </div>
+      <div class="role-arrow">›</div>
+    </div>
+
+    <button class="btn-back" onclick="showLoginScreen()">← Back to Customer Login</button>
+  </div>
+</div>
+
+<!-- ROLE LOGIN -->
+<div id="roleLoginScreen" class="screen">
+  <div class="role-login-header">
+    <div class="back-btn" onclick="showRoleScreen()">← Back</div>
+    <div class="role-login-icon" id="roleLoginIcon"></div>
+    <div class="role-login-title" id="roleLoginTitle"></div>
+    <div class="role-login-sub" id="roleLoginSub"></div>
+  </div>
+
+  <div class="role-login-body">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="roleEmail" placeholder="your@email.com" />
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="rolePassword" placeholder="••••••••" />
+    </div>
+    <button class="btn-primary" id="roleLoginBtn" onclick="loginWithRole()">
+      Sign In
+    </button>
+    <div class="error-box" id="roleError"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── FIREBASE CONFIG ──
+const firebaseConfig = {
+  apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
+  authDomain: "pureorder-eca2b.firebaseapp.com",
+  projectId: "pureorder-eca2b",
+  storageBucket: "pureorder-eca2b.firebasestorage.app",
+  messagingSenderId: "641924435931",
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe",
+  measurementId: "G-DM82V9XC5T"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── STATE ──
+let currentRole = 'customer';
+
+// ── SCREEN HELPERS ──
+window.showScreen = (id) => {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+};
+
+window.showLoginScreen = () => showScreen('loginScreen');
+window.showRoleScreen = () => showScreen('roleScreen');
+
+window.showRoleLogin = (role) => {
+  currentRole = role;
+  const configs = {
+    owner: { icon:'🏪', cls:'owner', title:'Owner Login', sub:'Sign in to manage your restaurant' },
+    delivery: { icon:'🛵', cls:'delivery', title:'Delivery Login', sub:'Sign in to view your deliveries' },
+    admin: { icon:'⚙️', cls:'admin', title:'Admin Login', sub:'Platform administration access' }
+  };
+  const c = configs[role];
+  const iconEl = document.getElementById('roleLoginIcon');
+  iconEl.textContent = c.icon;
+  iconEl.className = `role-login-icon ${c.cls}`;
+  document.getElementById('roleLoginTitle').textContent = c.title;
+  document.getElementById('roleLoginSub').textContent = c.sub;
+  document.getElementById('roleEmail').value = '';
+  document.getElementById('rolePassword').value = '';
+  document.getElementById('roleError').style.display = 'none';
+  showScreen('roleLoginScreen');
+};
+
+// ── TOAST ──
+window.toast = (msg, type = '') => {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3000);
+};
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // User already logged in — get role and redirect
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        const role = snap.data().role;
+        redirectToDashboard(role);
+      } else {
+        // New Google user — save and redirect
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          name: user.displayName || 'User',
+          email: user.email,
+          photo: user.photoURL || '',
+          phone: '',
+          address: '',
+          role: 'customer',
+          createdAt: serverTimestamp()
+        });
+        redirectToDashboard('customer');
+      }
+    } catch(e) {
+      showScreen('loginScreen');
+    }
+  } else {
+    // Not logged in
+    setTimeout(() => showScreen('loginScreen'), 1600);
+  }
+});
+
+// ── REDIRECT ──
+function redirectToDashboard(role) {
+  const pages = {
+    customer: 'customer.html',
+    owner: 'owner.html',
+    delivery: 'delivery.html',
+    admin: 'admin.html'
+  };
+  window.location.href = pages[role] || 'customer.html';
+}
+
+// ── GOOGLE LOGIN ──
+window.loginWithGoogle = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+    // onAuthStateChanged handles the rest
+  } catch(e) {
+    if (e.code !== 'auth/popup-closed-by-user') {
+      toast('Login failed. Try again.', 'error');
+    }
+  }
+};
+
+// ── ROLE LOGIN ──
+window.loginWithRole = async () => {
+  const email = document.getElementById('roleEmail').value.trim();
+  const pass = document.getElementById('rolePassword').value;
+  const btn = document.getElementById('roleLoginBtn');
+  const errEl = document.getElementById('roleError');
+
+  if (!email || !pass) {
+    errEl.textContent = '⚠️ Please fill all fields';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.innerHTML = '<div class="spinner"></div>';
+  btn.classList.add('loading');
+  errEl.style.display = 'none';
+
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, pass);
+    const snap = await getDoc(doc(db, 'users', result.user.uid));
+
+    if (!snap.exists()) {
+      await signOut(auth);
+      throw new Error('Account not found');
+    }
+
+    const userData = snap.data();
+    if (userData.role !== currentRole) {
+      await signOut(auth);
+      throw new Error(`This account is not a ${currentRole} account`);
+    }
+
+    toast('Welcome back! 👋', 'success');
+    setTimeout(() => redirectToDashboard(currentRole), 500);
+
+  } catch(e) {
+    let msg = 'Login failed. Check credentials.';
+    if (e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found') msg = 'Wrong email or password';
+    if (e.code === 'auth/invalid-email') msg = 'Invalid email address';
+    if (e.message.includes('not a')) msg = e.message;
+    if (e.message.includes('not found')) msg = 'Account not found';
+
+    errEl.textContent = '⚠️ ' + msg;
+    errEl.style.display = 'block';
+    btn.innerHTML = 'Sign In';
+    btn.classList.remove('loading');
+  }
+};
+
+// ── ENTER KEY ──
+document.getElementById('rolePassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') window.loginWithRole();
+});
+document.getElementById('roleEmail').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('rolePassword').focus();
+});
+</script>
+</body>
+</html>
