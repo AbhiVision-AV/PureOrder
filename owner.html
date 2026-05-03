@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<title>PureOrder — Owner</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #FFC529;
+  --orange: #FE724C;
+  --dark: #1C1C1E;
+  --gray: #6B7280;
+  --light: #F5F5F7;
+  --border: #E5E7EB;
+  --white: #fff;
+  --green: #34C759;
+  --red: #FF3B30;
+  --blue: #007AFF;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:'DM Sans',sans-serif; background:var(--light); color:var(--dark); min-height:100vh; max-width:430px; margin:0 auto; overflow-x:hidden; padding-bottom:72px; }
+
+/* LOADING */
+#loadingScreen { position:fixed; inset:0; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity 0.4s; }
+#loadingScreen.hide { opacity:0; pointer-events:none; }
+.loader-logo { font-family:'Sora',sans-serif; font-size:30px; font-weight:800; }
+.loader-logo span { color:var(--orange); }
+.loader-sub { font-size:13px; color:var(--gray); margin-top:6px; }
+.loader-bar { width:80px; height:3px; background:var(--light); border-radius:2px; overflow:hidden; margin-top:16px; }
+.loader-fill { height:100%; background:linear-gradient(90deg,var(--yellow),var(--orange)); animation:ld 1.4s ease forwards; }
+@keyframes ld { from{width:0} to{width:100%} }
+
+/* PAGES */
+.page { display:none; }
+.page.active { display:block; animation:fadeIn 0.2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+
+/* BOTTOM NAV */
+.bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:white; border-top:1px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
+.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px 4px 8px; cursor:pointer; border:none; background:none; position:relative; gap:3px; }
+.nav-btn svg { width:22px; height:22px; stroke:#9CA3AF; fill:none; stroke-width:2; transition:stroke 0.2s; }
+.nav-btn .nl { font-size:10px; font-weight:600; color:#9CA3AF; font-family:'DM Sans',sans-serif; transition:color 0.2s; }
+.nav-btn.active svg { stroke:var(--orange); }
+.nav-btn.active .nl { color:var(--orange); }
+.order-badge { position:absolute; top:6px; right:10px; background:var(--red); color:white; font-size:9px; font-weight:700; border-radius:10px; padding:1px 5px; min-width:16px; text-align:center; display:none; }
+
+/* COMMON */
+.page-header { background:white; padding:52px 20px 16px; border-bottom:1px solid var(--border); }
+.page-header-row { display:flex; align-items:center; justify-content:space-between; }
+.page-header h2 { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; }
+.page-header p { font-size:13px; color:var(--gray); margin-top:3px; }
+
+/* STATS ROW */
+.stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:16px; background:white; border-bottom:1px solid var(--border); }
+.stat-card { background:var(--light); border-radius:14px; padding:14px 12px; text-align:center; }
+.stat-val { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; letter-spacing:-0.5px; }
+.stat-label { font-size:11px; color:var(--gray); margin-top:3px; font-weight:500; }
+
+/* ORDER CARDS */
+.orders-list { padding:12px 16px; }
+.order-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1px solid var(--border); }
+.order-card.new-order { border-color:#FDE68A; background:#FFFDF5; }
+.order-card.accepted { border-color:#BBF7D0; }
+.order-card.assigned { border-color:#BFDBFE; }
+.order-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.order-id { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; }
+.order-time { font-size:12px; color:var(--gray); margin-top:2px; }
+.status-pill { font-size:11px; font-weight:700; border-radius:20px; padding:4px 12px; text-transform:capitalize; }
+.sp-placed { background:#FEF9C3; color:#A16207; }
+.sp-accepted { background:#DCFCE7; color:#16A34A; }
+.sp-preparing { background:#FFF3E0; color:#E65100; }
+.sp-ready { background:#DBEAFE; color:#1D4ED8; }
+.sp-assigned { background:#EDE9FE; color:#6D28D9; }
+.sp-delivered { background:#F0FDF4; color:#15803D; }
+
+.customer-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.cust-av { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--yellow),var(--orange)); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:14px; font-weight:700; color:white; flex-shrink:0; }
+.cust-name { font-size:14px; font-weight:600; }
+.cust-phone { font-size:12px; color:var(--gray); }
+.address-row { font-size:13px; color:var(--gray); margin-bottom:12px; display:flex; align-items:flex-start; gap:6px; }
+.address-row svg { width:14px; height:14px; stroke:var(--gray); flex-shrink:0; margin-top:1px; }
+
+.items-box { background:var(--light); border-radius:12px; padding:10px 12px; margin-bottom:12px; }
+.item-row { display:flex; justify-content:space-between; font-size:13px; padding:3px 0; color:#374151; }
+.items-total { display:flex; justify-content:space-between; font-size:14px; font-weight:700; padding-top:8px; margin-top:6px; border-top:1px solid var(--border); }
+
+.order-btns { display:flex; gap:8px; flex-wrap:wrap; }
+.btn-accept { flex:1; background:var(--dark); color:white; border:none; border-radius:10px; padding:12px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.btn-accept:active { opacity:0.85; }
+.btn-assign { flex:1; background:var(--orange); color:white; border:none; border-radius:10px; padding:12px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-status { flex:1; background:var(--blue); color:white; border:none; border-radius:10px; padding:12px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.btn-reject { background:var(--light); border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-size:13px; color:var(--red); cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:600; }
+.assigned-label { font-size:13px; color:#6D28D9; font-weight:600; padding:4px 0; }
+.empty-box { text-align:center; padding:60px 20px; }
+.empty-icon { width:64px; height:64px; background:var(--light); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+.empty-icon svg { width:28px; height:28px; stroke:#9CA3AF; fill:none; }
+.empty-box h3 { font-family:'Sora',sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; }
+.empty-box p { font-size:14px; color:var(--gray); }
+
+/* MENU PAGE */
+.menu-header { background:white; padding:52px 20px 12px; border-bottom:1px solid var(--border); }
+.menu-header-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.menu-header h2 { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; }
+.btn-add { background:var(--dark); color:white; border:none; border-radius:10px; padding:9px 16px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.cat-tabs { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding:12px 16px; background:white; border-bottom:1px solid var(--border); }
+.cat-tabs::-webkit-scrollbar { display:none; }
+.cat-tab { background:var(--light); border:none; border-radius:20px; padding:7px 16px; font-size:13px; font-weight:600; color:var(--gray); cursor:pointer; white-space:nowrap; font-family:'DM Sans',sans-serif; }
+.cat-tab.active { background:var(--dark); color:white; }
+
+.menu-list { padding:12px 16px; }
+.menu-item { background:white; border-radius:14px; padding:14px; margin-bottom:10px; display:flex; align-items:center; gap:12px; border:1px solid var(--border); }
+.menu-item-img { width:60px; height:60px; border-radius:12px; background:var(--light); display:flex; align-items:center; justify-content:center; font-size:10px; color:#9CA3AF; text-align:center; flex-shrink:0; overflow:hidden; }
+.menu-item-img img { width:100%; height:100%; object-fit:cover; }
+.menu-info { flex:1; min-width:0; }
+.menu-name { font-size:14px; font-weight:700; margin-bottom:2px; }
+.menu-cat { font-size:11px; color:var(--gray); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:4px; }
+.menu-price { font-size:15px; font-weight:800; color:var(--orange); }
+.menu-controls { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.toggle { position:relative; width:42px; height:24px; }
+.toggle input { display:none; }
+.toggle-track { position:absolute; inset:0; background:#E5E7EB; border-radius:12px; cursor:pointer; transition:background 0.2s; }
+.toggle-track::before { content:''; position:absolute; width:18px; height:18px; background:white; border-radius:50%; top:3px; left:3px; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+.toggle input:checked + .toggle-track { background:var(--green); }
+.toggle input:checked + .toggle-track::before { transform:translateX(18px); }
+.icon-btn { width:32px; height:32px; border-radius:8px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.ib-edit { background:#FEF9C3; }
+.ib-edit svg { stroke:#A16207; }
+.ib-del { background:#FEE2E2; }
+.ib-del svg { stroke:var(--red); }
+.icon-btn svg { width:15px; height:15px; fill:none; stroke-width:2; }
+
+/* ACCOUNTS PAGE */
+.account-item { background:white; padding:14px 16px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); }
+.acc-av { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:16px; font-weight:700; flex-shrink:0; }
+.av-customer { background:#FEF9C3; color:#A16207; }
+.av-delivery { background:#FEE2E2; color:#B91C1C; }
+.acc-info { flex:1; }
+.acc-name { font-size:14px; font-weight:700; }
+.acc-phone { font-size:12px; color:var(--gray); margin-top:2px; }
+.role-tag { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:capitalize; }
+.rt-customer { background:#FEF9C3; color:#A16207; }
+.rt-delivery { background:#FEE2E2; color:#B91C1C; }
+
+/* PROFILE */
+.profile-top { background:white; padding:52px 20px 24px; border-bottom:1px solid var(--border); text-align:center; }
+.profile-av { width:72px; height:72px; border-radius:50%; background:var(--yellow); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:26px; font-weight:700; color:var(--dark); margin:0 auto 12px; }
+.profile-name { font-family:'Sora',sans-serif; font-size:20px; font-weight:700; }
+.profile-role { font-size:13px; color:var(--gray); margin-top:4px; }
+.profile-body { padding:20px; }
+.pcard { background:white; border-radius:16px; border:1px solid var(--border); overflow:hidden; margin-bottom:12px; }
+.prow { display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border); }
+.prow:last-child { border-bottom:none; }
+.prow-icon { width:32px; height:32px; border-radius:8px; background:var(--light); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.prow-icon svg { width:16px; height:16px; stroke:var(--gray); fill:none; stroke-width:2; }
+.prow-label { flex:1; font-size:15px; font-weight:500; }
+.prow-val { font-size:13px; color:var(--gray); }
+.logout-btn { width:100%; background:#FEF2F2; border:1px solid #FECACA; border-radius:14px; padding:15px; font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--red); cursor:pointer; }
+
+/* MODALS */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:flex-end; justify-content:center; }
+.overlay.open { display:flex; }
+.sheet { background:white; border-radius:24px 24px 0 0; padding:20px 20px 44px; width:100%; max-width:430px; max-height:88vh; overflow-y:auto; animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.sheet-handle { width:36px; height:4px; background:#E5E7EB; border-radius:2px; margin:0 auto 18px; }
+.sheet-title { font-family:'Sora',sans-serif; font-size:18px; font-weight:700; margin-bottom:18px; }
+.field { margin-bottom:14px; }
+.field label { display:block; font-size:12px; font-weight:600; color:var(--gray); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:7px; }
+.field input, .field select, .field textarea { width:100%; background:var(--light); border:1.5px solid transparent; border-radius:12px; padding:13px 14px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--dark); outline:none; transition:all 0.2s; }
+.field input:focus, .field select:focus { background:white; border-color:var(--yellow); }
+.field select option { background:white; }
+.field textarea { resize:vertical; min-height:80px; }
+.sheet-btns { display:flex; gap:10px; margin-top:8px; }
+.btn-cancel { flex:1; background:var(--light); border:none; border-radius:12px; padding:14px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--gray); cursor:pointer; }
+.btn-save { flex:2; background:var(--dark); border:none; border-radius:12px; padding:14px; font-family:'Sora',sans-serif; font-size:14px; font-weight:700; color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-save:active { opacity:0.85; }
+
+/* DELIVERY BOY OPTIONS */
+.db-option { display:flex; align-items:center; gap:12px; padding:14px; border-radius:14px; border:1.5px solid var(--border); margin-bottom:10px; cursor:pointer; transition:border-color 0.2s; }
+.db-option:active { border-color:var(--orange); }
+.db-av { width:40px; height:40px; border-radius:50%; background:var(--light); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:15px; font-weight:700; flex-shrink:0; }
+.db-name { font-size:14px; font-weight:700; }
+.db-status { font-size:12px; font-weight:600; margin-top:1px; }
+.db-avail { color:var(--green); }
+.db-busy { color:var(--orange); }
+.db-arrow { margin-left:auto; }
+.db-arrow svg { width:18px; height:18px; stroke:#9CA3AF; fill:none; stroke-width:2.5; }
+
+/* TOAST */
+.toast { position:fixed; bottom:84px; left:50%; transform:translateX(-50%) translateY(10px); background:var(--dark); color:white; padding:11px 22px; border-radius:12px; font-size:14px; font-weight:500; opacity:0; transition:all 0.3s; z-index:9999; white-space:nowrap; pointer-events:none; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.success { background:var(--green); }
+.toast.error { background:var(--red); }
+.spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* SOUND WAVE */
+.sound-wave { display:none; align-items:center; gap:2px; margin-left:8px; }
+.sound-wave.active { display:flex; }
+.sw-bar { width:3px; background:var(--orange); border-radius:2px; animation:wave 0.8s ease-in-out infinite; }
+.sw-bar:nth-child(1){height:8px;animation-delay:0s}
+.sw-bar:nth-child(2){height:14px;animation-delay:0.1s}
+.sw-bar:nth-child(3){height:10px;animation-delay:0.2s}
+.sw-bar:nth-child(4){height:14px;animation-delay:0.3s}
+@keyframes wave { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(0.4)} }
+
+.live-dot { width:8px; height:8px; background:var(--green); border-radius:50%; animation:blink 1.5s ease-in-out infinite; display:inline-block; margin-right:4px; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+</head>
+<body>
+
+<div id="loadingScreen">
+  <div class="loader-logo">Pure<span>Order</span></div>
+  <div class="loader-sub">Owner Panel</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- ORDERS -->
+<div id="pageOrders" class="page active">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h2 style="display:flex;align-items:center;">
+          Orders
+          <span class="sound-wave" id="soundWave">
+            <div class="sw-bar"></div><div class="sw-bar"></div>
+            <div class="sw-bar"></div><div class="sw-bar"></div>
+          </span>
+        </h2>
+        <p id="restName">Mamu Bhanja Dhaba</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-weight:600;">
+        <span class="live-dot"></span> Live
+      </div>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val" id="statToday">0</div>
+      <div class="stat-label">Today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statActive">0</div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statRevenue">0</div>
+      <div class="stat-label">Revenue</div>
+    </div>
+  </div>
+  <div class="orders-list" id="ordersList">
+    <div class="empty-box">
+      <div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+      <h3>No orders yet</h3>
+      <p>New orders will appear here</p>
+    </div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div id="pageMenu" class="page">
+  <div class="menu-header">
+    <div class="menu-header-row">
+      <h2>Menu</h2>
+      <button class="btn-add" onclick="openAddItem()">+ Add Item</button>
+    </div>
+  </div>
+  <div class="cat-tabs" id="catTabs">
+    <button class="cat-tab active" onclick="filterCat('all',this)">All</button>
+  </div>
+  <div class="menu-list" id="menuList"></div>
+</div>
+
+<!-- ACCOUNTS -->
+<div id="pageAccounts" class="page">
+  <div class="page-header">
+    <div class="page-header-row">
+      <h2>Accounts</h2>
+      <button class="btn-add" onclick="openAddAccount()">+ Add</button>
+    </div>
+    <p>Delivery partners</p>
+  </div>
+  <div id="accountsList"></div>
+</div>
+
+<!-- PROFILE -->
+<div id="pageProfile" class="page">
+  <div class="profile-top">
+    <div class="profile-av" id="profileAv">O</div>
+    <div class="profile-name" id="profileName">Owner</div>
+    <div class="profile-role">Restaurant Owner</div>
+  </div>
+  <div class="profile-body">
+    <div class="pcard">
+      <div class="prow">
+        <div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="prow-label">Restaurant</div>
+        <div class="prow-val">Mamu Bhanja Dhaba</div>
+      </div>
+      <div class="prow">
+        <div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="prow-label">Email</div>
+        <div class="prow-val" id="profileEmail">-</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-orders" onclick="goPage('orders',this)">
+    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+    <div class="nl">Orders</div>
+    <div class="order-badge" id="orderBadge"></div>
+  </button>
+  <button class="nav-btn" id="nav-menu" onclick="goPage('menu',this)">
+    <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    <div class="nl">Menu</div>
+  </button>
+  <button class="nav-btn" id="nav-accounts" onclick="goPage('accounts',this)">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <div class="nl">Accounts</div>
+  </button>
+  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <div class="nl">Profile</div>
+  </button>
+</div>
+
+<!-- ASSIGN MODAL -->
+<div class="overlay" id="assignModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Assign Delivery Partner</div>
+    <div id="dbList"></div>
+    <button class="btn-cancel" style="width:100%;margin-top:4px;" onclick="closeModal('assignModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ADD ITEM MODAL -->
+<div class="overlay" id="addItemModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="itemModalTitle">Add Menu Item</div>
+    <div class="field"><label>Item Name</label><input type="text" id="iName" placeholder="e.g. Dal Tadka Rice" /></div>
+    <div class="field"><label>Category</label>
+      <select id="iCat">
+        <option value="Rice">Rice</option>
+        <option value="Roti">Roti</option>
+        <option value="Thali">Thali</option>
+        <option value="Snacks">Snacks</option>
+        <option value="Drinks">Drinks</option>
+        <option value="Curry">Curry</option>
+      </select>
+    </div>
+    <div class="field"><label>Price (Rs.)</label><input type="number" id="iPrice" placeholder="80" /></div>
+    <div class="field"><label>Description (optional)</label><textarea id="iDesc" placeholder="Short description..."></textarea></div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('addItemModal')">Cancel</button>
+      <button class="btn-save" id="saveItemBtn" onclick="saveItem()">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ACCOUNT MODAL -->
+<div class="overlay" id="addAccModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Delivery Partner</div>
+    <div class="field"><label>Full Name</label><input type="text" id="aName" placeholder="Name" /></div>
+    <div class="field"><label>Phone</label><input type="tel" id="aPhone" placeholder="10-digit number" /></div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('addAccModal')">Cancel</button>
+      <button class="btn-save" id="saveAccBtn" onclick="saveAccount()">Add Partner</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, addDoc, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
+  authDomain: "pureorder-eca2b.firebaseapp.com",
+  projectId: "pureorder-eca2b",
+  storageBucket: "pureorder-eca2b.firebasestorage.app",
+  messagingSenderId: "641924435931",
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null, userData = null;
+let orders = [], menuItems = [], accounts = [], deliveryBoys = [];
+let menuFilter = 'all', currentOrderId = null, editingItemId = null;
+let todayCount = 0, todayRevenue = 0;
+let audioCtx = null;
+
+// UTILS
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+
+// NAV
+window.goPage = (name, el) => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const map = {orders:'pageOrders', menu:'pageMenu', accounts:'pageAccounts', profile:'pageProfile'};
+  document.getElementById(map[name])?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.getElementById(`nav-${name}`)?.classList.add('active');
+  if (name==='menu') renderMenu();
+  if (name==='accounts') renderAccounts();
+  if (name==='profile') renderProfile();
+};
+
+// AUTH
+const fallback = setTimeout(() => window.location.href = 'index.html', 7000);
+onAuthStateChanged(auth, async user => {
+  clearTimeout(fallback);
+  if (!user) { window.location.href = 'index.html'; return; }
+  currentUser = user;
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists() || snap.data().role !== 'owner') { window.location.href = 'index.html'; return; }
+    userData = snap.data();
+  } catch(e) { window.location.href = 'index.html'; return; }
+  initApp();
+});
+
+function initApp() {
+  document.getElementById('profileName').textContent = userData.name || 'Owner';
+  document.getElementById('profileEmail').textContent = userData.email || currentUser.email || '';
+  loadMenu();
+  loadDeliveryBoys();
+  startOrderListener();
+  setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
+}
+
+// BEEP SOUND
+function beep() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    [0, 0.28, 0.56].forEach(t => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.4, audioCtx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+t+0.22);
+      o.start(audioCtx.currentTime+t); o.stop(audioCtx.currentTime+t+0.22);
+    });
+    const sw = document.getElementById('soundWave');
+    sw.classList.add('active');
+    setTimeout(() => sw.classList.remove('active'), 2000);
+  } catch(e) {}
+}
+
+// ORDERS — real-time listener
+let prevOrderIds = new Set();
+function startOrderListener() {
+  const q = query(
+    collection(db, 'orders'),
+    where('restaurantId', '==', 'mamu-bhanja'),
+    orderBy('createdAt', 'desc')
+  );
+  onSnapshot(q, snap => {
+    const newOrders = snap.docs.map(d => ({id:d.id,...d.data()}));
+    // Detect new orders
+    const newIds = new Set(newOrders.map(o=>o.id));
+    if (prevOrderIds.size > 0) {
+      newOrders.forEach(o => {
+        if (!prevOrderIds.has(o.id) && o.status==='placed') {
+          beep();
+          showToast('New order received!');
+        }
+      });
+    }
+    prevOrderIds = newIds;
+    orders = newOrders;
+    updateStats();
+    renderOrders();
+  });
+}
+
+function updateStats() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayOrders = orders.filter(o => {
+    if (!o.createdAt?.toDate) return false;
+    return o.createdAt.toDate() >= today;
+  });
+  const active = orders.filter(o => !['delivered','cancelled'].includes(o.status)).length;
+  const revenue = todayOrders.filter(o=>o.status==='delivered').reduce((s,o)=>s+o.totalAmount,0);
+  document.getElementById('statToday').textContent = todayOrders.length;
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statRevenue').textContent = revenue > 0 ? `${revenue}` : '0';
+  const newCount = orders.filter(o=>o.status==='placed').length;
+  const badge = document.getElementById('orderBadge');
+  badge.textContent = newCount; badge.style.display = newCount>0?'block':'none';
+}
+
+function renderOrders() {
+  const el = document.getElementById('ordersList');
+  const active = orders.filter(o => o.status !== 'delivered');
+  if (!active.length) {
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3>No active orders</h3><p>New orders will appear here automatically</p></div>`;
+    return;
+  }
+  const sMap = {placed:'sp-placed',accepted:'sp-accepted',preparing:'sp-preparing',ready:'sp-ready',assigned:'sp-assigned',delivered:'sp-delivered'};
+  el.innerHTML = active.map(o => {
+    const s = o.status||'placed', cls = sMap[s]||'sp-placed';
+    const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : 'Just now';
+    const total = o.totalAmount || o.items?.reduce((s,i)=>s+i.price*i.qty,0)||0;
+    return `<div class="order-card ${s==='placed'?'new-order':s==='assigned'?'assigned':''}">
+      <div class="order-top">
+        <div>
+          <div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div>
+          <div class="order-time">${time}</div>
+        </div>
+        <div class="status-pill ${cls}">${s}</div>
+      </div>
+      <div class="customer-row">
+        <div class="cust-av">${(o.customerName||'C')[0].toUpperCase()}</div>
+        <div>
+          <div class="cust-name">${o.customerName||'Customer'}</div>
+          <div class="cust-phone">${o.customerPhone||''}</div>
+        </div>
+      </div>
+      <div class="address-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${o.deliveryAddress||'Address not provided'}
+      </div>
+      <div class="items-box">
+        ${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>Rs.${i.price*i.qty}</span></div>`).join('')}
+        <div class="items-total"><span>Total</span><span style="color:var(--orange)">Rs.${total}</span></div>
+      </div>
+      <div class="order-btns">
+        ${s==='placed' ? `<button class="btn-accept" onclick="updateOrderStatus('${o.id}','accepted')">Accept Order</button><button class="btn-reject" onclick="updateOrderStatus('${o.id}','cancelled')">Reject</button>` : ''}
+        ${s==='accepted' ? `<button class="btn-status" onclick="updateOrderStatus('${o.id}','preparing')">Start Preparing</button>` : ''}
+        ${s==='preparing' ? `<button class="btn-status" onclick="updateOrderStatus('${o.id}','ready')">Mark Ready</button>` : ''}
+        ${s==='ready' ? `<button class="btn-assign" onclick="openAssign('${o.id}')">Assign Delivery</button>` : ''}
+        ${s==='assigned' ? `<div class="assigned-label">Assigned to ${o.deliveryPartnerName||'Delivery Partner'}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.updateOrderStatus = async (orderId, status) => {
+  try {
+    await updateDoc(doc(db,'orders',orderId), { status, updatedAt:serverTimestamp() });
+    showToast(`Order ${status}!`, 'success');
+  } catch(e) { showToast('Failed to update','error'); }
+};
+
+// ASSIGN
+window.openAssign = (orderId) => {
+  currentOrderId = orderId;
+  const el = document.getElementById('dbList');
+  if (!deliveryBoys.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:#9CA3AF;">No delivery partners added yet</div>';
+  } else {
+    el.innerHTML = deliveryBoys.map(db => `
+      <div class="db-option" onclick="assignDelivery('${db.id}','${db.name}')">
+        <div class="db-av">${db.name[0].toUpperCase()}</div>
+        <div>
+          <div class="db-name">${db.name}</div>
+          <div class="db-status ${db.busy?'db-busy':'db-avail'}">${db.busy?'Busy':'Available'}</div>
+        </div>
+        <div class="db-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>
+      </div>`).join('');
+  }
+  document.getElementById('assignModal').classList.add('open');
+};
+
+window.assignDelivery = async (dbId, dbName) => {
+  try {
+    await updateDoc(doc(db,'orders',currentOrderId), {
+      status:'assigned', deliveryPartnerId:dbId, deliveryPartnerName:dbName, updatedAt:serverTimestamp()
+    });
+    closeModal('assignModal');
+    showToast(`Assigned to ${dbName}!`, 'success');
+  } catch(e) { showToast('Failed to assign','error'); }
+};
+
+// MENU
+async function loadMenu() {
+  try {
+    const snap = await getDocs(query(collection(db,'menu'), where('restaurantId','==','mamu-bhanja')));
+    menuItems = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { menuItems = []; }
+  buildCatTabs();
+  renderMenu();
+}
+
+function buildCatTabs() {
+  const cats = ['All', ...new Set(menuItems.map(i=>i.category))];
+  document.getElementById('catTabs').innerHTML = cats.map((c,i)=>
+    `<button class="cat-tab ${i===0?'active':''}" onclick="filterCat('${c==='All'?'all':c.toLowerCase()}',this)">${c}</button>`
+  ).join('');
+}
+
+window.filterCat = (cat, el) => {
+  menuFilter = cat;
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderMenu();
+};
+
+function renderMenu() {
+  const filtered = menuFilter==='all' ? menuItems : menuItems.filter(i=>i.category.toLowerCase()===menuFilter);
+  const el = document.getElementById('menuList');
+  if (!filtered.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;">No items. Add your first menu item!</div>';
+    return;
+  }
+  el.innerHTML = filtered.map(item => `
+    <div class="menu-item">
+      <div class="menu-item-img">${item.imageUrl?`<img src="${item.imageUrl}">`:`<span>${item.name}</span>`}</div>
+      <div class="menu-info">
+        <div class="menu-name">${item.name}</div>
+        <div class="menu-cat">${item.category}</div>
+        <div class="menu-price">Rs.${item.price}</div>
+      </div>
+      <div class="menu-controls">
+        <label class="toggle">
+          <input type="checkbox" ${item.available?'checked':''} onchange="toggleAvail('${item.id}',this.checked)">
+          <div class="toggle-track"></div>
+        </label>
+        <button class="icon-btn ib-edit" onclick="editItem('${item.id}')">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="icon-btn ib-del" onclick="deleteItem('${item.id}')">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+window.toggleAvail = async (id, val) => {
+  try {
+    await updateDoc(doc(db,'menu',id), {available:val});
+    const item = menuItems.find(i=>i.id===id);
+    if (item) item.available = val;
+    showToast(val ? 'Item available' : 'Item hidden');
+  } catch(e) { showToast('Failed','error'); }
+};
+
+window.openAddItem = () => {
+  editingItemId = null;
+  document.getElementById('itemModalTitle').textContent = 'Add Menu Item';
+  ['iName','iPrice','iDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iCat').value = 'Rice';
+  document.getElementById('addItemModal').classList.add('open');
+};
+
+window.editItem = (id) => {
+  editingItemId = id;
+  const item = menuItems.find(i=>i.id===id);
+  document.getElementById('itemModalTitle').textContent = 'Edit Item';
+  document.getElementById('iName').value = item.name;
+  document.getElementById('iCat').value = item.category;
+  document.getElementById('iPrice').value = item.price;
+  document.getElementById('iDesc').value = item.description||'';
+  document.getElementById('addItemModal').classList.add('open');
+};
+
+window.saveItem = async () => {
+  const name = document.getElementById('iName').value.trim();
+  const cat = document.getElementById('iCat').value;
+  const price = parseInt(document.getElementById('iPrice').value);
+  const desc = document.getElementById('iDesc').value.trim();
+  const btn = document.getElementById('saveItemBtn');
+  if (!name||!price) { showToast('Fill name and price','error'); return; }
+  btn.innerHTML = '<div class="spinner"></div>';
+  btn.style.pointerEvents='none';
+  try {
+    const data = { name, category:cat, price, description:desc, restaurantId:'mamu-bhanja', available:true, popular:false, updatedAt:serverTimestamp() };
+    if (editingItemId) {
+      await updateDoc(doc(db,'menu',editingItemId), data);
+      const idx = menuItems.findIndex(i=>i.id===editingItemId);
+      if (idx>=0) menuItems[idx] = {...menuItems[idx],...data};
+      showToast('Item updated!','success');
+    } else {
+      data.createdAt = serverTimestamp();
+      const ref = await addDoc(collection(db,'menu'), data);
+      menuItems.push({id:ref.id,...data});
+      buildCatTabs();
+      showToast('Item added!','success');
+    }
+    closeModal('addItemModal');
+    renderMenu();
+  } catch(e) { showToast('Failed to save','error'); }
+  btn.innerHTML='Save Item'; btn.style.pointerEvents='auto';
+};
+
+window.deleteItem = async (id) => {
+  if (!confirm('Delete this item?')) return;
+  try {
+    const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await deleteDoc(doc(db,'menu',id));
+    menuItems = menuItems.filter(i=>i.id!==id);
+    renderMenu(); buildCatTabs();
+    showToast('Item deleted','success');
+  } catch(e) { showToast('Failed','error'); }
+};
+
+// ACCOUNTS
+async function loadDeliveryBoys() {
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('role','==','delivery')));
+    deliveryBoys = snap.docs.map(d=>({id:d.id,...d.data()}));
+    accounts = deliveryBoys;
+  } catch(e) { deliveryBoys=[]; accounts=[]; }
+}
+
+function renderAccounts() {
+  const el = document.getElementById('accountsList');
+  if (!accounts.length) {
+    el.innerHTML='<div style="text-align:center;padding:40px;color:#9CA3AF;">No accounts added yet</div>';
+    return;
+  }
+  el.innerHTML = accounts.map(a=>`
+    <div class="account-item">
+      <div class="acc-av av-delivery">${a.name[0].toUpperCase()}</div>
+      <div class="acc-info">
+        <div class="acc-name">${a.name}</div>
+        <div class="acc-phone">${a.phone||a.email||''}</div>
+      </div>
+      <div class="role-tag rt-delivery">Delivery</div>
+    </div>`).join('');
+}
+
+window.openAddAccount = () => {
+  ['aName','aPhone'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addAccModal').classList.add('open');
+};
+
+window.saveAccount = async () => {
+  const name = document.getElementById('aName').value.trim();
+  const phone = document.getElementById('aPhone').value.trim();
+  const btn = document.getElementById('saveAccBtn');
+  if (!name||!phone) { showToast('Fill all fields','error'); return; }
+  btn.innerHTML='<div class="spinner"></div>'; btn.style.pointerEvents='none';
+  try {
+    await addDoc(collection(db,'deliveryPartners'), { name, phone, role:'delivery', busy:false, restaurantId:'mamu-bhanja', createdAt:serverTimestamp() });
+    deliveryBoys.push({id:Date.now().toString(),name,phone,busy:false});
+    accounts = deliveryBoys;
+    closeModal('addAccModal');
+    renderAccounts();
+    showToast('Delivery partner added!','success');
+  } catch(e) { showToast('Failed','error'); }
+  btn.innerHTML='Add Partner'; btn.style.pointerEvents='auto';
+};
+
+// PROFILE
+function renderProfile() {
+  document.getElementById('profileName').textContent = userData?.name||'Owner';
+  document.getElementById('profileEmail').textContent = userData?.email||currentUser?.email||'';
+}
+
+// LOGOUT
+window.doLogout = async () => {
+  try { await signOut(auth); window.location.href='index.html'; }
+  catch(e) { showToast('Logout failed','error'); }
+};
+
+// CLOSE MODALS
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
