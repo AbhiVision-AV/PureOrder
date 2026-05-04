@@ -534,7 +534,7 @@ let activeOrders = [], historyOrders = [], menuItems = [], deliveryBoys = [];
 let categories = ['Rice','Roti','Thali','Snacks','Drinks'];
 let menuFilter = 'all', historyFilter = 'all';
 let editingDishId = null, rejectOrderId = null, currentAssignOrderId = null;
-let restaurantId = 'mamu-bhanja';
+let restaurantId = 'mamu-bhanja-dhaba';
 let audioCtx = null;
 
 // UTILS
@@ -592,7 +592,7 @@ onAuthStateChanged(auth, async user => {
     const snap = await getDoc(doc(db, 'users', user.uid));
     if (!snap.exists() || snap.data().role !== 'owner') { window.location.href = 'index.html'; return; }
     userData = snap.data();
-    restaurantId = userData.restaurantId || 'mamu-bhanja';
+    restaurantId = userData.restaurantId || 'mamu-bhanja-dhaba';
   } catch(e) { window.location.href = 'index.html'; return; }
   initApp();
 });
