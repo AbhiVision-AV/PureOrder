@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<title>PureOrder — Owner</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;--purple:#7C3AED;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;padding-bottom:72px;}
+
+#loadingScreen{position:fixed;inset:0;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s;}
+#loadingScreen.hide{opacity:0;pointer-events:none;}
+.loader-logo{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;}
+.loader-logo span{color:var(--orange);}
+.loader-sub{font-size:13px;color:var(--gray);margin-top:6px;}
+.loader-bar{width:80px;height:3px;background:var(--light);border-radius:2px;overflow:hidden;margin-top:16px;}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));animation:ld 1.4s ease forwards;}
+@keyframes ld{from{width:0}to{width:100%}}
+
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:white;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;position:relative;}
+.nav-btn svg{width:22px;height:22px;stroke:#9CA3AF;fill:none;stroke-width:2;transition:stroke 0.2s;}
+.nav-btn .nl{font-size:10px;font-weight:600;color:#9CA3AF;transition:color 0.2s;}
+.nav-btn.active svg{stroke:var(--orange);}
+.nav-btn.active .nl{color:var(--orange);}
+.nav-badge{position:absolute;top:6px;right:8px;background:var(--red);color:white;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;display:none;}
+
+/* NOTIFICATION BANNER */
+.notif-bar{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-100%);width:100%;max-width:430px;background:var(--dark);color:white;padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:500;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.notif-bar.show{transform:translateX(-50%) translateY(0);}
+.notif-dot{width:10px;height:10px;background:var(--orange);border-radius:50%;flex-shrink:0;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.notif-text{flex:1;font-size:14px;font-weight:600;}
+.notif-view{font-size:13px;color:var(--yellow);font-weight:700;cursor:pointer;flex-shrink:0;}
+
+/* PAGE HEADER */
+.page-header{background:white;padding:52px 20px 16px;border-bottom:1px solid var(--border);}
+.ph-row{display:flex;align-items:flex-start;justify-content:space-between;}
+.page-header h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;}
+.page-header p{font-size:13px;color:var(--gray);margin-top:3px;}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--green);font-weight:600;background:#F0FDF4;border:1px solid #BBF7D0;padding:5px 10px;border-radius:20px;flex-shrink:0;}
+.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 1.5s ease-in-out infinite;}
+.btn-add{background:var(--dark);color:white;border:none;border-radius:10px;padding:9px 16px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:16px;background:white;border-bottom:1px solid var(--border);}
+.stat-card{background:var(--light);border-radius:14px;padding:14px 10px;text-align:center;}
+.stat-val{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+.stat-label{font-size:11px;color:var(--gray);margin-top:3px;font-weight:500;}
+
+/* ORDER CARDS */
+.orders-list{padding:12px 16px;}
+.order-card{background:white;border-radius:18px;padding:16px;margin-bottom:12px;border:1.5px solid var(--border);cursor:pointer;}
+.order-card.is-new{border-color:#FDE68A;background:#FFFDF7;}
+.order-card.is-accepted{border-color:#BBF7D0;}
+.order-card.is-preparing{border-color:#FED7AA;}
+.order-card.is-ready{border-color:#BFDBFE;}
+.order-card.is-assigned{border-color:#DDD6FE;}
+.order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.order-id{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;}
+.order-time{font-size:12px;color:var(--gray);margin-top:2px;}
+.status-pill{font-size:11px;font-weight:700;border-radius:20px;padding:4px 12px;text-transform:capitalize;white-space:nowrap;}
+.sp-placed{background:#FEF9C3;color:#A16207;}
+.sp-accepted{background:#DCFCE7;color:#16A34A;}
+.sp-preparing{background:#FFF3E0;color:#C2410C;}
+.sp-ready{background:#DBEAFE;color:#1D4ED8;}
+.sp-assigned{background:#EDE9FE;color:#6D28D9;}
+.sp-delivered{background:#F0FDF4;color:#15803D;}
+.sp-cancelled{background:#FEE2E2;color:#B91C1C;}
+
+.customer-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.cust-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+.cust-name{font-size:14px;font-weight:600;}
+.cust-phone{font-size:12px;color:var(--gray);}
+.address-row{font-size:13px;color:var(--gray);margin-bottom:12px;display:flex;align-items:flex-start;gap:5px;line-height:1.4;}
+.address-row svg{width:13px;height:13px;stroke:var(--gray);fill:none;flex-shrink:0;margin-top:1px;}
+
+.items-box{background:var(--light);border-radius:12px;padding:10px 12px;margin-bottom:12px;}
+.item-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:#374151;}
+.items-total{display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding-top:8px;margin-top:6px;border-top:1px solid var(--border);}
+
+/* TRACKING BAR */
+.tracking-bar{display:flex;align-items:center;margin-bottom:12px;padding:10px 12px;background:var(--light);border-radius:12px;gap:0;}
+.track-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:48px;}
+.track-dot{width:20px;height:20px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;margin-bottom:4px;flex-shrink:0;}
+.track-dot.done{background:var(--green);}
+.track-dot.curr{background:var(--orange);}
+.track-dot svg{width:10px;height:10px;stroke:white;fill:none;stroke-width:2.5;}
+.track-lbl{font-size:9px;color:var(--gray);font-weight:600;text-align:center;line-height:1.2;}
+.track-lbl.done{color:var(--green);}
+.track-lbl.curr{color:var(--orange);}
+.track-line{flex:1;height:2px;background:#E5E7EB;margin-bottom:12px;min-width:6px;}
+.track-line.done{background:var(--green);}
+
+.order-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-accept{flex:1;background:var(--dark);color:white;border:none;border-radius:10px;padding:12px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-next{flex:1;background:var(--orange);color:white;border:none;border-radius:10px;padding:12px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-assign{flex:1;background:var(--blue);color:white;border:none;border-radius:10px;padding:12px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-reject{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--red);cursor:pointer;font-weight:600;}
+.assigned-label{font-size:13px;color:var(--purple);font-weight:600;padding:4px 0;}
+
+.empty-box{text-align:center;padding:48px 20px;}
+.empty-icon{width:64px;height:64px;background:var(--light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.empty-icon svg{width:28px;height:28px;stroke:#9CA3AF;fill:none;}
+.empty-box h3{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px;}
+.empty-box p{font-size:13px;color:var(--gray);}
+
+/* MENU */
+.menu-header{background:white;padding:52px 20px 0;border-bottom:1px solid var(--border);}
+.menu-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.menu-header-top h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;}
+.cat-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 0 12px;}
+.cat-scroll::-webkit-scrollbar{display:none;}
+.cat-tab{background:var(--light);border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;}
+.cat-tab.active{background:var(--dark);color:white;}
+.cat-add-btn{background:#FFF9EC;border:1.5px dashed var(--yellow);border-radius:20px;padding:7px 14px;font-size:13px;font-weight:600;color:#A16207;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;flex-shrink:0;}
+.menu-list{padding:12px 16px;}
+.menu-item-card{background:white;border-radius:16px;padding:14px;margin-bottom:10px;display:flex;gap:12px;border:1px solid var(--border);}
+.dish-img{width:72px;height:72px;border-radius:12px;background:var(--light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px;}
+.dish-img img{width:100%;height:100%;object-fit:cover;}
+.dish-info{flex:1;min-width:0;}
+.dish-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.dish-cat{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px;}
+.dish-desc{font-size:12px;color:var(--gray);line-height:1.4;margin-bottom:4px;}
+.dish-price{font-size:15px;font-weight:800;color:var(--orange);}
+.dish-na{font-size:11px;color:var(--red);font-weight:600;background:#FEE2E2;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
+.dish-controls{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;}
+.toggle{position:relative;width:42px;height:24px;}
+.toggle input{display:none;}
+.toggle-track{position:absolute;inset:0;background:#E5E7EB;border-radius:12px;cursor:pointer;transition:background 0.2s;}
+.toggle-track::before{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.toggle input:checked+.toggle-track{background:var(--green);}
+.toggle input:checked+.toggle-track::before{transform:translateX(18px);}
+.ic-btn{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ic-edit{background:#FEF9C3;}
+.ic-edit svg{stroke:#A16207;}
+.ic-del{background:#FEE2E2;}
+.ic-del svg{stroke:var(--red);}
+.ic-btn svg{width:14px;height:14px;fill:none;stroke-width:2;}
+
+/* HISTORY */
+.htabs{display:flex;background:white;border-bottom:1px solid var(--border);padding:0 16px;}
+.htab{flex:1;text-align:center;padding:12px 0;font-size:13px;font-weight:600;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
+.htab.active{color:var(--orange);border-bottom-color:var(--orange);}
+.history-list{padding:12px 16px;}
+.history-card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--border);cursor:pointer;}
+.hc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.hc-id{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;}
+.hc-date{font-size:12px;color:var(--gray);}
+.hc-customer{font-size:13px;color:var(--gray);margin-bottom:6px;}
+.hc-bottom{display:flex;justify-content:space-between;align-items:center;}
+.hc-total{font-size:15px;font-weight:700;color:var(--orange);}
+
+/* PROFILE */
+.profile-top{background:white;padding:52px 20px 24px;border-bottom:1px solid var(--border);}
+.rest-img-box{width:100%;height:160px;background:linear-gradient(135deg,#FFF9EC,#FFE8CC);border-radius:16px;margin-bottom:16px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;color:#9CA3AF;cursor:pointer;position:relative;}
+.rest-img-box img{width:100%;height:100%;object-fit:cover;}
+.rest-img-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;}
+.rest-img-overlay span{color:white;font-size:13px;font-weight:600;}
+.profile-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;margin-bottom:3px;}
+.profile-rest{font-size:14px;color:var(--gray);}
+.profile-body{padding:20px;}
+.pcard{background:white;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
+.prow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);}
+.prow:last-child{border-bottom:none;}
+.prow-icon{width:32px;height:32px;border-radius:8px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prow-icon svg{width:16px;height:16px;stroke:var(--gray);fill:none;stroke-width:2;}
+.prow-label{flex:1;font-size:15px;font-weight:500;}
+.prow-val{font-size:13px;color:var(--gray);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.logout-btn{width:100%;background:#FEF2F2;border:1px solid #FECACA;border-radius:14px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--red);cursor:pointer;}
+.status-toggle-card{background:white;border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.status-info{}
+.status-title{font-size:15px;font-weight:600;margin-bottom:3px;}
+.status-sub{font-size:12px;font-weight:600;}
+
+/* DELIVERY PARTNERS */
+.dp-section{background:white;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
+.dp-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);}
+.dp-header h3{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;}
+.dp-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);}
+.dp-item:last-child{border-bottom:none;}
+.dp-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:white;flex-shrink:0;}
+.dp-info{flex:1;min-width:0;}
+.dp-name{font-size:14px;font-weight:600;}
+.dp-email{font-size:12px;color:var(--gray);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dp-remove{background:#FEE2E2;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;flex-shrink:0;}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.sheet{background:white;border-radius:24px 24px 0 0;padding:20px 20px 44px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:#E5E7EB;border-radius:2px;margin:0 auto 18px;}
+.sheet-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:18px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;}
+.field input,.field select,.field textarea{width:100%;background:var(--light);border:1.5px solid transparent;border-radius:12px;padding:13px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);outline:none;transition:all 0.2s;}
+.field input:focus,.field select:focus,.field textarea:focus{background:white;border-color:var(--yellow);}
+.field textarea{resize:vertical;min-height:80px;}
+.field select option{background:white;}
+.img-prev{width:100%;height:120px;border-radius:12px;object-fit:cover;margin-top:8px;display:none;}
+.sheet-btns{display:flex;gap:10px;margin-top:8px;}
+.btn-cancel{flex:1;background:var(--light);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;}
+.btn-save{flex:2;background:var(--dark);border:none;border-radius:12px;padding:14px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-save.danger{background:var(--red);}
+
+/* DB OPTIONS */
+.db-option{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;border:1.5px solid var(--border);margin-bottom:10px;cursor:pointer;transition:border-color 0.2s;}
+.db-option:active{border-color:var(--orange);}
+.db-av2{width:40px;height:40px;border-radius:50%;background:var(--light);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;flex-shrink:0;}
+.db-n{font-size:14px;font-weight:700;}
+.db-s{font-size:12px;font-weight:600;margin-top:1px;}
+.db-avail{color:var(--green);}
+.db-busy{color:var(--orange);}
+
+/* DETAIL SHEET */
+.detail-sec{margin-bottom:16px;}
+.detail-lbl{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+.detail-box{background:var(--light);border-radius:12px;padding:12px 14px;}
+.detail-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;}
+.detail-total{display:flex;justify-content:space-between;font-size:15px;font-weight:700;padding-top:8px;margin-top:6px;border-top:1px solid var(--border);}
+
+/* STATUS CONFIRM */
+.confirm-icon{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.confirm-msg{font-size:14px;color:var(--gray);text-align:center;line-height:1.6;margin-bottom:20px;}
+
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);color:white;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{background:var(--green);}
+.toast.error{background:var(--red);}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.sound-wave{display:none;align-items:center;gap:2px;margin-left:8px;}
+.sound-wave.active{display:flex;}
+.sw-bar{width:3px;background:var(--orange);border-radius:2px;animation:wave 0.8s ease-in-out infinite;}
+.sw-bar:nth-child(1){height:8px;animation-delay:0s}
+.sw-bar:nth-child(2){height:14px;animation-delay:0.1s}
+.sw-bar:nth-child(3){height:10px;animation-delay:0.2s}
+.sw-bar:nth-child(4){height:14px;animation-delay:0.3s}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.4)}}
+</style>
+</head>
+<body>
+
+<div id="loadingScreen">
+  <div class="loader-logo">Pure<span>Order</span></div>
+  <div class="loader-sub">Owner Panel</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<div class="notif-bar" id="notifBar">
+  <div class="notif-dot"></div>
+  <div class="notif-text" id="notifText">New order received!</div>
+  <div class="notif-view" onclick="goPage('orders');hideNotif()">View</div>
+</div>
+
+<!-- ORDERS -->
+<div id="pageOrders" class="page active">
+  <div class="page-header">
+    <div class="ph-row">
+      <div>
+        <h2 style="display:flex;align-items:center;">Orders<span class="sound-wave" id="soundWave"><div class="sw-bar"></div><div class="sw-bar"></div><div class="sw-bar"></div><div class="sw-bar"></div></span></h2>
+        <p id="restNameLabel">Loading...</p>
+      </div>
+      <div class="live-pill"><div class="live-dot"></div>Live</div>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="sToday">0</div><div class="stat-label">Today</div></div>
+    <div class="stat-card"><div class="stat-val" id="sActive">0</div><div class="stat-label">Active</div></div>
+    <div class="stat-card"><div class="stat-val" id="sRevenue">&#8377;0</div><div class="stat-label">Revenue</div></div>
+  </div>
+  <div class="orders-list" id="ordersList">
+    <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3>No active orders</h3><p>New orders will appear here automatically</p></div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div id="pageMenu" class="page">
+  <div class="menu-header">
+    <div class="menu-header-top">
+      <h2>Menu</h2>
+      <button class="btn-add" onclick="openAddDish()">+ Add Dish</button>
+    </div>
+    <div class="cat-scroll" id="catScroll">
+      <button class="cat-tab active" onclick="filterCat('all',this)">All</button>
+      <button class="cat-add-btn" onclick="openAddCat()">+ Category</button>
+    </div>
+  </div>
+  <div class="menu-list" id="menuList"></div>
+</div>
+
+<!-- HISTORY -->
+<div id="pageHistory" class="page">
+  <div class="page-header"><h2>Order History</h2><p>Past orders by date</p></div>
+  <div class="htabs">
+    <div class="htab active" onclick="switchHTab('all',this)">All</div>
+    <div class="htab" onclick="switchHTab('delivered',this)">Delivered</div>
+    <div class="htab" onclick="switchHTab('cancelled',this)">Cancelled</div>
+  </div>
+  <div class="history-list" id="historyList"></div>
+</div>
+
+<!-- PROFILE -->
+<div id="pageProfile" class="page">
+  <div class="profile-top">
+    <div class="rest-img-box" id="restImgBox" onclick="openRestImg()">
+      <div class="rest-img-overlay"><span>Tap to set restaurant photo</span></div>
+    </div>
+    <div class="profile-name" id="profileName">Owner</div>
+    <div class="profile-rest" id="profileRest">Restaurant</div>
+  </div>
+  <div class="profile-body">
+    <!-- OPEN/CLOSE -->
+    <div class="status-toggle-card">
+      <div class="status-info">
+        <div class="status-title">Restaurant Status</div>
+        <div class="status-sub" id="statusSub" style="color:var(--green)">Open — Accepting Orders</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="restToggle" checked onchange="confirmToggle(this)"><div class="toggle-track"></div></label>
+    </div>
+    <!-- DELIVERY PARTNERS -->
+    <div class="dp-section">
+      <div class="dp-header"><h3>Delivery Partners</h3><button class="btn-add" style="padding:7px 14px;font-size:12px;" onclick="openAddDelivery()">+ Add</button></div>
+      <div id="dpList"><div style="text-align:center;padding:20px;color:#9CA3AF;font-size:13px;">No partners added</div></div>
+    </div>
+    <!-- INFO -->
+    <div class="pcard">
+      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="prow-label">Email</div><div class="prow-val" id="profileEmail">-</div></div>
+      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="prow-label">Phone</div><div class="prow-val" id="profilePhone">-</div></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-orders" onclick="goPage('orders',this)"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><div class="nl">Orders</div><div class="nav-badge" id="orderBadge"></div></button>
+  <button class="nav-btn" id="nav-menu" onclick="goPage('menu',this)"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg><div class="nl">Menu</div></button>
+  <button class="nav-btn" id="nav-history" onclick="goPage('history',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div class="nl">History</div></button>
+  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nl">Profile</div></button>
+</div>
+
+<!-- ASSIGN MODAL -->
+<div class="overlay" id="assignModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Assign Delivery Partner</div><div id="dbList"></div><button class="btn-cancel" style="width:100%;margin-top:6px;" onclick="closeModal('assignModal')">Cancel</button></div>
+</div>
+
+<!-- REJECT MODAL -->
+<div class="overlay" id="rejectModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Reason for Rejection</div><div class="field"><label>Reason (optional)</label><textarea id="rejectReason" placeholder="e.g. Item not available, restaurant closing soon..."></textarea></div><div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('rejectModal')">Cancel</button><button class="btn-save danger" onclick="confirmReject()">Reject Order</button></div></div>
+</div>
+
+<!-- ADD DISH MODAL -->
+<div class="overlay" id="addDishModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="dishModalTitle">Add Dish</div>
+    <div class="field"><label>Dish Name</label><input type="text" id="dName" placeholder="e.g. Dal Tadka" /></div>
+    <div class="field"><label>Category</label><select id="dCat"></select></div>
+    <div class="field"><label>Price (&#8377;)</label><input type="number" id="dPrice" placeholder="80" /></div>
+    <div class="field"><label>Image URL (optional)</label><input type="url" id="dImage" placeholder="https://..." oninput="prevDishImg(this.value)" /><img id="dishImgPrev" class="img-prev" /></div>
+    <div class="field"><label>Description (optional)</label><textarea id="dDesc" placeholder="Short description..."></textarea></div>
+    <div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('addDishModal')">Cancel</button><button class="btn-save" id="saveDishBtn" onclick="saveDish()">Save Dish</button></div>
+  </div>
+</div>
+
+<!-- ADD CATEGORY MODAL -->
+<div class="overlay" id="addCatModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Add Category</div><div class="field"><label>Category Name</label><input type="text" id="catName" placeholder="e.g. Non Veg, Biryani, Desserts..." /></div><div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('addCatModal')">Cancel</button><button class="btn-save" onclick="saveCategory()">Add</button></div></div>
+</div>
+
+<!-- ADD DELIVERY MODAL -->
+<div class="overlay" id="addDpModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Add Delivery Partner</div>
+    <div class="field"><label>Full Name</label><input type="text" id="dpName" placeholder="Partner's name" /></div>
+    <div class="field"><label>Gmail Address</label><input type="email" id="dpEmail" placeholder="partner@gmail.com" /></div>
+    <div style="background:#FFF9EC;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;font-size:13px;color:#92400E;margin-bottom:16px;line-height:1.5;">Partner will sign in using this Gmail through Google login. No password needed.</div>
+    <div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('addDpModal')">Cancel</button><button class="btn-save" id="saveDpBtn" onclick="saveDelivery()">Add Partner</button></div>
+  </div>
+</div>
+
+<!-- STATUS CONFIRM MODAL -->
+<div class="overlay" id="statusModal">
+  <div class="sheet"><div class="sheet-handle"></div>
+    <div class="confirm-icon" id="confirmIcon" style="background:#FEF9C3;"></div>
+    <div class="sheet-title" id="confirmTitle" style="text-align:center;">Confirm</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="sheet-btns"><button class="btn-cancel" onclick="cancelToggle()">Cancel</button><button class="btn-save" id="confirmBtn" onclick="applyToggle()">Confirm</button></div>
+  </div>
+</div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="overlay" id="detailModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="detailTitle">Order Details</div><div id="detailContent"></div><button class="btn-cancel" style="width:100%;margin-top:8px;" onclick="closeModal('detailModal')">Close</button></div>
+</div>
+
+<!-- REST IMAGE MODAL -->
+<div class="overlay" id="restImgModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Restaurant Photo</div><div class="field"><label>Image URL</label><input type="url" id="restImgUrl" placeholder="https://..." oninput="prevRestImg(this.value)" /><img id="restImgPrev" class="img-prev" /></div><div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('restImgModal')">Cancel</button><button class="btn-save" onclick="saveRestImg()">Save</button></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
+  authDomain: "pureorder-eca2b.firebaseapp.com",
+  projectId: "pureorder-eca2b",
+  storageBucket: "pureorder-eca2b.firebasestorage.app",
+  messagingSenderId: "641924435931",
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null, userData = null;
+let activeOrders = [], historyOrders = [], menuItems = [], deliveryBoys = [];
+let categories = [];
+let menuFilter = 'all', histTab = 'all';
+let editingDishId = null, rejectOrderId = null, assignOrderId = null;
+let pendingToggleVal = null, isRestOpen = true;
+let restaurantId = 'mamu-bhanja-dhaba';
+let audioCtx = null;
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+
+function beep() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.28, 0.56].forEach(t => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.4, audioCtx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + t + 0.22);
+      o.start(audioCtx.currentTime + t); o.stop(audioCtx.currentTime + t + 0.22);
+    });
+    const sw = document.getElementById('soundWave');
+    sw.classList.add('active');
+    setTimeout(() => sw.classList.remove('active'), 2000);
+  } catch(e) {}
+}
+
+function showNotif(msg) {
+  document.getElementById('notifText').textContent = msg;
+  const b = document.getElementById('notifBar');
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 5000);
+}
+window.hideNotif = () => document.getElementById('notifBar').classList.remove('show');
+
+// NAV
+window.goPage = (name, el) => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const map = { orders:'pageOrders', menu:'pageMenu', history:'pageHistory', profile:'pageProfile' };
+  document.getElementById(map[name])?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.getElementById(`nav-${name}`)?.classList.add('active');
+  if (name === 'history') loadHistory();
+  if (name === 'profile') renderProfile();
+};
+
+// AUTH
+const fallback = setTimeout(() => window.location.href = 'index.html', 8000);
+onAuthStateChanged(auth, async user => {
+  clearTimeout(fallback);
+  if (!user) { window.location.href = 'index.html'; return; }
+  currentUser = user;
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists() || snap.data().role !== 'owner') { window.location.href = 'index.html'; return; }
+    userData = snap.data();
+    restaurantId = userData.restaurantId || 'mamu-bhanja-dhaba';
+  } catch(e) { window.location.href = 'index.html'; return; }
+  initApp();
+});
+
+async function initApp() {
+  document.getElementById('restNameLabel').textContent = userData.restaurantName || 'Restaurant';
+  await loadMenu();
+  await loadDeliveryBoys();
+  startOrderListener();
+  loadRestStatus();
+  setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
+}
+
+// RESTAURANT STATUS
+async function loadRestStatus() {
+  try {
+    const snap = await getDoc(doc(db, 'restaurants', restaurantId));
+    if (snap.exists()) {
+      isRestOpen = snap.data().isOpen !== false;
+      updateStatusUI();
+    }
+  } catch(e) {}
+}
+
+function updateStatusUI() {
+  document.getElementById('restToggle').checked = isRestOpen;
+  const sub = document.getElementById('statusSub');
+  sub.textContent = isRestOpen ? 'Open — Accepting Orders' : 'Closed — Not Accepting Orders';
+  sub.style.color = isRestOpen ? 'var(--green)' : 'var(--red)';
+}
+
+window.confirmToggle = (checkbox) => {
+  pendingToggleVal = checkbox.checked;
+  checkbox.checked = !pendingToggleVal; // revert until confirmed
+  const icon = document.getElementById('confirmIcon');
+  icon.style.background = pendingToggleVal ? '#DCFCE7' : '#FEE2E2';
+  icon.innerHTML = pendingToggleVal
+    ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>`
+    : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+  document.getElementById('confirmTitle').textContent = pendingToggleVal ? 'Open Restaurant?' : 'Close Restaurant?';
+  document.getElementById('confirmMsg').textContent = pendingToggleVal
+    ? 'Customers will be able to place new orders. Are you sure you want to open the restaurant?'
+    : 'Customers will not be able to place new orders. Are you sure you want to close the restaurant?';
+  const btn = document.getElementById('confirmBtn');
+  btn.textContent = pendingToggleVal ? 'Yes, Open' : 'Yes, Close';
+  btn.style.background = pendingToggleVal ? 'var(--green)' : 'var(--red)';
+  document.getElementById('statusModal').classList.add('open');
+};
+window.cancelToggle = () => { closeModal('statusModal'); pendingToggleVal = null; };
+window.applyToggle = async () => {
+  try {
+    isRestOpen = pendingToggleVal;
+    await setDoc(doc(db, 'restaurants', restaurantId), { isOpen: isRestOpen }, { merge: true });
+    updateStatusUI();
+    closeModal('statusModal');
+    showToast(isRestOpen ? 'Restaurant is now Open!' : 'Restaurant is now Closed', isRestOpen ? 'success' : '');
+  } catch(e) { showToast('Failed to update', 'error'); }
+  pendingToggleVal = null;
+};
+
+// ORDERS — real-time
+let prevIds = new Set();
+function startOrderListener() {
+  const q = query(
+    collection(db, 'orders'),
+    where('restaurantId', '==', restaurantId),
+    where('status', 'in', ['placed','accepted','preparing','ready','assigned']),
+    orderBy('createdAt', 'desc')
+  );
+  onSnapshot(q, snap => {
+    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Detect new orders
+    orders.forEach(o => {
+      if (!prevIds.has(o.id) && o.status === 'placed' && prevIds.size > 0) {
+        beep();
+        showNotif(`New order from ${o.customerName || 'Customer'}!`);
+      }
+    });
+    prevIds = new Set(orders.map(o => o.id));
+    activeOrders = orders;
+    updateStats();
+    renderOrders();
+  });
+}
+
+function updateStats() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayOrders = activeOrders.filter(o => o.createdAt?.toDate && o.createdAt.toDate() >= today);
+  const active = activeOrders.filter(o => !['delivered','cancelled'].includes(o.status)).length;
+  const revenue = activeOrders.filter(o => o.status === 'delivered').reduce((s,o) => s + (o.totalAmount||0), 0);
+  document.getElementById('sToday').textContent = todayOrders.length;
+  document.getElementById('sActive').textContent = active;
+  document.getElementById('sRevenue').textContent = `&#8377;${revenue}`;
+  const newCnt = activeOrders.filter(o => o.status === 'placed').length;
+  const badge = document.getElementById('orderBadge');
+  badge.textContent = newCnt; badge.style.display = newCnt > 0 ? 'block' : 'none';
+}
+
+const STEPS = ['placed','accepted','preparing','ready','assigned'];
+const STEP_LABELS = ['Placed','Accepted','Preparing','Ready','Assigned'];
+const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled' };
+
+function renderOrders() {
+  const el = document.getElementById('ordersList');
+  if (!activeOrders.length) {
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3>No active orders</h3><p>New orders appear here automatically</p></div>`;
+    return;
+  }
+  el.innerHTML = activeOrders.map(o => {
+    const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
+    const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : 'Now';
+    const total = o.totalAmount || 0;
+    const stepIdx = STEPS.indexOf(s);
+    // Tracking
+    let trackHtml = '<div class="tracking-bar">';
+    STEPS.forEach((step, i) => {
+      const done = stepIdx > i, curr = stepIdx === i;
+      trackHtml += `<div class="track-step"><div class="track-dot ${done?'done':curr?'curr':''}">${done?`<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`:''}</div><div class="track-lbl ${done?'done':curr?'curr':''}">${STEP_LABELS[i]}</div></div>`;
+      if (i < STEPS.length-1) trackHtml += `<div class="track-line ${done?'done':''}"></div>`;
+    });
+    trackHtml += '</div>';
+    // Buttons
+    let btns = '';
+    if (s==='placed') btns=`<button class="btn-accept" onclick="event.stopPropagation();updateStatus('${o.id}','accepted')">Accept Order</button><button class="btn-reject" onclick="event.stopPropagation();openReject('${o.id}')">Reject</button>`;
+    else if (s==='accepted') btns=`<button class="btn-next" onclick="event.stopPropagation();updateStatus('${o.id}','preparing')">Start Preparing</button>`;
+    else if (s==='preparing') btns=`<button class="btn-next" onclick="event.stopPropagation();updateStatus('${o.id}','ready')">Mark as Ready</button>`;
+    else if (s==='ready') btns=`<button class="btn-assign" onclick="event.stopPropagation();openAssign('${o.id}')">Assign Delivery</button>`;
+    else if (s==='assigned') btns=`<div class="assigned-label">Assigned to ${o.deliveryPartnerName||'Partner'}</div>`;
+    return `<div class="order-card is-${s}" onclick="showDetail('${o.id}')">
+      <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
+      <div class="customer-row"><div class="cust-av">${(o.customerName||'C')[0].toUpperCase()}</div><div><div class="cust-name">${o.customerName||'Customer'}</div><div class="cust-phone">${o.customerPhone||''}</div></div></div>
+      <div class="address-row"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${o.deliveryAddress||'No address'}</div>
+      <div class="items-box">${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>&#8377;${i.price*i.qty}</span></div>`).join('')}<div class="items-total"><span>Total</span><span style="color:var(--orange)">&#8377;${total}</span></div></div>
+      ${trackHtml}
+      <div class="order-btns">${btns}</div>
+    </div>`;
+  }).join('');
+}
+
+window.updateStatus = async (id, status) => {
+  try {
+    await updateDoc(doc(db,'orders',id), { status, updatedAt: serverTimestamp() });
+    showToast(`Order ${status}!`, 'success');
+  } catch(e) { showToast('Failed','error'); }
+};
+
+window.openReject = id => {
+  rejectOrderId = id;
+  document.getElementById('rejectReason').value = '';
+  document.getElementById('rejectModal').classList.add('open');
+};
+window.confirmReject = async () => {
+  const reason = document.getElementById('rejectReason').value.trim();
+  try {
+    await updateDoc(doc(db,'orders',rejectOrderId), { status:'cancelled', cancellationReason: reason||'Rejected by restaurant', updatedAt: serverTimestamp() });
+    closeModal('rejectModal');
+    showToast('Order rejected','success');
+  } catch(e) { showToast('Failed','error'); }
+};
+
+window.openAssign = id => {
+  assignOrderId = id;
+  document.getElementById('dbList').innerHTML = deliveryBoys.length
+    ? deliveryBoys.map(db => `<div class="db-option" onclick="assignDB('${db.id}','${db.name}')"><div class="db-av2">${db.name[0].toUpperCase()}</div><div><div class="db-n">${db.name}</div><div class="db-s ${db.busy?'db-busy':'db-avail'}">${db.busy?'Busy':'Available'}</div></div><svg style="margin-left:auto;width:18px;height:18px;stroke:#9CA3AF;fill:none;stroke-width:2.5;" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div>`).join('')
+    : '<div style="text-align:center;padding:20px;color:#9CA3AF;">No delivery partners added</div>';
+  document.getElementById('assignModal').classList.add('open');
+};
+window.assignDB = async (dbId, dbName) => {
+  try {
+    await updateDoc(doc(db,'orders',assignOrderId), { status:'assigned', deliveryPartnerId:dbId, deliveryPartnerName:dbName, updatedAt:serverTimestamp() });
+    closeModal('assignModal');
+    showToast(`Assigned to ${dbName}!`,'success');
+  } catch(e) { showToast('Failed','error'); }
+};
+
+// ORDER DETAIL
+window.showDetail = id => {
+  const o = activeOrders.find(x=>x.id===id) || historyOrders.find(x=>x.id===id);
+  if (!o) return;
+  document.getElementById('detailTitle').textContent = `Order #${o.id.slice(-5).toUpperCase()}`;
+  const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString('en-IN') : 'Unknown';
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-sec"><div class="detail-lbl">Customer</div><div class="detail-box">
+      <div class="detail-row"><span>Name</span><span>${o.customerName||'-'}</span></div>
+      <div class="detail-row"><span>Phone</span><span>${o.customerPhone||'-'}</span></div>
+      <div class="detail-row"><span>Address</span><span style="max-width:180px;text-align:right;">${o.deliveryAddress||'-'}</span></div>
+      ${o.locationLink?`<div class="detail-row"><span>Location</span><a href="${o.locationLink}" target="_blank" style="color:var(--blue);font-weight:600;font-size:13px;">Open in Maps</a></div>`:''}
+    </div></div>
+    <div class="detail-sec"><div class="detail-lbl">Items</div><div class="detail-box">
+      ${(o.items||[]).map(i=>`<div class="detail-row"><span>${i.qty}&times; ${i.name}</span><span>&#8377;${i.price*i.qty}</span></div>`).join('')}
+      <div class="detail-total"><span>Total</span><span style="color:var(--orange)">&#8377;${o.totalAmount||0}</span></div>
+    </div></div>
+    <div class="detail-sec"><div class="detail-lbl">Order Info</div><div class="detail-box">
+      <div class="detail-row"><span>Status</span><span style="font-weight:700;color:var(--orange)">${o.status}</span></div>
+      <div class="detail-row"><span>Payment</span><span>${o.paymentType||'COD'}</span></div>
+      <div class="detail-row"><span>Time</span><span>${time}</span></div>
+      ${o.deliveryPartnerName?`<div class="detail-row"><span>Delivery Partner</span><span>${o.deliveryPartnerName}</span></div>`:''}
+      ${o.cancellationReason?`<div class="detail-row"><span>Reason</span><span style="color:var(--red)">${o.cancellationReason}</span></div>`:''}
+    </div></div>`;
+  document.getElementById('detailModal').classList.add('open');
+};
+
+// HISTORY
+async function loadHistory() {
+  const el = document.getElementById('historyList');
+  el.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;">Loading...</div>';
+  try {
+    const q = query(collection(db,'orders'), where('restaurantId','==',restaurantId), where('status','in',['delivered','cancelled']), orderBy('createdAt','desc'));
+    const snap = await getDocs(q);
+    historyOrders = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderHistory();
+  } catch(e) { el.innerHTML='<div style="text-align:center;padding:40px;color:#9CA3AF;">Could not load</div>'; }
+}
+window.switchHTab = (tab, el) => {
+  histTab = tab;
+  document.querySelectorAll('.htab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderHistory();
+};
+function renderHistory() {
+  const filtered = histTab==='all' ? historyOrders : historyOrders.filter(o=>o.status===histTab);
+  const el = document.getElementById('historyList');
+  if (!filtered.length) {
+    el.innerHTML=`<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><h3>No orders here</h3><p>Completed orders will appear here</p></div>`;
+    return;
+  }
+  const grouped = {};
+  filtered.forEach(o => {
+    const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : 'Unknown';
+    if (!grouped[date]) grouped[date]=[];
+    grouped[date].push(o);
+  });
+  let html='';
+  Object.entries(grouped).forEach(([date,orders]) => {
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;padding:12px 0 8px;">${date}</div>`;
+    orders.forEach(o=>{
+      html+=`<div class="history-card" onclick="showDetail('${o.id}')">
+        <div class="hc-top"><div class="hc-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="status-pill ${sMap[o.status]||'sp-delivered'}">${o.status}</div></div>
+        <div class="hc-customer">${o.customerName||'Customer'} &middot; ${o.customerPhone||''}</div>
+        <div class="hc-bottom"><span style="font-size:13px;color:var(--gray)">${(o.items||[]).length} item(s)</span><div class="hc-total">&#8377;${o.totalAmount||0}</div></div>
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+}
+
+// MENU
+async function loadMenu() {
+  try {
+    const snap = await getDocs(query(collection(db,'menu'),where('restaurantId','==',restaurantId)));
+    menuItems = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const rSnap = await getDoc(doc(db,'restaurants',restaurantId));
+    if (rSnap.exists() && rSnap.data().categories) categories=rSnap.data().categories;
+  } catch(e) { menuItems=[]; }
+  buildCatTabs(); renderMenu();
+}
+function buildCatTabs() {
+  const sel = document.getElementById('dCat');
+  if (sel) sel.innerHTML = categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+  document.getElementById('catScroll').innerHTML =
+    `<button class="cat-tab active" onclick="filterCat('all',this)">All</button>` +
+    categories.map(c=>`<button class="cat-tab" onclick="filterCat('${c.toLowerCase()}',this)">${c}</button>`).join('') +
+    `<button class="cat-add-btn" onclick="openAddCat()">+ Category</button>`;
+}
+window.filterCat = (cat, el) => {
+  menuFilter = cat;
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderMenu();
+};
+function renderMenu() {
+  const filtered = menuFilter==='all' ? menuItems : menuItems.filter(i=>i.category?.toLowerCase()===menuFilter);
+  const el = document.getElementById('menuList');
+  if (!filtered.length) {
+    el.innerHTML=`<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div><h3>No dishes yet</h3><p>Add your first dish</p></div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(item=>`
+    <div class="menu-item-card">
+      <div class="dish-img">${item.imageUrl?`<img src="${item.imageUrl}" onerror="this.style.display='none'">`:`<span>${item.name}</span>`}</div>
+      <div class="dish-info">
+        <div class="dish-name">${item.name}</div>
+        <div class="dish-cat">${item.category||''}</div>
+        ${item.description?`<div class="dish-desc">${item.description}</div>`:''}
+        <div class="dish-price">&#8377;${item.price}</div>
+        ${!item.available?'<div class="dish-na">Not available right now</div>':''}
+      </div>
+      <div class="dish-controls">
+        <label class="toggle"><input type="checkbox" ${item.available?'checked':''} onchange="toggleDish('${item.id}',this.checked)"><div class="toggle-track"></div></label>
+        <button class="ic-btn ic-edit" onclick="editDish('${item.id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="ic-btn ic-del" onclick="deleteDish('${item.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>`).join('');
+}
+window.toggleDish = async (id, val) => {
+  try {
+    await updateDoc(doc(db,'menu',id),{available:val,updatedAt:serverTimestamp()});
+    const i=menuItems.find(x=>x.id===id); if(i) i.available=val;
+    renderMenu(); showToast(val?'Dish available':'Marked as unavailable');
+  } catch(e) { showToast('Failed','error'); }
+};
+window.openAddDish = () => {
+  editingDishId=null;
+  document.getElementById('dishModalTitle').textContent='Add Dish';
+  ['dName','dPrice','dImage','dDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('dishImgPrev').style.display='none';
+  if (categories.length) document.getElementById('dCat').value=categories[0];
+  document.getElementById('addDishModal').classList.add('open');
+};
+window.editDish = id => {
+  editingDishId=id;
+  const item=menuItems.find(i=>i.id===id);
+  document.getElementById('dishModalTitle').textContent='Edit Dish';
+  document.getElementById('dName').value=item.name||'';
+  document.getElementById('dCat').value=item.category||'';
+  document.getElementById('dPrice').value=item.price||'';
+  document.getElementById('dImage').value=item.imageUrl||'';
+  document.getElementById('dDesc').value=item.description||'';
+  if (item.imageUrl) { const img=document.getElementById('dishImgPrev'); img.src=item.imageUrl; img.style.display='block'; }
+  else document.getElementById('dishImgPrev').style.display='none';
+  document.getElementById('addDishModal').classList.add('open');
+};
+window.prevDishImg = url => {
+  const img=document.getElementById('dishImgPrev');
+  if(url){img.src=url;img.style.display='block';img.onerror=()=>img.style.display='none';}
+  else img.style.display='none';
+};
+window.saveDish = async () => {
+  const name=document.getElementById('dName').value.trim();
+  const cat=document.getElementById('dCat').value;
+  const price=parseInt(document.getElementById('dPrice').value);
+  const imageUrl=document.getElementById('dImage').value.trim();
+  const desc=document.getElementById('dDesc').value.trim();
+  const btn=document.getElementById('saveDishBtn');
+  if(!name||!price){showToast('Fill name and price','error');return;}
+  btn.innerHTML='<div class="spinner"></div>';btn.style.pointerEvents='none';
+  try {
+    const data={name,category:cat,price,imageUrl,description:desc,restaurantId,available:true,updatedAt:serverTimestamp()};
+    if(editingDishId){
+      await updateDoc(doc(db,'menu',editingDishId),data);
+      const idx=menuItems.findIndex(i=>i.id===editingDishId);
+      if(idx>=0) menuItems[idx]={...menuItems[idx],...data};
+      showToast('Dish updated!','success');
+    } else {
+      data.createdAt=serverTimestamp();data.popular=false;
+      const ref=await addDoc(collection(db,'menu'),data);
+      menuItems.push({id:ref.id,...data});
+      buildCatTabs();
+      showToast('Dish added!','success');
+    }
+    closeModal('addDishModal');renderMenu();
+  } catch(e){showToast('Failed','error');}
+  btn.innerHTML='Save Dish';btn.style.pointerEvents='auto';
+};
+window.deleteDish = async id => {
+  if(!confirm('Delete this dish?')) return;
+  try{
+    await deleteDoc(doc(db,'menu',id));
+    menuItems=menuItems.filter(i=>i.id!==id);
+    renderMenu();buildCatTabs();showToast('Dish deleted','success');
+  } catch(e){showToast('Failed','error');}
+};
+window.openAddCat = () => { document.getElementById('catName').value=''; document.getElementById('addCatModal').classList.add('open'); };
+window.saveCategory = async () => {
+  const name=document.getElementById('catName').value.trim();
+  if(!name){showToast('Enter category name','error');return;}
+  if(categories.includes(name)){showToast('Already exists','error');return;}
+  categories.push(name);
+  try{await setDoc(doc(db,'restaurants',restaurantId),{categories},{merge:true});}catch(e){}
+  buildCatTabs();closeModal('addCatModal');showToast('Category added!','success');
+};
+
+// DELIVERY PARTNERS
+async function loadDeliveryBoys() {
+  try {
+    const snap=await getDocs(query(collection(db,'deliveryPartners'),where('restaurantId','==',restaurantId)));
+    deliveryBoys=snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e){deliveryBoys=[];}
+}
+function renderDeliveryPartners() {
+  const el=document.getElementById('dpList');
+  if(!el) return;
+  if(!deliveryBoys.length){el.innerHTML='<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:13px;">No partners added</div>';return;}
+  el.innerHTML=deliveryBoys.map(db=>`<div class="dp-item"><div class="dp-av">${db.name[0].toUpperCase()}</div><div class="dp-info"><div class="dp-name">${db.name}</div><div class="dp-email">${db.email}</div></div><button class="dp-remove" onclick="removeDP('${db.id}')">Remove</button></div>`).join('');
+}
+window.openAddDelivery = () => { document.getElementById('dpName').value=''; document.getElementById('dpEmail').value=''; document.getElementById('addDpModal').classList.add('open'); };
+window.saveDelivery = async () => {
+  const name=document.getElementById('dpName').value.trim();
+  const email=document.getElementById('dpEmail').value.trim();
+  const btn=document.getElementById('saveDpBtn');
+  if(!name||!email){showToast('Fill all fields','error');return;}
+  btn.innerHTML='<div class="spinner"></div>';btn.style.pointerEvents='none';
+  try{
+    const ref=await addDoc(collection(db,'deliveryPartners'),{name,email,restaurantId,busy:false,createdAt:serverTimestamp()});
+    deliveryBoys.push({id:ref.id,name,email,busy:false});
+    renderDeliveryPartners();closeModal('addDpModal');showToast('Partner added!','success');
+  }catch(e){showToast('Failed','error');}
+  btn.innerHTML='Add Partner';btn.style.pointerEvents='auto';
+};
+window.removeDP = async id => {
+  if(!confirm('Remove this partner?')) return;
+  try{
+    await deleteDoc(doc(db,'deliveryPartners',id));
+    deliveryBoys=deliveryBoys.filter(d=>d.id!==id);
+    renderDeliveryPartners();showToast('Partner removed','success');
+  }catch(e){showToast('Failed','error');}
+};
+
+// PROFILE
+function renderProfile() {
+  document.getElementById('profileName').textContent=userData?.name||'Owner';
+  document.getElementById('profileRest').textContent=userData?.restaurantName||'Restaurant';
+  document.getElementById('profileEmail').textContent=userData?.email||currentUser?.email||'';
+  document.getElementById('profilePhone').textContent=userData?.phone||'-';
+  if(userData?.restaurantImageUrl){
+    document.getElementById('restImgBox').innerHTML=`<img src="${userData.restaurantImageUrl}"><div class="rest-img-overlay"><span>Tap to change photo</span></div>`;
+  }
+  loadRestStatus();
+  renderDeliveryPartners();
+}
+window.openRestImg = () => { document.getElementById('restImgUrl').value=userData?.restaurantImageUrl||''; document.getElementById('restImgPrev').style.display='none'; document.getElementById('restImgModal').classList.add('open'); };
+window.prevRestImg = url => { const img=document.getElementById('restImgPrev'); if(url){img.src=url;img.style.display='block';img.onerror=()=>img.style.display='none';}else img.style.display='none'; };
+window.saveRestImg = async () => {
+  const url=document.getElementById('restImgUrl').value.trim();
+  try{
+    await setDoc(doc(db,'users',currentUser.uid),{restaurantImageUrl:url},{merge:true});
+    await setDoc(doc(db,'restaurants',restaurantId),{imageUrl:url},{merge:true});
+    userData.restaurantImageUrl=url;
+    renderProfile();closeModal('restImgModal');showToast('Photo updated!','success');
+  }catch(e){showToast('Failed','error');}
+};
+
+window.doLogout = async () => { try{await signOut(auth);window.location.href='index.html';}catch(e){showToast('Logout failed','error');} };
+
+document.querySelectorAll('.overlay').forEach(o=>{ o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}); });
+</script>
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<title>PureOrder</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;padding-bottom:72px;}
+
+#loadingScreen{position:fixed;inset:0;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s;}
+#loadingScreen.hide{opacity:0;pointer-events:none;}
+.loader-logo{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;}
+.loader-logo span{color:var(--orange);}
+.loader-bar{width:80px;height:3px;background:var(--light);border-radius:2px;overflow:hidden;margin-top:16px;}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));animation:ld 1.4s ease forwards;}
+@keyframes ld{from{width:0}to{width:100%}}
+
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:white;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;position:relative;}
+.nav-btn svg{width:22px;height:22px;stroke:#9CA3AF;fill:none;stroke-width:2;transition:stroke 0.2s;}
+.nav-btn .nl{font-size:10px;font-weight:600;color:#9CA3AF;transition:color 0.2s;}
+.nav-btn.active svg{stroke:var(--orange);}
+.nav-btn.active .nl{color:var(--orange);}
+.cart-badge{position:absolute;top:6px;right:14px;background:var(--red);color:white;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;display:none;}
+
+/* HOME */
+.home-header{background:white;padding:52px 20px 16px;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.deliver-label{font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px;margin-bottom:4px;}
+.deliver-label svg{width:12px;height:12px;stroke:var(--orange);fill:none;stroke-width:2.5;}
+.greeting-name{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.3px;}
+.header-avatar{width:42px;height:42px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:var(--dark);overflow:hidden;cursor:pointer;flex-shrink:0;}
+.header-avatar img{width:100%;height:100%;object-fit:cover;}
+
+.tagline-wrap{margin-bottom:14px;min-height:18px;}
+.tagline{font-size:13px;color:var(--gray);transition:opacity 0.4s ease;}
+.tagline.fade{opacity:0;}
+
+.search-bar{display:flex;align-items:center;gap:10px;background:var(--light);border-radius:14px;padding:13px 16px;cursor:pointer;}
+.search-bar svg{width:17px;height:17px;stroke:#9CA3AF;fill:none;stroke-width:2;flex-shrink:0;}
+.search-bar span{font-size:14px;color:#9CA3AF;}
+
+/* BANNERS */
+.banner-section{padding:16px 0;}
+.banner-outer{overflow:hidden;padding:0 20px;}
+.banner-scroll{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-behavior:smooth;}
+.banner-scroll::-webkit-scrollbar{display:none;}
+.banner-card{min-width:100%;height:180px;border-radius:20px;scroll-snap-align:center;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:flex-end;padding:20px;}
+.b1{background:linear-gradient(135deg,#FFC529,#FE724C);}
+.b2{background:linear-gradient(135deg,#1a1a2e,#FE724C);}
+.b3{background:linear-gradient(135deg,#134e5e,#71b280);}
+.banner-bg-text{position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-family:'Sora',sans-serif;font-size:90px;font-weight:800;color:rgba(255,255,255,0.07);line-height:1;user-select:none;}
+.banner-content{position:relative;z-index:1;}
+.banner-tag{background:rgba(255,255,255,0.2);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
+.banner-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;}
+.banner-sub{font-size:12px;color:rgba(255,255,255,0.8);margin-top:4px;}
+.banner-dots{display:flex;justify-content:center;gap:5px;padding:10px 0 0;}
+.banner-dot{width:6px;height:6px;border-radius:3px;background:#D1D5DB;transition:all 0.3s;}
+.banner-dot.active{width:18px;background:var(--orange);}
+
+/* SECTIONS */
+.section{padding:0 20px;margin-bottom:20px;}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-top:4px;}
+.section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;}
+
+/* POPULAR */
+.popular-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px;}
+.popular-scroll::-webkit-scrollbar{display:none;}
+.popular-card{min-width:140px;background:white;border-radius:16px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1px solid var(--border);transition:transform 0.15s;}
+.popular-card:active{transform:scale(0.97);}
+.popular-img{width:100%;height:90px;background:var(--light);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px;}
+.popular-img img{width:100%;height:100%;object-fit:cover;}
+.popular-info{padding:10px 10px 12px;}
+.popular-name{font-size:13px;font-weight:700;margin-bottom:2px;line-height:1.3;}
+.popular-price{font-size:14px;font-weight:800;color:var(--orange);}
+
+/* RESTAURANT CARD */
+.rest-card{background:white;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:transform 0.15s;}
+.rest-card:active{transform:scale(0.99);}
+.rest-img-box{width:100%;height:160px;background:linear-gradient(135deg,#FFF9EC,#FFE8CC);display:flex;align-items:center;justify-content:center;font-size:13px;color:#9CA3AF;overflow:hidden;position:relative;}
+.rest-img-box img{width:100%;height:100%;object-fit:cover;}
+.rest-status-badge{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;color:white;}
+.badge-open{background:var(--green);}
+.badge-closed{background:var(--red);}
+.rest-info{padding:14px 16px;}
+.rest-name{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px;}
+.rest-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.rest-meta-item{font-size:12px;color:var(--gray);}
+.meta-dot{width:3px;height:3px;background:#D1D5DB;border-radius:50%;}
+
+/* SEARCH */
+.search-page{background:white;min-height:100vh;padding:52px 20px 20px;}
+.search-top{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.back-circle{width:36px;height:36px;border-radius:50%;background:var(--light);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;}
+.back-circle svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2.5;}
+.search-input-box{flex:1;display:flex;align-items:center;gap:10px;background:var(--light);border-radius:14px;padding:12px 16px;border:1.5px solid transparent;transition:border-color 0.2s;}
+.search-input-box:focus-within{border-color:var(--yellow);background:white;}
+.search-input-box svg{width:17px;height:17px;stroke:#9CA3AF;fill:none;stroke-width:2;flex-shrink:0;}
+.search-input-box input{flex:1;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);}
+.search-input-box input::placeholder{color:#9CA3AF;}
+.search-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.si-img{width:50px;height:50px;border-radius:12px;background:var(--light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9CA3AF;text-align:center;padding:3px;}
+.si-img img{width:100%;height:100%;object-fit:cover;}
+.si-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+.si-rest{font-size:12px;color:var(--gray);}
+.si-price{font-size:14px;font-weight:700;color:var(--orange);flex-shrink:0;}
+
+/* RESTAURANT PAGE */
+.rest-page{min-height:100vh;background:var(--light);}
+.rest-hero{width:100%;height:200px;background:linear-gradient(135deg,#FFF9EC,#FFE8CC);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.rest-hero img{width:100%;height:100%;object-fit:cover;}
+.rest-hero-placeholder{font-size:13px;color:#9CA3AF;font-weight:500;}
+.rest-back-btn{position:absolute;top:52px;left:16px;width:36px;height:36px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.12);border:none;}
+.rest-back-btn svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2.5;}
+.closed-notice{background:#FEF2F2;border-bottom:1px solid #FECACA;padding:12px 20px;font-size:13px;color:var(--red);font-weight:600;text-align:center;display:none;}
+.rest-details-box{background:white;padding:16px 20px 10px;}
+.rest-details-box h2{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
+.rest-details-box p{font-size:13px;color:var(--gray);}
+.cat-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 20px;background:white;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.cat-tabs::-webkit-scrollbar{display:none;}
+.cat-tab{background:var(--light);border:none;border-radius:20px;padding:7px 16px;font-size:13px;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+.cat-tab.active{background:var(--dark);color:white;}
+.menu-list{padding:12px 20px;}
+.menu-cat-title{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px;}
+.menu-item{background:white;border-radius:16px;padding:14px;margin-bottom:10px;display:flex;gap:12px;border:1px solid var(--border);}
+.menu-item-img{width:80px;height:80px;border-radius:12px;background:var(--light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px;}
+.menu-item-img img{width:100%;height:100%;object-fit:cover;}
+.menu-item-info{flex:1;min-width:0;}
+.menu-item-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.menu-item-desc{font-size:12px;color:var(--gray);line-height:1.4;margin-bottom:6px;}
+.menu-item-price{font-size:15px;font-weight:800;color:var(--orange);}
+.menu-item-na{font-size:11px;color:var(--red);font-weight:600;background:#FEE2E2;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
+.menu-item-actions{flex-shrink:0;display:flex;align-items:flex-end;}
+.add-btn{background:var(--dark);color:white;border:none;border-radius:10px;padding:8px 14px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.qty-ctrl{display:flex;align-items:center;gap:6px;}
+.qty-btn{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border);background:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--dark);}
+.qty-num{font-size:15px;font-weight:700;min-width:20px;text-align:center;}
+
+/* CART */
+.page-header{background:white;padding:52px 20px 16px;border-bottom:1px solid var(--border);}
+.page-header h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;}
+.cart-list{padding:16px 20px;}
+.cart-item{background:white;border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;border:1px solid var(--border);}
+.cart-item-img{width:52px;height:52px;border-radius:10px;background:var(--light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9CA3AF;text-align:center;padding:3px;}
+.cart-item-img img{width:100%;height:100%;object-fit:cover;}
+.cart-item-info{flex:1;}
+.cart-item-name{font-size:14px;font-weight:600;margin-bottom:3px;}
+.cart-item-price{font-size:13px;color:var(--orange);font-weight:700;}
+.cart-summary{background:white;margin:0 20px 16px;border-radius:16px;padding:16px;border:1px solid var(--border);}
+.summary-row{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;color:var(--gray);}
+.summary-total{display:flex;justify-content:space-between;font-size:16px;font-weight:700;color:var(--dark);padding-top:12px;margin-top:6px;border-top:1px solid var(--border);}
+.checkout-btn{display:block;width:calc(100% - 40px);margin:0 auto;background:var(--orange);color:white;border:none;border-radius:14px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-align:center;}
+.empty-box{text-align:center;padding:60px 20px;}
+.empty-icon{width:64px;height:64px;background:var(--light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.empty-icon svg{width:28px;height:28px;stroke:#9CA3AF;fill:none;}
+.empty-box h3{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;}
+.empty-box p{font-size:14px;color:var(--gray);}
+
+/* ORDERS */
+.order-card{background:white;border-radius:16px;margin:0 20px 12px;padding:16px;border:1px solid var(--border);}
+.order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.order-id{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;}
+.order-time{font-size:12px;color:var(--gray);margin-top:2px;}
+.status-pill{font-size:11px;font-weight:700;border-radius:20px;padding:4px 12px;text-transform:capitalize;white-space:nowrap;}
+.sp-placed{background:#FEF9C3;color:#A16207;}
+.sp-accepted{background:#DBEAFE;color:#1D4ED8;}
+.sp-preparing{background:#FFF3E0;color:#C2410C;}
+.sp-ready{background:#E8F5E9;color:#2E7D32;}
+.sp-assigned{background:#EDE9FE;color:#6D28D9;}
+.sp-delivered{background:#DCFCE7;color:#16A34A;}
+.sp-cancelled{background:#FEE2E2;color:#B91C1C;}
+.order-items-text{font-size:13px;color:var(--gray);margin-bottom:10px;line-height:1.6;}
+.order-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:700;}
+.track-btn{width:100%;margin-top:12px;background:var(--orange);color:white;border:none;border-radius:10px;padding:11px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* PROFILE */
+.profile-top{background:white;padding:52px 20px 24px;border-bottom:1px solid var(--border);text-align:center;}
+.profile-av{width:80px;height:80px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:30px;font-weight:700;color:var(--dark);margin:0 auto 12px;overflow:hidden;}
+.profile-av img{width:100%;height:100%;object-fit:cover;}
+.profile-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;}
+.profile-email{font-size:13px;color:var(--gray);margin-top:4px;}
+.profile-body{padding:20px;}
+.pcard{background:white;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
+.prow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;}
+.prow:last-child{border-bottom:none;}
+.prow-icon{width:32px;height:32px;border-radius:8px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prow-icon svg{width:16px;height:16px;stroke:var(--gray);fill:none;stroke-width:2;}
+.prow-label{flex:1;font-size:15px;font-weight:500;}
+.prow-val{font-size:13px;color:var(--gray);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.prow-arrow svg{width:16px;height:16px;stroke:#9CA3AF;fill:none;stroke-width:2.5;}
+.logout-btn{width:100%;background:#FEF2F2;border:1px solid #FECACA;border-radius:14px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--red);cursor:pointer;}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.sheet{background:white;border-radius:24px 24px 0 0;padding:20px 20px 44px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:#E5E7EB;border-radius:2px;margin:0 auto 18px;}
+.sheet-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:18px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;}
+.field input{width:100%;background:var(--light);border:1.5px solid transparent;border-radius:12px;padding:13px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);outline:none;transition:all 0.2s;}
+.field input:focus{background:white;border-color:var(--yellow);}
+.field input::placeholder{color:#9CA3AF;}
+
+/* LOCATION PICKER */
+.loc-map-box{width:100%;height:200px;border-radius:14px;background:#E8F4FF;border:1.5px solid #BFDBFE;overflow:hidden;position:relative;margin-bottom:14px;}
+.loc-map-box iframe{width:100%;height:100%;border:none;}
+.loc-map-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;}
+.loc-map-placeholder svg{width:32px;height:32px;stroke:#1D4ED8;fill:none;stroke-width:1.5;}
+.loc-map-placeholder span{font-size:13px;color:#1D4ED8;font-weight:600;}
+.loc-map-placeholder small{font-size:11px;color:#6B7280;text-align:center;padding:0 16px;}
+.loc-status{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 14px;font-size:13px;color:#16A34A;font-weight:500;margin-bottom:14px;display:none;align-items:center;gap:8px;}
+.loc-status svg{width:16px;height:16px;stroke:#16A34A;fill:none;flex-shrink:0;}
+.btn-get-loc{width:100%;background:#1D4ED8;color:white;border:none;border-radius:12px;padding:13px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-get-loc svg{width:16px;height:16px;stroke:white;fill:none;}
+.btn-current-loc{width:100%;background:var(--light);border:1.5px solid var(--border);color:var(--dark);border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:14px;}
+.cod-info{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;font-size:13px;color:#92400E;margin-bottom:16px;font-weight:500;}
+.sheet-btns{display:flex;gap:10px;}
+.btn-cancel{flex:1;background:var(--light);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;}
+.btn-confirm{flex:2;background:var(--orange);border:none;border-radius:12px;padding:14px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);color:white;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.success{background:var(--green);}
+.toast.error{background:var(--red);}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="loadingScreen"><div class="loader-logo">Pure<span>Order</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
+
+<!-- HOME -->
+<div id="pageHome" class="page active">
+  <div class="home-header">
+    <div class="header-top">
+      <div>
+        <div class="deliver-label"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Kesinga, Odisha</div>
+        <div class="greeting-name" id="greetingName">Hello!</div>
+      </div>
+      <div class="header-avatar" id="headerAvatar" onclick="goPage('profile')"></div>
+    </div>
+    <div class="tagline-wrap"><div class="tagline" id="tagline">Fresh food, delivered to your door.</div></div>
+    <div class="search-bar" onclick="goPage('search')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span>Search dishes, restaurants...</span>
+    </div>
+  </div>
+  <div class="banner-section">
+    <div class="banner-outer"><div class="banner-scroll" id="bannerScroll">
+      <div class="banner-card b1"><div class="banner-bg-text">HOT</div><div class="banner-content"><div class="banner-tag">Today's Special</div><div class="banner-title">Fresh Thali<br>Every Day</div><div class="banner-sub">Mamu Bhanja Dhaba</div></div></div>
+      <div class="banner-card b2"><div class="banner-bg-text">NEW</div><div class="banner-content"><div class="banner-tag">Best Value</div><div class="banner-title">Rice + Dal + Roti<br>Starting &#8377;80</div><div class="banner-sub">Order now, enjoy soon</div></div></div>
+      <div class="banner-card b3"><div class="banner-bg-text">COD</div><div class="banner-content"><div class="banner-tag">Easy Payment</div><div class="banner-title">Cash on<br>Delivery</div><div class="banner-sub">Pay when food arrives</div></div></div>
+    </div></div>
+    <div class="banner-dots" id="bannerDots"><div class="banner-dot active"></div><div class="banner-dot"></div><div class="banner-dot"></div></div>
+  </div>
+  <div class="section">
+    <div class="section-header"><div class="section-title">Popular Now</div></div>
+    <div class="popular-scroll" id="popularScroll"><div style="color:#9CA3AF;font-size:13px;padding:10px 0;">Loading menu...</div></div>
+  </div>
+  <div class="section">
+    <div class="section-header"><div class="section-title">Restaurants</div></div>
+    <div id="restaurantCard"><div style="background:white;border-radius:20px;padding:40px;text-align:center;color:#9CA3AF;font-size:13px;">Loading...</div></div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div id="pageSearch" class="page">
+  <div class="search-page">
+    <div class="search-top">
+      <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+      <div class="search-input-box"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Search food..." oninput="doSearch(this.value)" /></div>
+    </div>
+    <div id="searchResults"><div style="text-align:center;padding:40px;color:#9CA3AF;font-size:14px;">Start typing to search food...</div></div>
+  </div>
+</div>
+
+<!-- RESTAURANT PAGE -->
+<div id="pageRestaurant" class="page">
+  <div class="rest-page">
+    <div class="rest-hero" id="restHero"><div class="rest-hero-placeholder">Mamu Bhanja Dhaba</div><button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button></div>
+    <div class="closed-notice" id="closedNotice">This restaurant is currently closed. You can browse the menu but cannot place orders.</div>
+    <div class="rest-details-box"><h2>Mamu Bhanja Dhaba</h2><p>Kesinga &middot; Fresh homestyle food &middot; Cash on Delivery</p></div>
+    <div class="cat-tabs" id="catTabs"><button class="cat-tab active" onclick="filterCat('all',this)">All</button></div>
+    <div class="menu-list" id="menuList"></div>
+    <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- CART -->
+<div id="pageCart" class="page">
+  <div class="page-header"><h2>Your Cart</h2></div>
+  <div id="cartContent"></div>
+</div>
+
+<!-- ORDERS -->
+<div id="pageOrders" class="page">
+  <div class="page-header"><h2>My Orders</h2></div>
+  <div style="padding-top:12px;" id="ordersList"></div>
+</div>
+
+<!-- PROFILE -->
+<div id="pageProfile" class="page">
+  <div class="profile-top">
+    <div class="profile-av" id="profileAv"></div>
+    <div class="profile-name" id="profileName">Loading...</div>
+    <div class="profile-email" id="profileEmail"></div>
+  </div>
+  <div class="profile-body">
+    <div class="pcard">
+      <div class="prow" onclick="editField('name')"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="prow-label">Name</div><div class="prow-val" id="pName">-</div><div class="prow-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+      <div class="prow" onclick="editField('phone')"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="prow-label">Phone</div><div class="prow-val" id="pPhone">Not set</div><div class="prow-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+      <div class="prow" onclick="editField('address')"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="prow-label">Address</div><div class="prow-val" id="pAddress">Not set</div><div class="prow-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div>
+    </div>
+    <div class="pcard"><div class="prow" onclick="goPage('orders')"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><div class="prow-label">My Orders</div><div class="prow-arrow"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></div></div></div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="goPage('home',this)"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><div class="nl">Home</div></button>
+  <button class="nav-btn" id="nav-search" onclick="goPage('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><div class="nl">Search</div></button>
+  <button class="nav-btn" id="nav-cart" onclick="goPage('cart',this)"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><div class="nl">Cart</div><div class="cart-badge" id="cartBadge"></div></button>
+  <button class="nav-btn" id="nav-orders" onclick="goPage('orders',this)"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><div class="nl">Orders</div></button>
+  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nl">Profile</div></button>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="overlay" id="checkoutModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Complete Your Order</div>
+    <div class="field"><label>Phone Number</label><input type="tel" id="coPhone" placeholder="10-digit mobile number" /></div>
+    <div class="field"><label>Delivery Address</label><input type="text" id="coAddress" placeholder="Your address in Kesinga" /></div>
+    <div style="font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Your Location</div>
+    <div class="loc-status" id="locStatus"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="locStatusText">Location captured</span></div>
+    <button class="btn-get-loc" id="btnGetLoc" onclick="captureLocation()"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Pin your exact location on map</button>
+    <button class="btn-current-loc" onclick="useCurrentLocation()">Use my current location automatically</button>
+    <div class="cod-info">Payment: Cash on Delivery — Pay when food arrives</div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('checkoutModal')">Cancel</button>
+      <button class="btn-confirm" id="placeBtn" onclick="placeOrder()">Place Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="editModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="editTitle">Edit</div>
+    <div class="field"><label id="editLabel">Value</label><input type="text" id="editInput" /></div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn-confirm" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
+  authDomain: "pureorder-eca2b.firebaseapp.com",
+  projectId: "pureorder-eca2b",
+  storageBucket: "pureorder-eca2b.firebasestorage.app",
+  messagingSenderId: "641924435931",
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const RESTAURANT_ID = 'mamu-bhanja-dhaba';
+let currentUser = null, userData = null;
+let menuItems = [], cart = {}, currentEditField = '';
+let capturedLat = null, capturedLng = null;
+let isRestOpen = true;
+
+const TAGLINES = [
+  'Fresh food, delivered to your door.',
+  'What are you craving today?',
+  'Quality food from Kesinga\'s best kitchen.',
+  'Hot meals, happy you.',
+  'Order now, enjoy in minutes.',
+  'Good food is just a tap away.',
+  'Let\'s find something delicious for you!',
+  'Real food, real fast, real good.',
+  'Your hunger stops here.',
+  'Hungry? We\'ve got you covered.',
+];
+let tlIdx = 0;
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good Morning';
+  if (h < 17) return 'Good Afternoon';
+  if (h < 21) return 'Good Evening';
+  return 'Good Night';
+}
+
+function startTaglines() {
+  setInterval(() => {
+    const el = document.getElementById('tagline');
+    el.classList.add('fade');
+    setTimeout(() => {
+      tlIdx = (tlIdx + 1) % TAGLINES.length;
+      el.textContent = TAGLINES[tlIdx];
+      el.classList.remove('fade');
+    }, 400);
+  }, 4000);
+}
+
+// Banner dots
+function initBanner() {
+  const scroll = document.getElementById('bannerScroll');
+  const dots = document.querySelectorAll('.banner-dot');
+  scroll.addEventListener('scroll', () => {
+    const idx = Math.round(scroll.scrollLeft / scroll.offsetWidth);
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  });
+}
+
+// NAV
+window.goPage = (name, el) => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const map = { home:'pageHome', search:'pageSearch', cart:'pageCart', orders:'pageOrders', profile:'pageProfile' };
+  document.getElementById(map[name])?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.getElementById(`nav-${name}`)?.classList.add('active');
+  if (name === 'cart') renderCart();
+  if (name === 'orders') startOrderListener();
+  if (name === 'profile') renderProfile();
+};
+
+window.goRestaurant = () => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pageRestaurant').classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  renderRestaurantMenu();
+};
+
+// AUTH
+const fallback = setTimeout(() => window.location.href = 'index.html', 8000);
+onAuthStateChanged(auth, async user => {
+  clearTimeout(fallback);
+  if (!user) { window.location.href = 'index.html'; return; }
+  currentUser = user;
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    userData = snap.exists() ? snap.data() : { name: user.displayName||'Friend', email: user.email, phone:'', address:'', role:'customer' };
+    if (userData.role && userData.role !== 'customer') { window.location.href = 'index.html'; return; }
+  } catch(e) {
+    userData = { name: user.displayName||'Friend', email: user.email, phone:'', address:'', role:'customer' };
+  }
+  initApp();
+});
+
+async function initApp() {
+  const first = (userData.name || 'Friend').split(' ')[0];
+  document.getElementById('greetingName').textContent = `${getGreeting()}, ${first}`;
+  const av = document.getElementById('headerAvatar');
+  if (currentUser.photoURL) av.innerHTML = `<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  else av.textContent = first[0].toUpperCase();
+  startTaglines();
+  initBanner();
+  listenRestaurant();
+  listenMenu();
+  loadBanners();
+  setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
+}
+
+// RESTAURANT — real-time listener
+function listenRestaurant() {
+  onSnapshot(doc(db, 'restaurants', RESTAURANT_ID), snap => {
+    if (!snap.exists()) { renderRestaurantCard(true, ''); return; }
+    const data = snap.data();
+    isRestOpen = data.isOpen !== false;
+    const imgUrl = data.imageUrl || data.restaurantImageUrl || '';
+    renderRestaurantCard(isRestOpen, imgUrl);
+    // Update hero image
+    const hero = document.getElementById('restHero');
+    if (imgUrl) {
+      hero.innerHTML = `<img src="${imgUrl}" onerror="this.style.display='none'"><button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24" fill="none" stroke="#1C1C1E" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>`;
+    }
+    document.getElementById('closedNotice').style.display = isRestOpen ? 'none' : 'block';
+    renderRestaurantMenu();
+  });
+}
+
+function renderRestaurantCard(open, imgUrl) {
+  document.getElementById('restaurantCard').innerHTML = `
+    <div class="rest-card" onclick="goRestaurant()">
+      <div class="rest-img-box">
+        ${imgUrl ? `<img src="${imgUrl}" onerror="this.style.display='none'">` : '<span>Mamu Bhanja Dhaba</span>'}
+        <div class="rest-status-badge ${open ? 'badge-open' : 'badge-closed'}">${open ? 'Open' : 'Closed'}</div>
+      </div>
+      <div class="rest-info">
+        <div class="rest-name">Mamu Bhanja Dhaba</div>
+        <div class="rest-meta">
+          <div class="rest-meta-item">Kesinga</div>
+          <div class="meta-dot"></div>
+          <div class="rest-meta-item">Cash on Delivery</div>
+          <div class="meta-dot"></div>
+          <div class="rest-meta-item" style="color:${open?'var(--green)':'var(--red)'};font-weight:600;">${open ? 'Accepting orders' : 'Currently closed'}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// MENU — real-time from Firestore
+function listenMenu() {
+  const q = query(collection(db, 'menu'), where('restaurantId', '==', RESTAURANT_ID));
+  onSnapshot(q, snap => {
+    menuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPopular();
+    buildCatTabs();
+    renderRestaurantMenu();
+  });
+}
+
+function renderPopular() {
+  const pop = menuItems.filter(i => i.popular && i.available);
+  document.getElementById('popularScroll').innerHTML = pop.length
+    ? pop.map(i => `<div class="popular-card" onclick="goRestaurant()"><div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">&#8377;${i.price}</div></div></div>`).join('')
+    : '<div style="color:#9CA3AF;font-size:13px;padding:10px 0;">No popular items yet</div>';
+}
+
+function buildCatTabs() {
+  const cats = ['All', ...new Set(menuItems.map(i => i.category).filter(Boolean))];
+  document.getElementById('catTabs').innerHTML = cats.map((c, i) =>
+    `<button class="cat-tab ${i === 0 ? 'active' : ''}" onclick="filterCat('${c === 'All' ? 'all' : c.toLowerCase()}',this)">${c}</button>`
+  ).join('');
+}
+
+window.filterCat = (cat, el) => {
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  window._menuFilter = cat;
+  renderRestaurantMenu();
+};
+
+function renderRestaurantMenu() {
+  const filter = window._menuFilter || 'all';
+  const filtered = filter === 'all' ? menuItems : menuItems.filter(i => i.category?.toLowerCase() === filter);
+  const grouped = {};
+  filtered.forEach(i => { if (!grouped[i.category]) grouped[i.category] = []; grouped[i.category].push(i); });
+  let html = '';
+  Object.entries(grouped).forEach(([cat, items]) => {
+    html += `<div class="menu-cat-title">${cat}</div>`;
+    items.forEach(item => {
+      const qty = cart[item.id]?.qty || 0;
+      const canAdd = item.available && isRestOpen;
+      html += `<div class="menu-item">
+        <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" onerror="this.style.display='none'">` : `<span>${item.name}</span>`}</div>
+        <div class="menu-item-info">
+          <div class="menu-item-name">${item.name}</div>
+          ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
+          <div class="menu-item-price">&#8377;${item.price}</div>
+          ${!item.available ? '<div class="menu-item-na">Not available right now</div>' : ''}
+        </div>
+        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',-1)">&#8722;</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">Add</button>`) : (!isRestOpen ? `<span style="font-size:11px;color:#9CA3AF;">Closed</span>` : '')}</div>
+      </div>`;
+    });
+  });
+  document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:#9CA3AF;">No items found</div>';
+}
+
+// CART
+window.updateCart = (id, name, price, imageUrl, delta) => {
+  if (!cart[id]) cart[id] = { id, name, price, imageUrl, qty: 0 };
+  cart[id].qty = Math.max(0, cart[id].qty + delta);
+  if (cart[id].qty === 0) delete cart[id];
+  updateBadge();
+  renderRestaurantMenu();
+};
+
+function updateBadge() {
+  const total = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+  const b = document.getElementById('cartBadge');
+  b.textContent = total; b.style.display = total > 0 ? 'block' : 'none';
+}
+
+function renderCart() {
+  const items = Object.values(cart);
+  const el = document.getElementById('cartContent');
+  if (!items.length) {
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><h3>Cart is empty</h3><p>Add items from the restaurant</p></div>`;
+    return;
+  }
+  const sub = items.reduce((s, i) => s + i.price * i.qty, 0);
+  el.innerHTML = `<div class="cart-list">${items.map(i => `<div class="cart-item"><div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">&#8377;${i.price} &times; ${i.qty} = &#8377;${i.price * i.qty}</div></div><div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'${i.imageUrl||''}',-1);renderCart()">&#8722;</button><div class="qty-num">${i.qty}</div><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'${i.imageUrl||''}',1);renderCart()">+</button></div></div>`).join('')}</div>
+  <div class="cart-summary"><div class="summary-row"><span>Subtotal</span><span>&#8377;${sub}</span></div><div class="summary-row"><span>Delivery</span><span style="color:var(--green)">Free</span></div><div class="summary-total"><span>Total</span><span>&#8377;${sub}</span></div></div>
+  <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>`;
+}
+window.renderCart = renderCart;
+
+// CHECKOUT
+window.openCheckout = () => {
+  if (!isRestOpen) { showToast('Restaurant is currently closed', 'error'); return; }
+  document.getElementById('coPhone').value = userData.phone || '';
+  document.getElementById('coAddress').value = userData.address || '';
+  capturedLat = null; capturedLng = null;
+  document.getElementById('locStatus').style.display = 'none';
+  document.getElementById('btnGetLoc').style.display = 'flex';
+  document.getElementById('checkoutModal').classList.add('open');
+};
+
+window.captureLocation = () => {
+  const btn = document.getElementById('btnGetLoc');
+  btn.innerHTML = '<div class="spinner"></div> Getting location...';
+  btn.style.pointerEvents = 'none';
+  if (!navigator.geolocation) { showToast('Location not supported', 'error'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    capturedLat = pos.coords.latitude;
+    capturedLng = pos.coords.longitude;
+    btn.style.display = 'none';
+    const status = document.getElementById('locStatus');
+    status.style.display = 'flex';
+    document.getElementById('locStatusText').textContent = `Location pinned (${capturedLat.toFixed(5)}, ${capturedLng.toFixed(5)})`;
+  }, () => {
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Pin your exact location on map';
+    btn.style.pointerEvents = 'auto';
+    showToast('Could not get location. Try again.', 'error');
+  }, { timeout: 8000, enableHighAccuracy: true });
+};
+
+window.useCurrentLocation = () => {
+  window.captureLocation();
+};
+
+window.placeOrder = async () => {
+  const phone = document.getElementById('coPhone').value.trim();
+  const address = document.getElementById('coAddress').value.trim();
+  const btn = document.getElementById('placeBtn');
+  if (!phone || !address) { showToast('Fill phone and address', 'error'); return; }
+  if (phone.length < 10) { showToast('Enter valid phone number', 'error'); return; }
+  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
+  try {
+    const items = Object.values(cart);
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+    await setDoc(doc(db, 'users', currentUser.uid), { phone, address, name: userData.name }, { merge: true });
+    userData.phone = phone; userData.address = address;
+    const orderData = {
+      customerId: currentUser.uid,
+      customerName: userData.name || currentUser.displayName || 'Customer',
+      customerPhone: phone,
+      deliveryAddress: address,
+      restaurantId: RESTAURANT_ID,
+      restaurantName: 'Mamu Bhanja Dhaba',
+      items: items.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
+      totalAmount: total,
+      paymentType: 'COD',
+      status: 'placed',
+      locationLink: '',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    if (capturedLat && capturedLng) {
+      orderData.latitude = capturedLat;
+      orderData.longitude = capturedLng;
+      orderData.locationLink = `https://www.google.com/maps?q=${capturedLat},${capturedLng}`;
+    }
+    await addDoc(collection(db, 'orders'), orderData);
+    cart = {}; updateBadge();
+    closeModal('checkoutModal');
+    showToast('Order placed successfully!', 'success');
+    setTimeout(() => goPage('orders'), 600);
+  } catch(e) {
+    console.error('Order error:', e);
+    showToast('Failed to place order. Check connection.', 'error');
+    btn.innerHTML = 'Place Order'; btn.style.pointerEvents = 'auto';
+  }
+};
+
+// ORDERS — real-time listener
+let ordersListenerUnsub = null;
+function startOrderListener() {
+  if (ordersListenerUnsub) return; // already listening
+  const el = document.getElementById('ordersList');
+  el.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;">Loading...</div>';
+  const q = query(collection(db, 'orders'), where('customerId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+  ordersListenerUnsub = onSnapshot(q, snap => {
+    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderOrders(orders);
+  }, err => {
+    console.error('Orders error:', err);
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;">Could not load orders</div>';
+  });
+}
+
+function renderOrders(orders) {
+  const el = document.getElementById('ordersList');
+  if (!orders.length) {
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3>No orders yet</h3><p>Your order history will appear here</p></div>`;
+    return;
+  }
+  const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled' };
+  el.innerHTML = orders.map(o => {
+    const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
+    const itemsText = o.items?.map(i => `${i.qty}&times; ${i.name}`).join(', ') || '';
+    const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'Just now';
+    return `<div class="order-card">
+      <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
+      <div class="order-items-text">${itemsText}</div>
+      <div class="order-total-row"><span>Total</span><span style="color:var(--orange)">&#8377;${o.totalAmount || 0}</span></div>
+      ${(s === 'assigned' || s === 'out for delivery') && o.locationLink ? `<button class="track-btn" onclick="window.open('${o.locationLink}','_blank')">Track Delivery on Google Maps</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// BANNERS from Firestore
+async function loadBanners() {
+  try {
+    const snap = await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).getDocs(
+      query(collection(db, 'banners'), where('active', '==', true))
+    );
+    if (!snap.empty) {
+      const banners = snap.docs.map(d => d.data());
+      const colors = ['b1', 'b2', 'b3'];
+      document.getElementById('bannerScroll').innerHTML = banners.map((b, i) => `
+        <div class="banner-card ${colors[i % 3]}">
+          ${b.imageUrl ? `<img src="${b.imageUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5;">` : ''}
+          <div class="banner-bg-text">${b.title?.slice(0, 3).toUpperCase() || 'HOT'}</div>
+          <div class="banner-content"><div class="banner-tag">Offer</div><div class="banner-title">${b.title || ''}</div><div class="banner-sub">${b.caption || ''}</div></div>
+        </div>`).join('');
+      document.getElementById('bannerDots').innerHTML = banners.map((_, i) => `<div class="banner-dot ${i === 0 ? 'active' : ''}"></div>`).join('');
+    }
+  } catch(e) {}
+}
+
+// SEARCH
+window.doSearch = val => {
+  const el = document.getElementById('searchResults');
+  if (!val.trim()) { el.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;font-size:14px;">Start typing to search food...</div>'; return; }
+  const res = menuItems.filter(i => i.name?.toLowerCase().includes(val.toLowerCase()) && i.available);
+  el.innerHTML = res.length
+    ? res.map(i => `<div class="search-item" onclick="goRestaurant()"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">Mamu Bhanja Dhaba &middot; ${i.category || ''}</div></div><div class="si-price">&#8377;${i.price}</div></div>`).join('')
+    : `<div style="text-align:center;padding:40px;color:#9CA3AF;">No results for "${val}"</div>`;
+};
+
+// PROFILE
+function renderProfile() {
+  const name = userData.name || currentUser.displayName || 'User';
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileEmail').textContent = userData.email || currentUser.email || '';
+  document.getElementById('pName').textContent = name;
+  document.getElementById('pPhone').textContent = userData.phone || 'Not set';
+  document.getElementById('pAddress').textContent = userData.address || 'Not set';
+  const av = document.getElementById('profileAv');
+  if (currentUser.photoURL) av.innerHTML = `<img src="${currentUser.photoURL}">`;
+  else av.textContent = name[0].toUpperCase();
+}
+
+window.editField = field => {
+  currentEditField = field;
+  const labels = { name: 'Your Name', phone: 'Phone Number', address: 'Delivery Address' };
+  document.getElementById('editTitle').textContent = `Edit ${labels[field]}`;
+  document.getElementById('editLabel').textContent = labels[field];
+  document.getElementById('editInput').value = userData[field] || '';
+  document.getElementById('editInput').type = field === 'phone' ? 'tel' : 'text';
+  document.getElementById('editModal').classList.add('open');
+};
+
+window.saveProfile = async () => {
+  const val = document.getElementById('editInput').value.trim();
+  if (!val) { showToast('Please enter a value', 'error'); return; }
+  try {
+    await setDoc(doc(db, 'users', currentUser.uid), { [currentEditField]: val }, { merge: true });
+    userData[currentEditField] = val;
+    if (currentEditField === 'name') {
+      document.getElementById('greetingName').textContent = `${getGreeting()}, ${val.split(' ')[0]}`;
+    }
+    renderProfile();
+    closeModal('editModal');
+    showToast('Saved!', 'success');
+  } catch(e) { showToast('Failed to save', 'error'); }
+};
+
+window.doLogout = async () => {
+  try { await signOut(auth); window.location.href = 'index.html'; }
+  catch(e) { showToast('Logout failed', 'error'); }
+};
+
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
