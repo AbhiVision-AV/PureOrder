@@ -1,219 +1,318 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<meta name="theme-color" content="#f5f5f7">
-<title>PureOrder — Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<title>PureOrder — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --yellow: #FFC529;
-  --orange: #FE724C;
-  --dark: #1C1C1E;
-  --gray: #6B7280;
-  --light: #F5F5F7;
-  --border: #E5E7EB;
-  --white: #ffffff;
-  --green: #34C759;
-  --red: #FF3B30;
-  --blue: #007AFF;
-  --purple: #7C3AED;
-  --card-shadow: 0 2px 8px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.03);
-}
+:root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;--purple:#7C3AED;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;max-width:1280px;margin:0 auto;overflow-x:hidden;padding-bottom:20px;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;padding-bottom:72px;}
 
 /* LOADING */
 #loadingScreen{position:fixed;inset:0;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s;}
 #loadingScreen.hide{opacity:0;pointer-events:none;}
-.loader-logo{font-family:'Sora',sans-serif;font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--orange),var(--yellow));-webkit-background-clip:text;background-clip:text;color:transparent;}
-.loader-sub{font-size:13px;color:var(--gray);margin-top:6px;}
-.loader-bar{width:100px;height:3px;background:var(--light);border-radius:2px;overflow:hidden;margin-top:16px;}
-.loader-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));animation:ld 1.4s ease forwards;}
+.loader-logo{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;}
+.loader-logo span{color:var(--orange);}
+.loader-sub{font-size:13px;color:var(--gray);margin-top:6px;text-transform:uppercase;letter-spacing:2px;}
+.loader-bar{width:80px;height:3px;background:var(--light);border-radius:2px;overflow:hidden;margin-top:16px;}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));animation:ld 1.4s ease forwards;}
 @keyframes ld{from{width:0}to{width:100%}}
 
-/* PAGE TRANSITIONS */
-.page{display:none;}
-.page.active{display:block;animation:fadeIn 0.25s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+/* PAGES */
+.page { display:none; }
+.page.active { display:block; animation:fadeIn 0.2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
 
-/* TOP HEADER */
-.top-header{background:white;padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:90;}
-.logo h1{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--orange),var(--yellow));-webkit-background-clip:text;background-clip:text;color:transparent;}
-.logo p{font-size:12px;color:var(--gray);margin-top:2px;}
-.nav-tabs{display:flex;gap:8px;background:var(--light);padding:4px;border-radius:48px;}
-.nav-btn{background:transparent;border:none;padding:8px 20px;border-radius:40px;font-weight:600;font-size:14px;color:var(--gray);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
-.nav-btn.active{background:white;color:var(--orange);box-shadow:0 2px 6px rgba(0,0,0,0.05);}
-.live-pill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-weight:600;background:#F0FDF4;border:1px solid #BBF7D0;padding:6px 12px;border-radius:20px;}
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:white;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;position:relative;}
+.nav-btn svg{width:22px;height:22px;stroke:#9CA3AF;fill:none;stroke-width:2;transition:stroke 0.2s;}
+.nav-btn .nl{font-size:10px;font-weight:600;color:#9CA3AF;transition:color 0.2s;}
+.nav-btn.active svg{stroke:var(--orange);}
+.nav-btn.active .nl{color:var(--orange);}
 
-/* SECTION STYLES */
-.page-container{padding:24px;}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-.section-header h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;}
-.btn-add{background:var(--dark);color:white;border:none;border-radius:12px;padding:10px 20px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.2s;}
-.btn-add:active{opacity:0.85;}
+/* PAGE HEADER */
+.page-header{background:white;padding:52px 20px 16px;border-bottom:1px solid var(--border);}
+.ph-row{display:flex;align-items:flex-start;justify-content:space-between;}
+.page-header h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;}
+.page-header p{font-size:13px;color:var(--gray);margin-top:3px;}
+.btn-add{background:var(--dark);color:white;border:none;border-radius:10px;padding:9px 16px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.btn-add:active { opacity:0.85; }
+.live-pill{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--green);font-weight:600;background:#F0FDF4;border:1px solid #BBF7D0;padding:5px 10px;border-radius:20px;flex-shrink:0;}
+.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 
-/* STATS GRID */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;}
-.stat-card{background:white;border-radius:20px;padding:18px;border:1px solid var(--border);}
-.stat-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
-.stat-value{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.5px;}
-.stat-label{font-size:13px;color:var(--gray);margin-top:4px;}
+/* ANALYTICS PAGE */
+.analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
+.analytics-card { background:white; border-radius:18px; padding:18px 16px; border:1.5px solid var(--border); }
+.analytics-card.full { grid-column:1/-1; }
+.ac-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.ac-icon svg { width:18px; height:18px; fill:none; stroke-width:2; }
+.ac-val { font-family:'Sora',sans-serif; font-size:26px; font-weight:800; letter-spacing:-0.5px; color:var(--dark); }
+.ac-label { font-size:12px; color:var(--gray); font-weight:500; margin-top:4px; }
 
-/* RESTAURANT TABLE */
-.restaurant-card{background:white;border-radius:20px;padding:18px;margin-bottom:12px;border:1px solid var(--border);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;}
-.rest-info h3{font-size:16px;font-weight:700;margin-bottom:4px;}
-.rest-info p{font-size:13px;color:var(--gray);}
-.badge-open{background:#DCFCE7;color:#15803D;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
-.badge-closed{background:#FEE2E2;color:#B91C1C;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;}
-.rest-stats{display:flex;gap:20px;}
-.rest-stats div{text-align:center;}
-.rest-stats .num{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;}
-.rest-stats .lbl{font-size:11px;color:var(--gray);}
+.section-title { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; padding:0 20px 12px; color:var(--dark); }
+.rest-stat-card { background:white; border-radius:16px; padding:16px; margin:0 16px 10px; border:1.5px solid var(--border); }
+.rsc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.rsc-name { font-size:15px; font-weight:700; }
+.rsc-badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+.badge-open { background:#F0FDF4; color:var(--green); border:1px solid #BBF7D0; }
+.badge-closed { background:#FEF2F2; color:var(--red); border:1px solid #FECACA; }
+.rsc-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+.rsc-stat { background:var(--light); border-radius:10px; padding:10px; text-align:center; }
+.rsc-stat-val { font-family:'Sora',sans-serif; font-size:16px; font-weight:800; }
+.rsc-stat-lbl { font-size:10px; color:var(--gray); margin-top:2px; font-weight:600; }
 
-/* OWNERS LIST */
-.owner-card{background:white;border-radius:18px;padding:16px;margin-bottom:12px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;}
-.owner-avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--yellow));display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:white;flex-shrink:0;}
-.owner-details{flex:1;min-width:150px;}
-.owner-name{font-size:16px;font-weight:700;margin-bottom:2px;}
-.owner-rest{font-size:13px;color:var(--orange);font-weight:600;}
-.owner-email{font-size:12px;color:var(--gray);margin-top:2px;}
-.btn-remove{background:#FEE2E2;border:none;border-radius:10px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;}
+/* OWNERS PAGE */
+.owners-list { padding:12px 16px; }
+.owner-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1.5px solid var(--border); display:flex; align-items:center; gap:14px; }
+.owner-av { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--yellow),var(--orange)); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:18px; font-weight:700; color:white; flex-shrink:0; }
+.owner-info { flex:1; min-width:0; }
+.owner-name { font-size:15px; font-weight:700; margin-bottom:2px; }
+.owner-rest { font-size:13px; color:var(--gray); margin-bottom:2px; }
+.owner-email { font-size:12px; color:var(--gray); font-family:'JetBrains Mono',monospace; }
+.owner-actions { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+.active-tag { background:#F0FDF4; color:var(--green); font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
+.remove-btn { background:#FEF2F2; border:none; border-radius:8px; padding:6px 10px; font-size:12px; font-weight:600; color:var(--red); cursor:pointer; }
 
-/* CATEGORIES */
-.category-card{background:white;border-radius:18px;padding:14px;margin-bottom:10px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;}
-.cat-img{width:52px;height:52px;border-radius:16px;object-fit:cover;background:var(--light);flex-shrink:0;}
-.cat-info{flex:1;}
-.cat-name{font-size:15px;font-weight:700;margin-bottom:2px;}
-.cat-status{font-size:11px;color:var(--gray);}
-.toggle-switch{position:relative;display:inline-block;width:46px;height:26px;}
-.toggle-switch input{opacity:0;width:0;height:0;}
-.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#CBD5E1;border-radius:34px;transition:0.2s;}
-.toggle-slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;bottom:3px;background-color:white;border-radius:50%;transition:0.2s;}
-input:checked + .toggle-slider{background-color:var(--green);}
-input:checked + .toggle-slider:before{transform:translateX(20px);}
-.btn-icon{width:32px;height:32px;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
-.btn-icon.del{background:#FEE2E2;}
-.btn-icon.del svg{stroke:var(--red);width:14px;height:14px;}
+/* CATEGORIES PAGE */
+.categories-list { padding:12px 16px; }
+.category-card { background:white; border-radius:16px; padding:16px; margin-bottom:10px; border:1.5px solid var(--border); display:flex; align-items:center; gap:14px; }
+.cat-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; background:var(--light); overflow:hidden; }
+.cat-icon img { width:100%; height:100%; object-fit:cover; }
+.cat-info { flex:1; }
+.cat-name { font-size:15px; font-weight:700; margin-bottom:2px; }
+.cat-count { font-size:12px; color:var(--gray); }
+.cat-actions { display:flex; gap:8px; align-items:center; }
+.toggle { position:relative; width:42px; height:24px; }
+.toggle input { display:none; }
+.toggle-track { position:absolute; inset:0; background:#E5E7EB; border-radius:12px; cursor:pointer; transition:background 0.2s; }
+.toggle-track::before { content:''; position:absolute; width:18px; height:18px; background:white; border-radius:50%; top:3px; left:3px; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+.toggle input:checked+.toggle-track { background:var(--green); }
+.toggle input:checked+.toggle-track::before { transform:translateX(18px); }
+.ic-btn { width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.ic-del { background:#FEF2F2; }
+.ic-del svg { stroke:var(--red); width:14px; height:14px; fill:none; stroke-width:2; }
 
-/* BANNERS */
-.banner-card{background:white;border-radius:20px;padding:16px;margin-bottom:14px;border:1px solid var(--border);}
-.banner-img{width:100%;height:130px;border-radius:16px;object-fit:cover;background:linear-gradient(135deg,#FFF9EC,#FFE8CC);margin-bottom:12px;}
-.banner-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.banner-title{font-weight:700;font-size:15px;}
-.banner-link{font-size:12px;color:var(--blue);word-break:break-all;margin:8px 0;}
-.banner-link a{color:var(--blue);text-decoration:none;}
+/* BANNERS PAGE */
+.banners-list { padding:12px 16px; }
+.banner-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1.5px solid var(--border); }
+.banner-preview { width:100%; height:120px; border-radius:12px; background:linear-gradient(135deg,var(--yellow),var(--orange)); margin-bottom:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,0.7); font-weight:500; position:relative; }
+.banner-preview img { width:100%; height:100%; object-fit:cover; }
+.banner-info-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.banner-title-text { font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.link-icon { width:14px; height:14px; stroke:var(--blue); fill:none; stroke-width:2; }
+.banner-link-text { font-size:12px; color:var(--blue); margin-bottom:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; display:block; }
+.banner-footer { display:flex; align-items:center; justify-content:space-between; }
+.banner-status { font-size:12px; color:var(--gray); }
+.banner-del { background:#FEF2F2; border:none; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--red); cursor:pointer; }
+
+/* PROFILE */
+.profile-hero { background:white; padding:52px 20px 24px; border-bottom:1px solid var(--border); text-align:center; }
+.profile-av { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--yellow),var(--orange)); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:26px; font-weight:700; color:white; margin:0 auto 12px; }
+.profile-name { font-family:'Sora',sans-serif; font-size:20px; font-weight:700; color:var(--dark); }
+.profile-role { font-size:12px; background:#FFF9EC; color:#A16207; display:inline-block; padding:4px 14px; border-radius:20px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-top:6px; border:1px solid #FDE68A; }
+.profile-body { padding:20px; }
+.pcard { background:white; border-radius:16px; border:1.5px solid var(--border); overflow:hidden; margin-bottom:12px; }
+.prow { display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border); }
+.prow:last-child { border-bottom:none; }
+.prow-icon { width:32px; height:32px; border-radius:8px; background:var(--light); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.prow-icon svg { width:15px; height:15px; stroke:var(--gray); fill:none; stroke-width:2; }
+.prow-label { flex:1; font-size:14px; font-weight:600; color:var(--dark); }
+.prow-val { font-size:12px; color:var(--gray); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:'JetBrains Mono',monospace; }
+.logout-btn { width:100%; background:#FEF2F2; border:1px solid #FECACA; border-radius:14px; padding:15px; font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--red); cursor:pointer; }
 
 /* MODALS */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;}
 .overlay.open{display:flex;}
-.modal-sheet{background:white;border-radius:28px;padding:24px;width:90%;max-width:480px;max-height:85vh;overflow-y:auto;}
-.modal-sheet h3{font-family:'Sora',sans-serif;font-size:20px;margin-bottom:6px;}
-.modal-sheet .sub{font-size:13px;color:var(--gray);margin-bottom:20px;}
-.field{margin-bottom:16px;}
-.field label{font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
-.field input,.field select{width:100%;padding:14px;background:var(--light);border:1.5px solid var(--border);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:14px;transition:0.2s;}
-.field input:focus,.field select:focus{border-color:var(--orange);outline:none;background:white;}
-.img-preview{margin-top:8px;width:100%;height:110px;border-radius:14px;object-fit:cover;display:none;}
-.modal-btns{display:flex;gap:12px;margin-top:20px;}
-.btn-cancel{flex:1;background:var(--light);border:none;border-radius:40px;padding:14px;font-weight:600;cursor:pointer;}
-.btn-save{flex:2;background:var(--orange);border:none;border-radius:40px;padding:14px;font-weight:700;color:white;cursor:pointer;}
-.empty-state{text-align:center;padding:48px 20px;background:white;border-radius:24px;color:var(--gray);}
+.sheet{background:white;border-radius:24px 24px 0 0;padding:20px 20px 44px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:#E5E7EB;border-radius:2px;margin:0 auto 18px;}
+.sheet-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;}
+.sheet-sub { font-size:13px; color:var(--gray); margin-bottom:20px; }
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;}
+.field input, .field select{width:100%;background:var(--light);border:1.5px solid transparent;border-radius:12px;padding:13px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);outline:none;transition:all 0.2s;}
+.field input:focus, .field select:focus{background:white;border-color:var(--yellow);}
+.field input::placeholder { color:#9CA3AF; }
+.field select option{background:white;}
+.img-prev{width:100%;height:120px;border-radius:12px;object-fit:cover;margin-top:8px;display:none;}
+.info-note { background:#FFF9EC; border:1px solid #FDE68A; border-radius:12px; padding:12px 14px; font-size:13px; color:#92400E; margin-bottom:16px; line-height:1.5; }
+.sheet-btns{display:flex;gap:10px;margin-top:8px;}
+.btn-cancel{flex:1;background:var(--light);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;}
+.btn-save{flex:2;background:var(--dark);border:none;border-radius:12px;padding:14px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+
+.empty-box { text-align:center; padding:48px 20px; }
 .empty-icon{width:64px;height:64px;background:var(--light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:12px 24px;border-radius:60px;font-size:14px;opacity:0;transition:0.2s;z-index:1000;pointer-events:none;}
+.empty-icon svg{width:28px;height:28px;stroke:#9CA3AF;fill:none;}
+.empty-box h3 { font-family:'Sora',sans-serif; font-size:17px; font-weight:700; margin-bottom:6px; }
+.empty-box p { font-size:13px; color:var(--gray); }
+
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);color:white;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.success{background:var(--green);}
 .toast.error{background:var(--red);}
-.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;display:inline-block;}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-hr{margin:16px 0;border-color:var(--border);}
 </style>
 </head>
 <body>
 
 <div id="loadingScreen">
   <div class="loader-logo">Pure<span>Order</span></div>
-  <div class="loader-sub">Admin Control</div>
+  <div class="loader-sub">Admin Panel</div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
 
-<div class="top-header">
-  <div class="logo"><h1>PureOrder Admin</h1><p>Restaurant platform management</p></div>
-  <div class="nav-tabs">
-    <button class="nav-btn active" data-page="analytics">📊 Dashboard</button>
-    <button class="nav-btn" data-page="restaurants">🏪 Restaurants</button>
-    <button class="nav-btn" data-page="categories">🏷️ Categories</button>
-    <button class="nav-btn" data-page="banners">🎯 Offer Slider</button>
-    <button class="nav-btn" data-page="profile">👤 Admin</button>
-  </div>
-  <div class="live-pill"><div class="live-dot" style="width:7px;height:7px;background:var(--green);border-radius:50%;"></div>Live</div>
-</div>
-
-<!-- DASHBOARD PAGE -->
 <div id="pageAnalytics" class="page active">
-  <div class="page-container">
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon" style="background:#FFF0E6;">👥</div><div class="stat-value" id="totalUsers">-</div><div class="stat-label">Total Users</div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#E6F7EC;">⚡</div><div class="stat-value" id="activeToday">-</div><div class="stat-label">Active Today</div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#FFF0E6;">🍽️</div><div class="stat-value" id="totalOrders">-</div><div class="stat-label">Completed Orders</div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#E6F0FF;">🏬</div><div class="stat-value" id="restCount">-</div><div class="stat-label">Restaurants</div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:#F0E6FF;">📋</div><div class="stat-value" id="menuItems">-</div><div class="stat-label">Menu Items</div></div>
+  <div class="page-header">
+    <div class="ph-row">
+      <div><h2>Dashboard</h2><p>Platform overview</p></div>
+      <div class="live-pill"><div class="live-dot"></div>Live</div>
     </div>
-    <div class="section-header"><h2>📊 Restaurant Performance</h2></div>
-    <div id="restStatsList"></div>
+  </div>
+  <div class="analytics-grid">
+    <div class="analytics-card blue">
+      <div class="ac-icon" style="background:#EFF6FF;"><svg viewBox="0 0 24 24" stroke="#3b82f6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="ac-val" id="aTotal">-</div>
+      <div class="ac-label">Total Users</div>
+    </div>
+    <div class="analytics-card green">
+      <div class="ac-icon" style="background:#F0FDF4;"><svg viewBox="0 0 24 24" stroke="#10b981"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="ac-val" id="aDAU">-</div>
+      <div class="ac-label">Active Today</div>
+    </div>
+    <div class="analytics-card full">
+      <div class="ac-icon" style="background:#FFF9EC;"><svg viewBox="0 0 24 24" stroke="#FFC529"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+      <div class="ac-val" id="aTotalOrders">-</div>
+      <div class="ac-label">Total Orders (Accepted)</div>
+    </div>
+    <div class="analytics-card purple">
+      <div class="ac-icon" style="background:#F5F3FF;"><svg viewBox="0 0 24 24" stroke="#8b5cf6"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="ac-val" id="aRestCount">-</div>
+      <div class="ac-label">Restaurants</div>
+    </div>
+    <div class="analytics-card cyan">
+      <div class="ac-icon" style="background:#ECFEFF;"><svg viewBox="0 0 24 24" stroke="#06b6d4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <div class="ac-val" id="aMenuItems">-</div>
+      <div class="ac-label">Menu Items</div>
+    </div>
+  </div>
+  <div class="section-title">Per Restaurant</div>
+  <div id="restStatsList"></div>
+</div>
+
+<div id="pageOwners" class="page">
+  <div class="page-header">
+    <div class="ph-row">
+      <div><h2>Restaurants</h2><p>Owner accounts</p></div>
+      <button class="btn-add" onclick="openAddOwner()">+ Create</button>
+    </div>
+  </div>
+  <div class="owners-list" id="ownersList">
+    <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><h3>No restaurants</h3><p>Create your first restaurant owner</p></div>
   </div>
 </div>
 
-<!-- RESTAURANTS (OWNERS) PAGE -->
-<div id="pageRestaurants" class="page">
-  <div class="page-container">
-    <div class="section-header"><h2>🏪 Restaurant Owners</h2><button class="btn-add" onclick="openAddOwner()">+ New Owner</button></div>
-    <div id="ownersList"></div>
-  </div>
-</div>
-
-<!-- CATEGORIES PAGE (IMAGE URL) -->
 <div id="pageCategories" class="page">
-  <div class="page-container">
-    <div class="section-header"><h2>🏷️ Menu Categories</h2><button class="btn-add" onclick="openAddCategory()">+ Category</button></div>
-    <div id="categoriesList"></div>
+  <div class="page-header">
+    <div class="ph-row">
+      <div><h2>Categories</h2><p>Shown on customer home</p></div>
+      <button class="btn-add" onclick="openAddCategory()">+ Add</button>
+    </div>
+  </div>
+  <div class="categories-list" id="categoriesList">
+    <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><h3>No categories</h3><p>Add categories for customer home screen</p></div>
   </div>
 </div>
 
-<!-- BANNERS PAGE (LINKED PAGE) -->
 <div id="pageBanners" class="page">
-  <div class="page-container">
-    <div class="section-header"><h2>🎯 Offer Slider</h2><button class="btn-add" onclick="openAddBanner()">+ Add Slide</button></div>
-    <div id="bannersList"></div>
+  <div class="page-header">
+    <div class="ph-row">
+      <div><h2>Banners</h2><p>Offer slider on home screen</p></div>
+      <button class="btn-add" onclick="openAddBanner()">+ Add</button>
+    </div>
+  </div>
+  <div class="banners-list" id="bannersList">
+    <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>No banners</h3><p>Add promotional banners</p></div>
   </div>
 </div>
 
-<!-- PROFILE PAGE -->
 <div id="pageProfile" class="page">
-  <div class="page-container">
-    <div class="stat-card" style="text-align:center;padding:32px;">
-      <div class="owner-avatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 16px;">A</div>
-      <h3 id="profileName">Admin</h3>
-      <p style="color:var(--orange);font-weight:700;margin-top:4px;">Platform Administrator</p>
-      <hr>
-      <div style="text-align:left;margin-top:20px;"><p><strong>📧 Email:</strong> <span id="profileEmail">-</span></p><p><strong>🔐 Role:</strong> Super Admin</p><p><strong>📱 Version:</strong> PureOrder v2.0</p></div>
-      <button class="btn-remove" style="width:100%;margin-top:24px;padding:14px;" onclick="doLogout()">Sign Out</button>
+  <div class="profile-hero">
+    <div class="profile-av">A</div>
+    <div class="profile-name" id="profileName">Admin</div>
+    <div class="profile-role">Administrator</div>
+  </div>
+  <div class="profile-body">
+    <div class="pcard">
+      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="prow-label">Email</div><div class="prow-val" id="profileEmail">-</div></div>
+      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="prow-label">Role</div><div class="prow-val">Platform Admin</div></div>
+      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="prow-label">Version</div><div class="prow-val">PureOrder v1.0</div></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-analytics" onclick="goPage('analytics',this)"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div class="nl">Analytics</div></button>
+  <button class="nav-btn" id="nav-owners" onclick="goPage('owners',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><div class="nl">Restaurants</div></button>
+  <button class="nav-btn" id="nav-categories" onclick="goPage('categories',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><div class="nl">Categories</div></button>
+  <button class="nav-btn" id="nav-banners" onclick="goPage('banners',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><div class="nl">Banners</div></button>
+  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nl">Profile</div></button>
+</div>
+
+<div class="overlay" id="addOwnerModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Create Restaurant Owner</div>
+    <div class="sheet-sub">Owner will sign in using Google with this email</div>
+    <div class="info-note">Make sure the owner uses this exact Gmail to sign in via Google login on the app.</div>
+    <div class="field"><label>Restaurant Name</label><input type="text" id="oRestName" placeholder="e.g. Mamu Bhanja Dhaba" /></div>
+    <div class="field"><label>Owner Name</label><input type="text" id="oName" placeholder="Full name" /></div>
+    <div class="field"><label>Phone Number</label><input type="tel" id="oPhone" placeholder="10-digit number" /></div>
+    <div class="field"><label>Gmail Address</label><input type="email" id="oEmail" placeholder="owner@gmail.com" /></div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('addOwnerModal')">Cancel</button>
+      <button class="btn-save" id="saveOwnerBtn" onclick="createOwner()">Create Account</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: ADD OWNER -->
-<div id="ownerModal" class="overlay"><div class="modal-sheet"><h3>Create Restaurant Owner</h3><div class="sub">Owner signs in with Google using this Gmail</div><div class="field"><label>Restaurant Name</label><input id="ownerRestName" placeholder="e.g., Urban Spice"></div><div class="field"><label>Owner Name</label><input id="ownerName" placeholder="Full name"></div><div class="field"><label>Phone</label><input id="ownerPhone" placeholder="10-digit number"></div><div class="field"><label>Gmail Address</label><input id="ownerEmail" placeholder="owner@gmail.com"></div><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('ownerModal')">Cancel</button><button class="btn-save" id="saveOwnerBtn" onclick="createOwner()">Create Account</button></div></div></div>
+<div class="overlay" id="addCatModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Category</div>
+    <div class="sheet-sub">Will appear on customer home screen</div>
+    <div class="field"><label>Category Name</label><input type="text" id="catName" placeholder="e.g. Biryani, Fast Food, Snacks..." /></div>
+    <div class="field"><label>Image URL</label><input type="url" id="catImage" placeholder="https://..." oninput="prevCatImg(this.value)" /><img id="catImgPrev" class="img-prev" /></div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('addCatModal')">Cancel</button>
+      <button class="btn-save" id="saveCatBtn" onclick="saveCategory()">Add Category</button>
+    </div>
+  </div>
+</div>
 
-<!-- MODAL: ADD CATEGORY (IMAGE URL) -->
-<div id="categoryModal" class="overlay"><div class="modal-sheet"><h3>Add Category</h3><div class="sub">Shown on customer home screen</div><div class="field"><label>Category Name</label><input id="catName" placeholder="e.g., Biryani, Pizza"></div><div class="field"><label>Category Image URL</label><input id="catImageUrl" placeholder="https://...image.png" oninput="previewCatImage(this.value)"><img id="catImgPreview" class="img-preview"></div><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('categoryModal')">Cancel</button><button class="btn-save" onclick="saveCategory()">Add Category</button></div></div></div>
+<div class="overlay" id="addBannerModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Offer Banner</div>
+    <div class="sheet-sub">Paste an image URL — will show on customer home slider</div>
+    <div class="field"><label>Image URL</label><input type="url" id="bImage" placeholder="https://..." oninput="prevBanner(this.value)" /><img id="bannerPrev" class="img-prev" /></div>
+    <div class="field"><label>Title</label><input type="text" id="bTitle" placeholder="e.g. Weekend Special" /></div>
+    <div class="field"><label>Linked Page URL (optional)</label><input type="url" id="bLink" placeholder="https://..." /></div>
+    <div class="info-note" style="margin-top:4px;">When customers click the offer banner, they will be redirected to the Linked Page above.</div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('addBannerModal')">Cancel</button>
+      <button class="btn-save" id="saveBannerBtn" onclick="saveBanner()">Add Banner</button>
+    </div>
+  </div>
+</div>
 
-<!-- MODAL: ADD BANNER (WITH LINK) -->
-<div id="bannerModal" class="overlay"><div class="modal-sheet"><h3>Add Offer Slide</h3><div class="sub">Click on slider → navigates to linked page</div><div class="field"><label>Image URL</label><input id="bannerImageUrl" placeholder="https://..." oninput="previewBannerImg(this.value)"><img id="bannerImgPrev" class="img-preview"></div><div class="field"><label>Title / Offer text</label><input id="bannerTitle" placeholder="Weekend Special"></div><div class="field"><label>🔗 Linked Page URL</label><input id="bannerLink" placeholder="https://pureorder.com/promo"><div style="font-size:11px;color:var(--gray);margin-top:6px;">Customers will be redirected when tapping this banner</div></div><div class="modal-btns"><button class="btn-cancel" onclick="closeModal('bannerModal')">Cancel</button><button class="btn-save" onclick="saveBanner()">Add Slide</button></div></div></div>
-
-<div class="toast" id="toastMsg"></div>
+<div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -226,227 +325,339 @@ const firebaseConfig = {
   projectId: "pureorder-eca2b",
   storageBucket: "pureorder-eca2b.firebasestorage.app",
   messagingSenderId: "641924435931",
-  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe"
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe",
+  measurementId: "G-DM82V9XC5T"
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentAdmin = null;
-let ownersList = [], categoriesList = [], bannersList = [];
+let currentUser = null, userData = null;
+let owners = [], categories = [], banners = [];
 
 function showToast(msg, type='') {
-  const t = document.getElementById('toastMsg');
+  const t = document.getElementById('toast');
   t.textContent = msg; t.className = `toast show ${type}`;
-  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2800);
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3000);
 }
-window.closeModal = (id) => document.getElementById(id).classList.remove('open');
-function openModal(id) { document.getElementById(id).classList.add('open'); }
+window.closeModal = id => document.getElementById(id).classList.remove('open');
 
-// Navigation
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const pageName = btn.dataset.page;
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(`page${pageName.charAt(0).toUpperCase() + pageName.slice(1)}`).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (pageName === 'analytics') loadAnalytics();
-    if (pageName === 'restaurants') loadOwners();
-    if (pageName === 'profile') renderProfile();
-  });
+// NAV
+window.goPage = (name, el) => {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const map = { analytics:'pageAnalytics', owners:'pageOwners', categories:'pageCategories', banners:'pageBanners', profile:'pageProfile' };
+  document.getElementById(map[name])?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else document.getElementById(`nav-${name}`)?.classList.add('active');
+  if (name==='analytics') loadAnalytics();
+  if (name==='profile') renderProfile();
+};
+
+// AUTH
+const fallback = setTimeout(() => window.location.href = 'index.html', 8000);
+onAuthStateChanged(auth, async user => {
+  clearTimeout(fallback);
+  if (!user) { window.location.href = 'index.html'; return; }
+  currentUser = user;
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists() || snap.data().role !== 'admin') { window.location.href = 'index.html'; return; }
+    userData = snap.data();
+  } catch(e) { window.location.href = 'index.html'; return; }
+  initApp();
 });
 
-onAuthStateChanged(auth, async user => {
-  if (!user) { window.location.href = 'index.html'; return; }
-  const snap = await getDoc(doc(db, 'users', user.uid));
-  if (!snap.exists() || snap.data().role !== 'admin') { window.location.href = 'index.html'; return; }
-  currentAdmin = { uid: user.uid, ...snap.data() };
+async function initApp() {
   await Promise.all([loadOwners(), loadCategories(), loadBanners()]);
   loadAnalytics();
-  document.getElementById('loadingScreen').classList.add('hide');
-});
+  setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
+}
 
-// ============ OWNERS ============
-async function loadOwners() {
-  const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'owner')));
-  ownersList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderOwners();
-}
-function renderOwners() {
-  const el = document.getElementById('ownersList');
-  if (!ownersList.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🏪</div><h3>No restaurants yet</h3><p>Create your first owner account</p></div>'; return; }
-  el.innerHTML = ownersList.map(o => `
-    <div class="owner-card">
-      <div class="owner-avatar">${(o.name || 'O')[0].toUpperCase()}</div>
-      <div class="owner-details"><div class="owner-name">${o.name || 'Owner'}</div><div class="owner-rest">${o.restaurantName || 'Restaurant'}</div><div class="owner-email">${o.email || ''}</div></div>
-      <button class="btn-remove" onclick="deleteOwner('${o.id}')">Remove</button>
-    </div>
-  `).join('');
-}
-window.openAddOwner = () => {
-  ['ownerRestName','ownerName','ownerPhone','ownerEmail'].forEach(id => document.getElementById(id).value = '');
-  openModal('ownerModal');
-};
-window.createOwner = async () => {
-  const restName = document.getElementById('ownerRestName').value.trim();
-  const name = document.getElementById('ownerName').value.trim();
-  const phone = document.getElementById('ownerPhone').value.trim();
-  const email = document.getElementById('ownerEmail').value.trim();
-  if (!restName || !name || !email) { showToast('Fill required fields', 'error'); return; }
-  const btn = document.getElementById('saveOwnerBtn');
-  btn.innerHTML = '<div class="spinner"></div>'; btn.disabled = true;
-  try {
-    const restId = restName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    await addDoc(collection(db, 'pending_owners'), { name, email, phone, restaurantName: restName, restaurantId: restId, role: 'owner', createdBy: currentAdmin.uid, createdAt: serverTimestamp() });
-    await setDoc(doc(db, 'restaurants', restId), { name: restName, ownerId: '', ownerName: name, ownerEmail: email, phone, status: 'active', isOpen: true, createdAt: serverTimestamp() });
-    ownersList.push({ id: restId, name, email, restaurantName: restName });
-    renderOwners();
-    closeModal('ownerModal');
-    showToast(`Owner ${name} created!`, 'success');
-  } catch(e) { showToast('Error: ' + e.message, 'error'); }
-  btn.innerHTML = 'Create Account'; btn.disabled = false;
-};
-window.deleteOwner = async (id) => {
-  if (!confirm('Delete this owner? Their data will be lost.')) return;
-  try { await deleteDoc(doc(db, 'users', id)); ownersList = ownersList.filter(o => o.id !== id); renderOwners(); showToast('Owner removed', 'success'); } 
-  catch(e) { showToast('Failed', 'error'); }
-};
-
-// ============ CATEGORIES (IMAGE URL) ============
-async function loadCategories() {
-  const snap = await getDocs(collection(db, 'globalCategories'));
-  categoriesList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderCategories();
-}
-function renderCategories() {
-  const el = document.getElementById('categoriesList');
-  if (!categoriesList.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🏷️</div><h3>No categories</h3><p>Add categories with image URL</p></div>'; return; }
-  el.innerHTML = categoriesList.map(c => `
-    <div class="category-card">
-      <img class="cat-img" src="${c.imageUrl || 'https://placehold.co/60x60?text=🍽️'}" onerror="this.src='https://placehold.co/60x60?text=🍕'">
-      <div class="cat-info"><div class="cat-name">${c.name}</div><div class="cat-status">${c.active !== false ? 'Visible' : 'Hidden'}</div></div>
-      <label class="toggle-switch"><input type="checkbox" ${c.active !== false ? 'checked' : ''} onchange="toggleCategory('${c.id}', this.checked)"><span class="toggle-slider"></span></label>
-      <button class="btn-icon del" onclick="deleteCategory('${c.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-    </div>
-  `).join('');
-}
-window.openAddCategory = () => {
-  document.getElementById('catName').value = '';
-  document.getElementById('catImageUrl').value = '';
-  document.getElementById('catImgPreview').style.display = 'none';
-  openModal('categoryModal');
-};
-window.previewCatImage = (url) => { const img = document.getElementById('catImgPreview'); if(url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; } else img.style.display = 'none'; };
-window.saveCategory = async () => {
-  const name = document.getElementById('catName').value.trim();
-  const imageUrl = document.getElementById('catImageUrl').value.trim();
-  if (!name) { showToast('Category name required', 'error'); return; }
-  try {
-    const ref = await addDoc(collection(db, 'globalCategories'), { name, imageUrl: imageUrl || 'https://placehold.co/60x60?text=🍽️', active: true, createdAt: serverTimestamp() });
-    categoriesList.push({ id: ref.id, name, imageUrl, active: true });
-    renderCategories();
-    closeModal('categoryModal');
-    showToast('Category added!', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
-};
-window.toggleCategory = async (id, val) => {
-  try { await updateDoc(doc(db, 'globalCategories', id), { active: val }); const cat = categoriesList.find(c => c.id === id); if (cat) cat.active = val; renderCategories(); showToast(val ? 'Visible' : 'Hidden'); } 
-  catch(e) { showToast('Failed', 'error'); }
-};
-window.deleteCategory = async (id) => {
-  if (!confirm('Delete this category?')) return;
-  try { await deleteDoc(doc(db, 'globalCategories', id)); categoriesList = categoriesList.filter(c => c.id !== id); renderCategories(); showToast('Deleted', 'success'); } 
-  catch(e) { showToast('Failed', 'error'); }
-};
-
-// ============ BANNERS (LINKED PAGE) ============
-async function loadBanners() {
-  const snap = await getDocs(collection(db, 'banners'));
-  bannersList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderBanners();
-}
-function renderBanners() {
-  const el = document.getElementById('bannersList');
-  if (!bannersList.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎯</div><h3>No offer slides</h3><p>Add banners with linked pages for customers</p></div>'; return; }
-  el.innerHTML = bannersList.map(b => `
-    <div class="banner-card">
-      <img class="banner-img" src="${b.imageUrl || 'https://placehold.co/400x130?text=Offer+Slide'}" onerror="this.src='https://placehold.co/400x130?text=Image+Not+Found'">
-      <div class="banner-row"><span class="banner-title">${b.title || 'Untitled'}</span><label class="toggle-switch"><input type="checkbox" ${b.active !== false ? 'checked' : ''} onchange="toggleBanner('${b.id}', this.checked)"><span class="toggle-slider"></span></label></div>
-      <div class="banner-link">🔗 <a href="${b.linkUrl || '#'}" target="_blank">${b.linkUrl ? (b.linkUrl.length > 50 ? b.linkUrl.slice(0,50)+'...' : b.linkUrl) : 'No link set'}</a></div>
-      <div style="display:flex; justify-content:flex-end; margin-top:10px;"><button class="btn-icon del" onclick="deleteBanner('${b.id}')" style="background:#FEE2E2; padding:6px 14px; border-radius:30px; font-size:12px; font-weight:600; color:var(--red);">Remove</button></div>
-    </div>
-  `).join('');
-}
-window.openAddBanner = () => {
-  document.getElementById('bannerImageUrl').value = '';
-  document.getElementById('bannerTitle').value = '';
-  document.getElementById('bannerLink').value = '';
-  document.getElementById('bannerImgPrev').style.display = 'none';
-  openModal('bannerModal');
-};
-window.previewBannerImg = (url) => { const img = document.getElementById('bannerImgPrev'); if(url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; } else img.style.display = 'none'; };
-window.saveBanner = async () => {
-  const imageUrl = document.getElementById('bannerImageUrl').value.trim();
-  const title = document.getElementById('bannerTitle').value.trim();
-  const linkUrl = document.getElementById('bannerLink').value.trim();
-  if (!title) { showToast('Title is required', 'error'); return; }
-  try {
-    const ref = await addDoc(collection(db, 'banners'), { imageUrl: imageUrl || 'https://placehold.co/400x130?text=Offer', title, linkUrl: linkUrl || '#', active: true, createdAt: serverTimestamp() });
-    bannersList.push({ id: ref.id, imageUrl, title, linkUrl, active: true });
-    renderBanners();
-    closeModal('bannerModal');
-    showToast('Offer slide added!', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
-};
-window.toggleBanner = async (id, val) => {
-  try { await updateDoc(doc(db, 'banners', id), { active: val }); const b = bannersList.find(b => b.id === id); if (b) b.active = val; renderBanners(); showToast(val ? 'Slide visible' : 'Hidden'); } 
-  catch(e) { showToast('Failed', 'error'); }
-};
-window.deleteBanner = async (id) => {
-  if (!confirm('Remove this banner?')) return;
-  try { await deleteDoc(doc(db, 'banners', id)); bannersList = bannersList.filter(b => b.id !== id); renderBanners(); showToast('Removed', 'success'); } 
-  catch(e) { showToast('Failed', 'error'); }
-};
-
-// ============ ANALYTICS + PER RESTAURANT ============
+// ANALYTICS
 async function loadAnalytics() {
   try {
     const usersSnap = await getDocs(collection(db, 'users'));
     const allUsers = usersSnap.docs.map(d => d.data());
-    document.getElementById('totalUsers').innerText = allUsers.length;
+    document.getElementById('aTotal').textContent = allUsers.length;
+
     const today = new Date(); today.setHours(0,0,0,0);
     const dau = allUsers.filter(u => u.createdAt?.toDate && u.createdAt.toDate() >= today).length;
-    document.getElementById('activeToday').innerText = dau;
-    const menuSnap = await getDocs(collection(db, 'menu'));
-    document.getElementById('menuItems').innerText = menuSnap.size;
+    document.getElementById('aDAU').textContent = dau;
+
     const restSnap = await getDocs(collection(db, 'restaurants'));
-    document.getElementById('restCount').innerText = restSnap.size;
-    const orderSnap = await getDocs(query(collection(db, 'orders'), where('status', 'in', ['delivered', 'completed'])));
-    document.getElementById('totalOrders').innerText = orderSnap.size;
-    const allOrders = orderSnap.docs.map(d => d.data());
     const restaurants = restSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const restDiv = document.getElementById('restStatsList');
-    if (!restaurants.length) { restDiv.innerHTML = '<div class="empty-state">No restaurants yet</div>'; return; }
-    restDiv.innerHTML = restaurants.map(r => {
+    document.getElementById('aRestCount').textContent = restaurants.length;
+
+    const menuSnap = await getDocs(collection(db, 'menu'));
+    document.getElementById('aMenuItems').textContent = menuSnap.size;
+
+    const orderSnap = await getDocs(query(collection(db, 'orders'), where('status', 'in', ['accepted','preparing','ready','assigned','delivered'])));
+    const allOrders = orderSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    document.getElementById('aTotalOrders').textContent = allOrders.length;
+
+    const el = document.getElementById('restStatsList');
+    if (!restaurants.length) { el.innerHTML = ''; return; }
+    el.innerHTML = restaurants.map(r => {
       const rOrders = allOrders.filter(o => o.restaurantId === r.id);
-      const revenue = rOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
-      return `<div class="restaurant-card">
-        <div class="rest-info"><h3>${r.name || r.id}</h3><p>${r.ownerName || 'Owner'}</p></div>
-        <div><span class="${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</span></div>
-        <div class="rest-stats"><div><div class="num">${rOrders.length}</div><div class="lbl">Orders</div></div><div><div class="num">₹${revenue}</div><div class="lbl">Revenue</div></div></div>
+      const delivered = rOrders.filter(o => o.status === 'delivered').length;
+      const revenue = rOrders.filter(o => o.status === 'delivered').reduce((s,o) => s + (o.totalAmount||0), 0);
+      return `<div class="rest-stat-card">
+        <div class="rsc-top">
+          <div class="rsc-name">${r.name || r.id}</div>
+          <div class="rsc-badge ${r.isOpen !== false ? 'badge-open':'badge-closed'}">${r.isOpen !== false ? 'Open':'Closed'}</div>
+        </div>
+        <div class="rsc-stats">
+          <div class="rsc-stat"><div class="rsc-stat-val">${rOrders.length}</div><div class="rsc-stat-lbl">Orders</div></div>
+          <div class="rsc-stat"><div class="rsc-stat-val">${delivered}</div><div class="rsc-stat-lbl">Delivered</div></div>
+          <div class="rsc-stat"><div class="rsc-stat-val">&#8377;${revenue}</div><div class="rsc-stat-lbl">Revenue</div></div>
+        </div>
       </div>`;
     }).join('');
-  } catch(e) { console.error(e); }
+  } catch(e) { console.error('Analytics error:', e); }
 }
 
-function renderProfile() {
-  document.getElementById('profileName').innerText = currentAdmin?.name || 'Admin';
-  document.getElementById('profileEmail').innerText = currentAdmin?.email || auth.currentUser?.email || '';
+// OWNERS
+async function loadOwners() {
+  try {
+    const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'owner')));
+    owners = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderOwners();
+  } catch(e) { owners = []; renderOwners(); }
 }
-window.doLogout = async () => { try { await signOut(auth); window.location.href = 'index.html'; } catch(e) { showToast('Logout failed', 'error'); } };
-document.querySelectorAll('.overlay').forEach(o => { o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }); });
+
+function renderOwners() {
+  const el = document.getElementById('ownersList');
+  if (!owners.length) {
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><h3>No restaurants yet</h3><p>Create your first restaurant owner account</p></div>`;
+    return;
+  }
+  el.innerHTML = owners.map(o => `
+    <div class="owner-card">
+      <div class="owner-av">${(o.name||'O')[0].toUpperCase()}</div>
+      <div class="owner-info">
+        <div class="owner-name">${o.name||'Owner'}</div>
+        <div class="owner-rest">${o.restaurantName||'Restaurant'}</div>
+        <div class="owner-email">${o.email||''}</div>
+      </div>
+      <div class="owner-actions">
+        <div class="active-tag">Active</div>
+        <button class="remove-btn" onclick="deleteOwner('${o.id}','${o.name}')">Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+window.openAddOwner = () => {
+  ['oRestName','oName','oPhone','oEmail'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('addOwnerModal').classList.add('open');
+};
+
+window.createOwner = async () => {
+  const restName = document.getElementById('oRestName').value.trim();
+  const name = document.getElementById('oName').value.trim();
+  const phone = document.getElementById('oPhone').value.trim();
+  const email = document.getElementById('oEmail').value.trim();
+  const btn = document.getElementById('saveOwnerBtn');
+  if (!restName || !name || !email) { showToast('Fill all required fields', 'error'); return; }
+  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
+  try {
+    const restId = restName.toLowerCase().replace(/\s+/g, '-');
+    await addDoc(collection(db, 'pending_owners'), {
+      name, email, phone, restaurantName: restName, restaurantId: restId,
+      role: 'owner', createdAt: serverTimestamp(), createdBy: currentUser.uid
+    });
+    await setDoc(doc(db, 'restaurants', restId), {
+      name: restName, ownerId: '', ownerName: name,
+      ownerEmail: email, phone, status:'active', isOpen: true,
+      createdAt: serverTimestamp()
+    });
+    owners.push({ id: restId, name, email, phone, restaurantName: restName });
+    renderOwners();
+    closeModal('addOwnerModal');
+    showToast(`Owner account prepared for ${name}!`, 'success');
+  } catch(e) { showToast('Failed to create account', 'error'); }
+  btn.innerHTML = 'Create Account'; btn.style.pointerEvents = 'auto';
+};
+
+window.deleteOwner = async (id, name) => {
+  if (!confirm(`Remove ${name}? This cannot be undone.`)) return;
+  try {
+    await deleteDoc(doc(db, 'users', id));
+    owners = owners.filter(o => o.id !== id);
+    renderOwners();
+    showToast('Owner removed', 'success');
+  } catch(e) { showToast('Failed', 'error'); }
+};
+
+// CATEGORIES
+async function loadCategories() {
+  try {
+    const snap = await getDocs(collection(db, 'globalCategories'));
+    categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderCategories();
+  } catch(e) { categories = []; renderCategories(); }
+}
+
+function renderCategories() {
+  const el = document.getElementById('categoriesList');
+  if (!categories.length) {
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><h3>No categories yet</h3><p>Add categories for customer home screen</p></div>`;
+    return;
+  }
+  el.innerHTML = categories.map((cat, i) => `
+    <div class="category-card">
+      <div class="cat-icon">${cat.imageUrl ? `<img src="${cat.imageUrl}" onerror="this.style.display='none'">` : '🍽️'}</div>
+      <div class="cat-info">
+        <div class="cat-name">${cat.name}</div>
+        <div class="cat-count">Tap to search in all restaurants</div>
+      </div>
+      <div class="cat-actions">
+        <label class="toggle">
+          <input type="checkbox" ${cat.active!==false?'checked':''} onchange="toggleCategory('${cat.id}',this.checked)">
+          <div class="toggle-track"></div>
+        </label>
+        <button class="ic-btn ic-del" onclick="deleteCategory('${cat.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>`).join('');
+}
+
+window.openAddCategory = () => {
+  document.getElementById('catName').value = '';
+  document.getElementById('catImage').value = '';
+  document.getElementById('catImgPrev').style.display = 'none';
+  document.getElementById('addCatModal').classList.add('open');
+};
+
+window.prevCatImg = url => {
+  const img = document.getElementById('catImgPrev');
+  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
+  else img.style.display = 'none';
+};
+
+window.saveCategory = async () => {
+  const name = document.getElementById('catName').value.trim();
+  const imageUrl = document.getElementById('catImage').value.trim();
+  const btn = document.getElementById('saveCatBtn');
+  if (!name) { showToast('Enter category name', 'error'); return; }
+  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
+  try {
+    const ref = await addDoc(collection(db, 'globalCategories'), { name, imageUrl, active: true, createdAt: serverTimestamp() });
+    categories.push({ id: ref.id, name, imageUrl, active: true });
+    renderCategories();
+    closeModal('addCatModal');
+    showToast('Category added!', 'success');
+  } catch(e) { showToast('Failed', 'error'); }
+  btn.innerHTML = 'Add Category'; btn.style.pointerEvents = 'auto';
+};
+
+window.toggleCategory = async (id, val) => {
+  try {
+    await updateDoc(doc(db, 'globalCategories', id), { active: val });
+    const cat = categories.find(c => c.id === id);
+    if (cat) cat.active = val;
+    showToast(val ? 'Category visible' : 'Category hidden');
+  } catch(e) { showToast('Failed', 'error'); }
+};
+
+window.deleteCategory = async id => {
+  if (!confirm('Delete this category?')) return;
+  try {
+    await deleteDoc(doc(db, 'globalCategories', id));
+    categories = categories.filter(c => c.id !== id);
+    renderCategories();
+    showToast('Category deleted', 'success');
+  } catch(e) { showToast('Failed', 'error'); }
+};
+
+// BANNERS
+async function loadBanners() {
+  try {
+    const snap = await getDocs(collection(db, 'banners'));
+    banners = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderBanners();
+  } catch(e) { banners = []; renderBanners(); }
+}
+
+function renderBanners() {
+  const el = document.getElementById('bannersList');
+  if (!banners.length) {
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>No banners yet</h3><p>Add promotional banners</p></div>`;
+    return;
+  }
+  el.innerHTML = banners.map(b => `
+    <div class="banner-card">
+      <div class="banner-preview">${b.imageUrl ? `<img src="${b.imageUrl}" onerror="this.style.display='none'">` : (b.title||'Banner')}</div>
+      <div class="banner-info-row">
+        <div class="banner-title-text">${b.title||'Untitled'} ${b.linkUrl ? '<svg class="link-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>' : ''}</div>
+        <label class="toggle"><input type="checkbox" ${b.active?'checked':''} onchange="toggleBanner('${b.id}',this.checked)"><div class="toggle-track"></div></label>
+      </div>
+      ${b.linkUrl ? `<a href="${b.linkUrl}" target="_blank" class="banner-link-text">${b.linkUrl}</a>` : ''}
+      <div class="banner-footer">
+        <div class="banner-status">${b.active?'Visible to customers':'Hidden'}</div>
+        <button class="banner-del" onclick="deleteBanner('${b.id}')">Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+window.openAddBanner = () => {
+  ['bImage','bTitle','bLink'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('bannerPrev').style.display = 'none';
+  document.getElementById('addBannerModal').classList.add('open');
+};
+window.prevBanner = url => {
+  const img = document.getElementById('bannerPrev');
+  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
+  else img.style.display = 'none';
+};
+window.saveBanner = async () => {
+  const imageUrl = document.getElementById('bImage').value.trim();
+  const title = document.getElementById('bTitle').value.trim();
+  const linkUrl = document.getElementById('bLink').value.trim();
+  const btn = document.getElementById('saveBannerBtn');
+  if (!title) { showToast('Enter a title', 'error'); return; }
+  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
+  try {
+    const ref = await addDoc(collection(db, 'banners'), { imageUrl, title, linkUrl, active: true, createdAt: serverTimestamp() });
+    banners.push({ id: ref.id, imageUrl, title, linkUrl, active: true });
+    renderBanners();
+    closeModal('addBannerModal');
+    showToast('Banner added!', 'success');
+  } catch(e) { showToast('Failed', 'error'); }
+  btn.innerHTML = 'Add Banner'; btn.style.pointerEvents = 'auto';
+};
+window.toggleBanner = async (id, val) => {
+  try {
+    await updateDoc(doc(db, 'banners', id), { active: val });
+    const b = banners.find(x => x.id === id);
+    if (b) b.active = val;
+    renderBanners();
+    showToast(val ? 'Banner visible' : 'Banner hidden');
+  } catch(e) { showToast('Failed', 'error'); }
+};
+window.deleteBanner = async id => {
+  if (!confirm('Remove this banner?')) return;
+  try {
+    await deleteDoc(doc(db, 'banners', id));
+    banners = banners.filter(b => b.id !== id);
+    renderBanners();
+    showToast('Banner removed', 'success');
+  } catch(e) { showToast('Failed', 'error'); }
+};
+
+// PROFILE
+function renderProfile() {
+  document.getElementById('profileName').textContent = userData?.name || 'Admin';
+  document.getElementById('profileEmail').textContent = userData?.email || currentUser?.email || '';
+}
+
+window.doLogout = async () => {
+  try { await signOut(auth); window.location.href = 'index.html'; }
+  catch(e) { showToast('Logout failed', 'error'); }
+};
+
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
 </script>
 </body>
 </html>
-```
