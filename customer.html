@@ -49,12 +49,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .search-bar svg{width:17px;height:17px;stroke:#9CA3AF;fill:none;stroke-width:2;flex-shrink:0;}
 .search-bar span{font-size:14px;color:#9CA3AF;}
 
+/* CATEGORIES ROW */
+.category-row { display:flex; overflow-x:auto; gap:16px; padding:0 20px 20px; scrollbar-width:none; background:white; }
+.category-row::-webkit-scrollbar { display:none; }
+.cat-circle-card { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; flex-shrink:0; }
+.cat-circle-img { width:60px; height:60px; border-radius:50%; background:var(--light); overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); }
+.cat-circle-img img { width:100%; height:100%; object-fit:cover; }
+.cat-circle-name { font-size:12px; font-weight:600; color:var(--dark); white-space:nowrap; }
+
 /* BANNERS */
-.banner-section{padding:16px 0;}
+.banner-section{padding:16px 0; background:white;}
 .banner-outer{overflow:hidden;padding:0 20px;}
 .banner-scroll{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-behavior:smooth;}
 .banner-scroll::-webkit-scrollbar{display:none;}
-.banner-card{min-width:100%;height:180px;border-radius:20px;scroll-snap-align:center;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:flex-end;padding:20px;}
+.banner-card{min-width:100%;height:180px;border-radius:20px;scroll-snap-align:center;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:flex-end;padding:20px; cursor:pointer;}
 .b1{background:linear-gradient(135deg,#FFC529,#FE724C);}
 .b2{background:linear-gradient(135deg,#1a1a2e,#FE724C);}
 .b3{background:linear-gradient(135deg,#134e5e,#71b280);}
@@ -62,13 +70,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .banner-content{position:relative;z-index:1;}
 .banner-tag{background:rgba(255,255,255,0.2);color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
 .banner-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;}
-.banner-sub{font-size:12px;color:rgba(255,255,255,0.8);margin-top:4px;}
 .banner-dots{display:flex;justify-content:center;gap:5px;padding:10px 0 0;}
 .banner-dot{width:6px;height:6px;border-radius:3px;background:#D1D5DB;transition:all 0.3s;}
 .banner-dot.active{width:18px;background:var(--orange);}
 
 /* SECTIONS */
-.section{padding:0 20px;margin-bottom:20px;}
+.section{padding:0 20px;margin-bottom:20px; padding-top:10px;}
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-top:4px;}
 .section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;}
 
@@ -240,7 +247,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 <body>
 <div id="loadingScreen"><div class="loader-logo">Pure<span>Order</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
 
-<!-- HOME -->
 <div id="pageHome" class="page active">
   <div class="home-header">
     <div class="header-top">
@@ -256,14 +262,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
       <span>Search dishes, restaurants...</span>
     </div>
   </div>
+  
   <div class="banner-section">
     <div class="banner-outer"><div class="banner-scroll" id="bannerScroll">
-      <div class="banner-card b1"><div class="banner-bg-text">HOT</div><div class="banner-content"><div class="banner-tag">Today's Special</div><div class="banner-title">Fresh Thali<br>Every Day</div><div class="banner-sub">Mamu Bhanja Dhaba</div></div></div>
-      <div class="banner-card b2"><div class="banner-bg-text">NEW</div><div class="banner-content"><div class="banner-tag">Best Value</div><div class="banner-title">Rice + Dal + Roti<br>Starting &#8377;80</div><div class="banner-sub">Order now, enjoy soon</div></div></div>
-      <div class="banner-card b3"><div class="banner-bg-text">COD</div><div class="banner-content"><div class="banner-tag">Easy Payment</div><div class="banner-title">Cash on<br>Delivery</div><div class="banner-sub">Pay when food arrives</div></div></div>
+      <div class="banner-card b1"><div class="banner-bg-text">HOT</div><div class="banner-content"><div class="banner-tag">Today's Special</div><div class="banner-title">Fresh Thali<br>Every Day</div></div></div>
     </div></div>
-    <div class="banner-dots" id="bannerDots"><div class="banner-dot active"></div><div class="banner-dot"></div><div class="banner-dot"></div></div>
+    <div class="banner-dots" id="bannerDots"><div class="banner-dot active"></div></div>
   </div>
+
+  <div class="category-row" id="homeCategories">
+    <div style="font-size:12px; color:#9CA3AF; padding:10px 0;">Loading categories...</div>
+  </div>
+
   <div class="section">
     <div class="section-header"><div class="section-title">Popular Now</div></div>
     <div class="popular-scroll" id="popularScroll"><div style="color:#9CA3AF;font-size:13px;padding:10px 0;">Loading menu...</div></div>
@@ -274,7 +284,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- SEARCH -->
 <div id="pageSearch" class="page">
   <div class="search-page">
     <div class="search-top">
@@ -285,31 +294,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- RESTAURANT PAGE -->
 <div id="pageRestaurant" class="page">
   <div class="rest-page">
     <div class="rest-hero" id="restHero"><div class="rest-hero-placeholder">Mamu Bhanja Dhaba</div><button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button></div>
     <div class="closed-notice" id="closedNotice">This restaurant is currently closed. You can browse the menu but cannot place orders.</div>
-    <div class="rest-details-box"><h2>Mamu Bhanja Dhaba</h2><p>Kesinga &middot; Fresh homestyle food &middot; Cash on Delivery</p></div>
+    <div class="rest-details-box"><h2>Mamu Bhanja Dhaba</h2><p>Kesinga · Fresh homestyle food · Cash on Delivery</p></div>
     <div class="cat-tabs" id="catTabs"><button class="cat-tab active" onclick="filterCat('all',this)">All</button></div>
     <div class="menu-list" id="menuList"></div>
     <div style="height:16px;"></div>
   </div>
 </div>
 
-<!-- CART -->
 <div id="pageCart" class="page">
   <div class="page-header"><h2>Your Cart</h2></div>
   <div id="cartContent"></div>
 </div>
 
-<!-- ORDERS -->
 <div id="pageOrders" class="page">
   <div class="page-header"><h2>My Orders</h2></div>
   <div style="padding-top:12px;" id="ordersList"></div>
 </div>
 
-<!-- PROFILE -->
 <div id="pageProfile" class="page">
   <div class="profile-top">
     <div class="profile-av" id="profileAv"></div>
@@ -327,7 +332,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <button class="nav-btn active" id="nav-home" onclick="goPage('home',this)"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><div class="nl">Home</div></button>
   <button class="nav-btn" id="nav-search" onclick="goPage('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><div class="nl">Search</div></button>
@@ -336,7 +340,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nl">Profile</div></button>
 </div>
 
-<!-- CHECKOUT MODAL -->
 <div class="overlay" id="checkoutModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -355,7 +358,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- EDIT MODAL -->
 <div class="overlay" id="editModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -368,12 +370,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
+<div class="overlay" id="noticeModal" style="z-index: 9999;">
+  <div class="sheet" style="padding-bottom: 24px;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="gnTitle">Notice</div>
+    <img id="gnImage" style="width:100%; height:auto; max-height:200px; object-fit:cover; border-radius:14px; margin-bottom:14px; display:none;" />
+    <div style="font-size:14px; color:var(--gray); margin-bottom: 24px; line-height:1.6;" id="gnMessage"></div>
+    <button class="btn-confirm" style="width:100%" onclick="closeModal('noticeModal')">Understood</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
@@ -381,7 +393,8 @@ const firebaseConfig = {
   projectId: "pureorder-eca2b",
   storageBucket: "pureorder-eca2b.firebasestorage.app",
   messagingSenderId: "641924435931",
-  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe"
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe",
+  measurementId: "G-DM82V9XC5T"
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -487,12 +500,86 @@ async function initApp() {
   if (currentUser.photoURL) av.innerHTML = `<img src="${currentUser.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
   else av.textContent = first[0].toUpperCase();
   startTaglines();
-  initBanner();
+  
+  loadGlobalNotice();
+  loadBanners();
+  loadCategories();
   listenRestaurant();
   listenMenu();
-  loadBanners();
+  
   setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
 }
+
+// LOAD GLOBAL NOTICE (POPUP)
+async function loadGlobalNotice() {
+  try {
+    const snap = await getDoc(doc(db, 'platformSettings', 'globalNotice'));
+    if (snap.exists()) {
+      const data = snap.data();
+      // Only show if it's active AND the user hasn't already seen it in this session
+      if (data.active && !sessionStorage.getItem('noticeShown')) {
+        document.getElementById('gnTitle').textContent = data.title || 'Notice';
+        document.getElementById('gnMessage').textContent = data.message || '';
+        const img = document.getElementById('gnImage');
+        if (data.imageUrl) { img.src = data.imageUrl; img.style.display = 'block'; }
+        else { img.style.display = 'none'; }
+        
+        document.getElementById('noticeModal').classList.add('open');
+        // Remember that we showed it so it doesn't pop up again while they browse
+        sessionStorage.setItem('noticeShown', 'true');
+      }
+    }
+  } catch(e) {}
+}
+
+// BANNERS from Firestore
+async function loadBanners() {
+  try {
+    const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
+    if (!snap.empty) {
+      const banners = snap.docs.map(d => d.data());
+      const colors = ['b1', 'b2', 'b3'];
+      document.getElementById('bannerScroll').innerHTML = banners.map((b, i) => `
+        <div class="banner-card ${colors[i % 3]}" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')" style="cursor:pointer;"` : ''}>
+          ${b.imageUrl ? `<img src="${b.imageUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5;">` : ''}
+          <div class="banner-bg-text">${b.title?.slice(0, 3).toUpperCase() || 'HOT'}</div>
+          <div class="banner-content">
+            <div class="banner-tag">Offer</div>
+            <div class="banner-title">${b.title || ''}</div>
+          </div>
+        </div>`).join('');
+      document.getElementById('bannerDots').innerHTML = banners.map((_, i) => `<div class="banner-dot ${i === 0 ? 'active' : ''}"></div>`).join('');
+      initBanner();
+    }
+  } catch(e) {}
+}
+
+// CATEGORIES FROM FIRESTORE
+async function loadCategories() {
+  try {
+    const snap = await getDocs(query(collection(db, 'globalCategories'), where('active', '==', true)));
+    const cats = snap.docs.map(d => d.data());
+    const el = document.getElementById('homeCategories');
+    if (cats.length > 0) {
+      el.innerHTML = cats.map(c => `
+        <div class="cat-circle-card" onclick="searchCategory('${c.name}')">
+          <div class="cat-circle-img">
+            ${c.imageUrl ? `<img src="${c.imageUrl}">` : `<span style="font-size:20px;">🍽️</span>`}
+          </div>
+          <span class="cat-circle-name">${c.name}</span>
+        </div>
+      `).join('');
+    } else {
+      el.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+window.searchCategory = (name) => {
+  goPage('search');
+  document.getElementById('searchInput').value = name;
+  window.doSearch(name);
+};
 
 // RESTAURANT — real-time listener
 function listenRestaurant() {
@@ -546,7 +633,7 @@ function listenMenu() {
 function renderPopular() {
   const pop = menuItems.filter(i => i.popular && i.available);
   document.getElementById('popularScroll').innerHTML = pop.length
-    ? pop.map(i => `<div class="popular-card" onclick="goRestaurant()"><div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">&#8377;${i.price}</div></div></div>`).join('')
+    ? pop.map(i => `<div class="popular-card" onclick="goRestaurant()"><div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">₹${i.price}</div></div></div>`).join('')
     : '<div style="color:#9CA3AF;font-size:13px;padding:10px 0;">No popular items yet</div>';
 }
 
@@ -580,10 +667,10 @@ function renderRestaurantMenu() {
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
           ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
-          <div class="menu-item-price">&#8377;${item.price}</div>
+          <div class="menu-item-price">₹${item.price}</div>
           ${!item.available ? '<div class="menu-item-na">Not available right now</div>' : ''}
         </div>
-        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',-1)">&#8722;</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">Add</button>`) : (!isRestOpen ? `<span style="font-size:11px;color:#9CA3AF;">Closed</span>` : '')}</div>
+        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',-1)">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">Add</button>`) : (!isRestOpen ? `<span style="font-size:11px;color:#9CA3AF;">Closed</span>` : '')}</div>
       </div>`;
     });
   });
@@ -613,8 +700,8 @@ function renderCart() {
     return;
   }
   const sub = items.reduce((s, i) => s + i.price * i.qty, 0);
-  el.innerHTML = `<div class="cart-list">${items.map(i => `<div class="cart-item"><div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">&#8377;${i.price} &times; ${i.qty} = &#8377;${i.price * i.qty}</div></div><div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'${i.imageUrl||''}',-1);renderCart()">&#8722;</button><div class="qty-num">${i.qty}</div><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'${i.imageUrl||''}',1);renderCart()">+</button></div></div>`).join('')}</div>
-  <div class="cart-summary"><div class="summary-row"><span>Subtotal</span><span>&#8377;${sub}</span></div><div class="summary-row"><span>Delivery</span><span style="color:var(--green)">Free</span></div><div class="summary-total"><span>Total</span><span>&#8377;${sub}</span></div></div>
+  el.innerHTML = `<div class="cart-list">${items.map(i => `<div class="cart-item"><div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">₹${i.price} × ${i.qty} = ₹${i.price * i.qty}</div></div><div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'${i.imageUrl||''}',-1);renderCart()">−</button><div class="qty-num">${i.qty}</div><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'${i.imageUrl||''}',1);renderCart()">+</button></div></div>`).join('')}</div>
+  <div class="cart-summary"><div class="summary-row"><span>Subtotal</span><span>₹${sub}</span></div><div class="summary-row"><span>Delivery</span><span style="color:var(--green)">Free</span></div><div class="summary-total"><span>Total</span><span>₹${sub}</span></div></div>
   <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>`;
 }
 window.renderCart = renderCart;
@@ -722,44 +809,24 @@ function renderOrders(orders) {
   const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled' };
   el.innerHTML = orders.map(o => {
     const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
-    const itemsText = o.items?.map(i => `${i.qty}&times; ${i.name}`).join(', ') || '';
+    const itemsText = o.items?.map(i => `${i.qty}× ${i.name}`).join(', ') || '';
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'Just now';
     return `<div class="order-card">
       <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
       <div class="order-items-text">${itemsText}</div>
-      <div class="order-total-row"><span>Total</span><span style="color:var(--orange)">&#8377;${o.totalAmount || 0}</span></div>
+      <div class="order-total-row"><span>Total</span><span style="color:var(--orange)">₹${o.totalAmount || 0}</span></div>
       ${(s === 'assigned' || s === 'out for delivery') && o.locationLink ? `<button class="track-btn" onclick="window.open('${o.locationLink}','_blank')">Track Delivery on Google Maps</button>` : ''}
     </div>`;
   }).join('');
-}
-
-// BANNERS from Firestore
-async function loadBanners() {
-  try {
-    const snap = await (await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")).getDocs(
-      query(collection(db, 'banners'), where('active', '==', true))
-    );
-    if (!snap.empty) {
-      const banners = snap.docs.map(d => d.data());
-      const colors = ['b1', 'b2', 'b3'];
-      document.getElementById('bannerScroll').innerHTML = banners.map((b, i) => `
-        <div class="banner-card ${colors[i % 3]}">
-          ${b.imageUrl ? `<img src="${b.imageUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5;">` : ''}
-          <div class="banner-bg-text">${b.title?.slice(0, 3).toUpperCase() || 'HOT'}</div>
-          <div class="banner-content"><div class="banner-tag">Offer</div><div class="banner-title">${b.title || ''}</div><div class="banner-sub">${b.caption || ''}</div></div>
-        </div>`).join('');
-      document.getElementById('bannerDots').innerHTML = banners.map((_, i) => `<div class="banner-dot ${i === 0 ? 'active' : ''}"></div>`).join('');
-    }
-  } catch(e) {}
 }
 
 // SEARCH
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { el.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;font-size:14px;">Start typing to search food...</div>'; return; }
-  const res = menuItems.filter(i => i.name?.toLowerCase().includes(val.toLowerCase()) && i.available);
+  const res = menuItems.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
   el.innerHTML = res.length
-    ? res.map(i => `<div class="search-item" onclick="goRestaurant()"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">Mamu Bhanja Dhaba &middot; ${i.category || ''}</div></div><div class="si-price">&#8377;${i.price}</div></div>`).join('')
+    ? res.map(i => `<div class="search-item" onclick="goRestaurant()"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span>${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">Mamu Bhanja Dhaba · ${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
     : `<div style="text-align:center;padding:40px;color:#9CA3AF;">No results for "${val}"</div>`;
 };
 
