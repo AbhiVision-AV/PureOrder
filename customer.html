@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>customer.html</title>
-  <style>
-
-  </style>
-</head>
-<body>
-<!DOCTYPE html>
-<html lang="en">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#ffffff">
@@ -465,7 +454,7 @@ body{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
@@ -484,6 +473,41 @@ let currentUser = null, userData = null;
 let menuItems = [], cart = {}, currentEditField = '';
 let capturedLat = null, capturedLng = null;
 let isRestOpen = true;
+
+const VAPID_PUBLIC_KEY = "BNU3CGv8fDbnHMh61d2L8uam1DQiffr25u8sFlSNkDhVMT27PEb-TzfgE5s0atanC3XDH12hZHFT-_jfTf0cPBs";
+
+// PUSH NOTIFICATION SETUP
+function urlB64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+async function setupPushNotifications() {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        const registration = await navigator.serviceWorker.register('./sw.js');
+        let subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+        }
+        await setDoc(doc(db, 'users', currentUser.uid), { pushSubscription: JSON.parse(JSON.stringify(subscription)) }, { merge: true });
+      }
+    } catch (error) {
+      console.error('Push setup failed:', error);
+    }
+  }
+}
 
 const TAGLINES = [
   'Fresh food, delivered to your door.',
@@ -592,6 +616,7 @@ async function initApp() {
   loadCategories();
   listenRestaurant();
   listenMenu();
+  setupPushNotifications();
   
   setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
 }
@@ -1023,10 +1048,5 @@ document.querySelectorAll('.overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
 </script>
-</body>
-</html>
-  <script>
-
-  </script>
 </body>
 </html>
