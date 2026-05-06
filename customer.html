@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-:root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;}
+:root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
 body{
@@ -35,6 +35,22 @@ body{
 .page.active{display:block;animation:fadeIn 0.2s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
+/* DRAWER (HAMBURGER MENU) */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.drawer-overlay.open{opacity:1;pointer-events:auto;}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:280px;background:white;z-index:1001;transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,0.1);}
+.drawer.open{transform:translateX(0);}
+.drawer-header{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.drawer-close{background:var(--light);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.drawer-close svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2;}
+.drawer-links{flex:1;padding:20px 0;overflow-y:auto;}
+.drawer-link{display:flex;align-items:center;gap:14px;padding:16px 24px;color:var(--dark);text-decoration:none;font-size:15px;font-weight:600;transition:background 0.2s;}
+.drawer-link:active{background:var(--light);}
+.drawer-link svg{width:20px;height:20px;stroke:var(--gray);fill:none;stroke-width:2;}
+.drawer-footer{padding:24px;border-top:1px solid var(--border);background:#FAFAFA;text-align:center;}
+.df-text{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--dark);margin-bottom:4px;}
+.df-sub{font-size:12px;font-weight:600;color:var(--orange);letter-spacing:0.5px;}
+
 /* NAV */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-top:1px solid rgba(0,0,0,0.05);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;position:relative;}
@@ -46,10 +62,12 @@ body{
 
 /* HOME */
 .home-header{padding:52px 20px 16px;}
-.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.deliver-label{font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px;margin-bottom:4px;}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.menu-icon-btn{background:white;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.menu-icon-btn svg{width:22px;height:22px;stroke:var(--dark);fill:none;stroke-width:2;}
+.deliver-label{font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px;margin-bottom:2px;}
 .deliver-label svg{width:12px;height:12px;stroke:var(--orange);fill:none;stroke-width:2.5;}
-.greeting-name{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.3px;}
+.greeting-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.3px;}
 .header-avatar{width:42px;height:42px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:var(--dark);overflow:hidden;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 .header-avatar img{width:100%;height:100%;object-fit:cover;}
 
@@ -232,15 +250,23 @@ body{
 .loc-status{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 14px;font-size:13px;color:#16A34A;font-weight:500;margin-bottom:14px;display:none;align-items:center;gap:8px;}
 .loc-status svg{width:16px;height:16px;stroke:#16A34A;fill:none;flex-shrink:0;}
 
-.btn-get-loc{flex:1; background:#EFF6FF; color:#1D4ED8; border:1.5px solid #BFDBFE; border-radius:12px; padding:12px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:background 0.2s; white-space:nowrap;}
-.btn-get-loc:active{background:#DBEAFE;}
-.btn-get-loc svg{width:16px;height:16px;stroke:#1D4ED8;fill:none;stroke-width:2;}
+.btn-get-loc{flex:1; background:white; color:var(--dark); border:1.5px solid var(--border); border-radius:12px; padding:12px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s; white-space:nowrap; box-shadow:0 2px 4px rgba(0,0,0,0.02);}
+.btn-get-loc:active{background:var(--light);}
+.btn-get-loc svg{width:16px;height:16px;stroke:var(--dark);fill:none;stroke-width:2;}
 
-.map-wrapper {display:none; position:relative; height:240px; border-radius:12px; overflow:hidden; margin-bottom:14px; border:1.5px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.map-wrapper {display:none; position:relative; height:240px; border-radius:16px; overflow:hidden; margin-bottom:14px; border:none; box-shadow:0 8px 24px rgba(0,0,0,0.12);}
 .map-container {width:100%; height:100%; z-index:1;}
-.map-pin-overlay {position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); z-index:10; pointer-events:none; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));}
+.map-pin-overlay {position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); z-index:10; pointer-events:none; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));}
 
-.cod-info{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;font-size:13px;color:#92400E;margin-bottom:16px;font-weight:500;}
+/* Custom Leaflet Zoom Controls to match premium UI */
+.leaflet-control-zoom { border:none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important; border-radius: 8px !important; overflow: hidden; margin: 10px !important; }
+.leaflet-control-zoom a { color: var(--dark) !important; border-bottom: 1px solid var(--border) !important; background: white !important; width:34px !important; height:34px !important; line-height:34px !important; font-family:'DM Sans', sans-serif !important; font-weight:600 !important; }
+.leaflet-control-zoom a:last-child { border-bottom: none !important; }
+.leaflet-control-zoom a:hover { background: var(--light) !important; }
+
+.cod-info{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;font-size:13px;color:#92400E;margin-bottom:8px;font-weight:500;}
+.cancel-warning{font-size:11px;color:var(--gray);text-align:center;margin-bottom:16px;line-height:1.4;padding:0 10px;}
+
 .sheet-btns{display:flex;gap:10px;}
 .btn-cancel{flex:1;background:var(--light);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;}
 .btn-confirm{flex:2;background:var(--orange);border:none;border-radius:12px;padding:14px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
@@ -256,12 +282,35 @@ body{
 <body>
 <div id="loadingScreen"><div class="loader-logo">Pure<span>Order</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
 
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="mainDrawer">
+  <div class="drawer-header">
+    <div class="loader-logo" style="font-size:22px;">Pure<span>Order</span></div>
+    <button class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="drawer-links">
+    <a href="https://abhivision.in" target="_blank" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>AV Frames</a>
+    <a href="#" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
+    <a href="#" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
+    <a href="#" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>About Us</a>
+  </div>
+  <div class="drawer-footer">
+    <div class="df-text">Made By Abhishek Sahoo</div>
+    <div class="df-sub">Founder of Pureorder</div>
+  </div>
+</div>
+
 <div id="pageHome" class="page active">
   <div class="home-header">
     <div class="header-top">
-      <div>
-        <div class="deliver-label"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Kesinga, Odisha</div>
-        <div class="greeting-name" id="greetingName">Hello!</div>
+      <div style="display:flex; align-items:center; gap:14px;">
+        <button class="menu-icon-btn" onclick="openDrawer()">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <div class="deliver-label"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Kesinga, Odisha</div>
+          <div class="greeting-name" id="greetingName">Hello!</div>
+        </div>
       </div>
       <div class="header-avatar" id="headerAvatar" onclick="goPage('profile')"></div>
     </div>
@@ -359,7 +408,7 @@ body{
     <div class="sheet-title">Complete Your Order</div>
     <div class="field"><label>Phone Number</label><input type="tel" id="coPhone" placeholder="10-digit mobile number" /></div>
     
-    <div class="field" style="margin-bottom: 20px;">
+    <div class="field" style="margin-bottom: 12px;">
       <label>Delivery Address</label>
       <textarea id="coAddress" placeholder="Enter complete address or pin your exact location..." style="height:70px; resize:none; margin-bottom:10px;"></textarea>
       
@@ -375,7 +424,7 @@ body{
       <div id="mapWrap" class="map-wrapper">
         <div id="locMap" class="map-container"></div>
         <div class="map-pin-overlay">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--red)" stroke="white" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--dark)" stroke="white" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>
         </div>
       </div>
       
@@ -383,6 +432,7 @@ body{
     </div>
     
     <div class="cod-info">Payment: Cash on Delivery — Pay when food arrives</div>
+    <div class="cancel-warning">Note: Once an order is placed, it cannot be canceled. Please review your items carefully before proceeding.</div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('checkoutModal')">Cancel</button>
       <button class="btn-confirm" id="placeBtn" onclick="placeOrder()">Place Order</button>
@@ -460,6 +510,10 @@ function showToast(msg, type='') {
 }
 window.closeModal = id => document.getElementById(id).classList.remove('open');
 
+// DRAWER LOGIC
+window.openDrawer = () => document.getElementById('drawerOverlay').classList.add('open') || document.getElementById('mainDrawer').classList.add('open');
+window.closeDrawer = () => document.getElementById('drawerOverlay').classList.remove('open') || document.getElementById('mainDrawer').classList.remove('open');
+
 function getGreeting() {
   const h = new Date().getHours();
   if (h < 12) return 'Good Morning';
@@ -480,14 +534,12 @@ function startTaglines() {
   }, 4000);
 }
 
-// Convert URLs in text to clickable links
 function linkifyText(text) {
   if (!text) return '';
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, url => `<a href="${url}" target="_blank" style="color:var(--blue); text-decoration:underline; font-weight:600;">${url}</a>`);
 }
 
-// Banner dots
 function initBanner() {
   const scroll = document.getElementById('bannerScroll');
   const dots = document.querySelectorAll('.banner-dot');
@@ -617,7 +669,7 @@ async function loadCategories() {
       `).join('');
     } else {
       el.style.display = 'none';
-      document.getElementById('homeCategories').previousElementSibling.style.display = 'none'; // hide title if empty
+      document.getElementById('homeCategories').previousElementSibling.style.display = 'none';
     }
   } catch(e) {}
 }
@@ -628,7 +680,7 @@ window.searchCategory = (name) => {
   window.doSearch(name);
 };
 
-// RESTAURANT — real-time listener
+// RESTAURANT
 function listenRestaurant() {
   onSnapshot(doc(db, 'restaurants', RESTAURANT_ID), snap => {
     if (!snap.exists()) { renderRestaurantCard(true, ''); return; }
@@ -666,7 +718,7 @@ function renderRestaurantCard(open, imgUrl) {
     </div>`;
 }
 
-// MENU — real-time from Firestore
+// MENU
 function listenMenu() {
   const q = query(collection(db, 'menu'), where('restaurantId', '==', RESTAURANT_ID));
   onSnapshot(q, snap => {
@@ -753,7 +805,7 @@ function renderCart() {
 }
 window.renderCart = renderCart;
 
-// CHECKOUT & GPS LOCATION (Leaflet Map Integration)
+// CHECKOUT & MAP
 let mapInstance = null;
 
 window.openCheckout = () => {
@@ -771,7 +823,6 @@ window.openCheckout = () => {
   document.getElementById('checkoutModal').classList.add('open');
 };
 
-// 1. Simple GPS Auto-Fetch
 window.useGpsLocation = () => {
   const btn = document.getElementById('btnGps');
   btn.innerHTML = '<div class="spinner" style="border-top-color:#1D4ED8; width:14px; height:14px;"></div> Locating...';
@@ -787,7 +838,6 @@ window.useGpsLocation = () => {
     capturedLat = pos.coords.latitude;
     capturedLng = pos.coords.longitude;
     
-    // Auto-fill address via reverse geocoding
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${capturedLat}&lon=${capturedLng}`);
       const data = await res.json();
@@ -816,20 +866,21 @@ function resetGpsBtn() {
   btn.style.pointerEvents = 'auto';
 }
 
-// 2. Interactive Map Picker using Leaflet JS
 window.openMapPicker = () => {
   const wrap = document.getElementById('mapWrap');
   wrap.style.display = 'block';
 
   if (!mapInstance) {
-    // Initialize map centered roughly around Kesinga, Odisha by default
+    // Initial center on Kesinga roughly
     mapInstance = L.map('locMap').setView([20.2012, 83.1678], 15);
     
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
+    // PREMIUM MAP TILES: CARTO Voyager
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
     }).addTo(mapInstance);
 
-    // When user drags map, capture the center
     mapInstance.on('moveend', async () => {
       const center = mapInstance.getCenter();
       capturedLat = center.lat;
@@ -838,7 +889,6 @@ window.openMapPicker = () => {
       document.getElementById('locStatusText').textContent = 'Location pinned from map!';
       document.getElementById('locStatus').style.display = 'flex';
       
-      // Reverse geocode the new pin location
       try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${capturedLat}&lon=${capturedLng}`);
         const data = await res.json();
@@ -849,14 +899,11 @@ window.openMapPicker = () => {
     });
   }
 
-  // Ensure map renders correctly inside the modal
   setTimeout(() => {
     mapInstance.invalidateSize();
-    // If we already have a location, center it
     if (capturedLat && capturedLng) {
       mapInstance.setView([capturedLat, capturedLng], 17);
     } else if (navigator.geolocation) {
-       // Attempt to center on user to make it easier for them
        navigator.geolocation.getCurrentPosition(pos => {
           mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 17);
        }, () => {}, {timeout:5000});
@@ -916,7 +963,7 @@ window.placeOrder = async () => {
   }
 };
 
-// ORDERS — IN MEMORY SORT FIX 
+// ORDERS
 let ordersListenerUnsub = null;
 function startOrderListener() {
   if (ordersListenerUnsub) return; 
@@ -927,7 +974,6 @@ function startOrderListener() {
   
   ordersListenerUnsub = onSnapshot(q, snap => {
     let orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    // Sort manually
     orders.sort((a,b) => {
         let timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : Date.now()) : Date.now();
         let timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : Date.now()) : Date.now();
