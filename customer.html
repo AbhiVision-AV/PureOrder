@@ -921,7 +921,7 @@ function renderOrders(orders) {
     el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3>No orders yet</h3><p>Your order history will appear here</p></div>`;
     return;
   }
-  const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', 'out for delivery':'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled' };
+  const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', 'picked up':'sp-assigned', 'out for delivery':'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled' };
   
   el.innerHTML = orders.map(o => {
     const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
@@ -930,12 +930,12 @@ function renderOrders(orders) {
     
     // Delivery Partner Details HTML
     let dpInfo = '';
-    if (['assigned', 'out for delivery'].includes(s) && o.deliveryPartnerName) {
+    if (['assigned', 'picked up', 'out for delivery'].includes(s) && o.deliveryPartnerName) {
         dpInfo = `
           <div class="dp-info-box">
-            <div class="dp-info-title">Delivery Partner Assigned</div>
+            <div class="dp-info-title">Delivery Partner</div>
             <div class="dp-info-details">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--orange)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--orange)" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               ${o.deliveryPartnerName}
             </div>
           </div>
@@ -947,7 +947,7 @@ function renderOrders(orders) {
       <div class="order-items-text">${itemsText}</div>
       ${dpInfo}
       <div class="order-total-row"><span>Total</span><span style="color:var(--orange)">₹${o.totalAmount || 0}</span></div>
-      ${(s === 'assigned' || s === 'out for delivery') && o.locationLink ? `<button class="track-btn" onclick="window.open('${o.locationLink}','_blank')">Track Delivery on Google Maps</button>` : ''}
+      ${(s === 'assigned' || s === 'picked up' || s === 'out for delivery') && o.locationLink ? `<button class="track-btn" onclick="window.open('${o.locationLink}','_blank')">Track Delivery on Google Maps</button>` : ''}
     </div>`;
   }).join('');
 }
@@ -970,15 +970,6 @@ function renderProfile() {
   document.getElementById('pName').textContent = name;
   document.getElementById('pPhone').textContent = userData.phone || 'Not set';
   document.getElementById('pAddress').textContent = userData.address || 'Not set';
-  
-  const av = document.getElementById('profileAv');
-  if (currentUser.photoURL) {
-    av.innerHTML = `<img src="${currentUser.photoURL}">`;
-    av.style.background = 'transparent';
-  } else {
-    av.textContent = name[0].toUpperCase();
-    av.style.background = 'var(--yellow)';
-  }
 }
 
 window.editField = field => {
