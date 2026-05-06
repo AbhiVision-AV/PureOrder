@@ -5,142 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#ffffff">
 <title>PureOrder — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;--purple:#7C3AED;}
+:root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden;padding-bottom:72px;}
-
-/* LOADING */
 #loadingScreen{position:fixed;inset:0;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s;}
 #loadingScreen.hide{opacity:0;pointer-events:none;}
 .loader-logo{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;}
 .loader-logo span{color:var(--orange);}
-.loader-sub{font-size:13px;color:var(--gray);margin-top:6px;text-transform:uppercase;letter-spacing:2px;}
+.loader-sub{font-size:13px;color:var(--gray);margin-top:6px;}
 .loader-bar{width:80px;height:3px;background:var(--light);border-radius:2px;overflow:hidden;margin-top:16px;}
 .loader-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));animation:ld 1.4s ease forwards;}
 @keyframes ld{from{width:0}to{width:100%}}
-
-/* PAGES */
-.page { display:none; }
-.page.active { display:block; animation:fadeIn 0.2s ease; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
-
-/* NAV */
+.page{display:none;}
+.page.active{display:block;animation:fadeIn 0.2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:white;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;position:relative;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;}
 .nav-btn svg{width:22px;height:22px;stroke:#9CA3AF;fill:none;stroke-width:2;transition:stroke 0.2s;}
 .nav-btn .nl{font-size:10px;font-weight:600;color:#9CA3AF;transition:color 0.2s;}
 .nav-btn.active svg{stroke:var(--orange);}
 .nav-btn.active .nl{color:var(--orange);}
-
-/* PAGE HEADER */
 .page-header{background:white;padding:52px 20px 16px;border-bottom:1px solid var(--border);}
 .ph-row{display:flex;align-items:flex-start;justify-content:space-between;}
 .page-header h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;}
 .page-header p{font-size:13px;color:var(--gray);margin-top:3px;}
-.btn-add{background:var(--dark);color:white;border:none;border-radius:10px;padding:9px 16px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
-.btn-add:active { opacity:0.85; }
-.live-pill{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--green);font-weight:600;background:#F0FDF4;border:1px solid #BBF7D0;padding:5px 10px;border-radius:20px;flex-shrink:0;}
-.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 1.5s ease-in-out infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.btn-add{background:var(--dark);color:white;border:none;border-radius:10px;padding:9px 16px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
 
-/* ANALYTICS PAGE */
-.analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
-.analytics-card { background:white; border-radius:18px; padding:18px 16px; border:1.5px solid var(--border); }
-.analytics-card.full { grid-column:1/-1; }
-.ac-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
-.ac-icon svg { width:18px; height:18px; fill:none; stroke-width:2; }
-.ac-val { font-family:'Sora',sans-serif; font-size:26px; font-weight:800; letter-spacing:-0.5px; color:var(--dark); }
-.ac-label { font-size:12px; color:var(--gray); font-weight:500; margin-top:4px; }
+/* ANALYTICS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px;}
+.stat-card{background:white;border-radius:18px;padding:18px;border:1px solid var(--border);}
+.stat-card.full{grid-column:1/-1;}
+.sc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.sc-icon svg{width:18px;height:18px;stroke-width:2;fill:none;}
+.sc-val{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;letter-spacing:-1px;}
+.sc-label{font-size:12px;color:var(--gray);font-weight:500;margin-top:3px;}
+.rest-stat{background:white;border-radius:16px;margin:0 16px 10px;padding:16px;border:1px solid var(--border);}
+.rs-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.rs-name{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;}
+.rs-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
+.badge-open{background:#DCFCE7;color:#16A34A;}
+.badge-closed{background:#FEE2E2;color:var(--red);}
+.rs-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.rs-item{background:var(--light);border-radius:10px;padding:10px;text-align:center;}
+.rs-val{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;}
+.rs-lbl{font-size:10px;color:var(--gray);margin-top:2px;font-weight:500;}
+.section-head{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;padding:16px 20px 8px;}
 
-.section-title { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; padding:0 20px 12px; color:var(--dark); }
-.rest-stat-card { background:white; border-radius:16px; padding:16px; margin:0 16px 10px; border:1.5px solid var(--border); }
-.rsc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.rsc-name { font-size:15px; font-weight:700; }
-.rsc-badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
-.badge-open { background:#F0FDF4; color:var(--green); border:1px solid #BBF7D0; }
-.badge-closed { background:#FEF2F2; color:var(--red); border:1px solid #FECACA; }
-.rsc-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-.rsc-stat { background:var(--light); border-radius:10px; padding:10px; text-align:center; }
-.rsc-stat-val { font-family:'Sora',sans-serif; font-size:16px; font-weight:800; }
-.rsc-stat-lbl { font-size:10px; color:var(--gray); margin-top:2px; font-weight:600; }
+/* OWNERS */
+.list-wrap{padding:12px 16px;}
+.owner-card{background:white;border-radius:18px;padding:16px;margin-bottom:10px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;}
+.owner-av{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:white;flex-shrink:0;}
+.owner-info{flex:1;min-width:0;}
+.owner-name{font-size:15px;font-weight:700;margin-bottom:2px;}
+.owner-rest{font-size:13px;color:var(--gray);margin-bottom:2px;}
+.owner-email{font-size:12px;color:#9CA3AF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.owner-right{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;}
+.active-tag{background:#DCFCE7;color:#16A34A;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.remove-btn{background:#FEE2E2;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;}
 
-/* OWNERS PAGE */
-.owners-list { padding:12px 16px; }
-.owner-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1.5px solid var(--border); display:flex; align-items:center; gap:14px; }
-.owner-av { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--yellow),var(--orange)); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:18px; font-weight:700; color:white; flex-shrink:0; }
-.owner-info { flex:1; min-width:0; }
-.owner-name { font-size:15px; font-weight:700; margin-bottom:2px; }
-.owner-rest { font-size:13px; color:var(--gray); margin-bottom:2px; }
-.owner-email { font-size:12px; color:var(--gray); font-family:'JetBrains Mono',monospace; }
-.owner-actions { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
-.active-tag { background:#F0FDF4; color:var(--green); font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; }
-.remove-btn { background:#FEF2F2; border:none; border-radius:8px; padding:6px 10px; font-size:12px; font-weight:600; color:var(--red); cursor:pointer; }
+/* CATEGORIES */
+.cat-card{background:white;border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.cat-img{width:52px;height:52px;border-radius:12px;background:var(--light);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;flex-shrink:0;}
+.cat-img img{width:100%;height:100%;object-fit:cover;}
+.cat-info{flex:1;}
+.cat-name{font-size:15px;font-weight:700;margin-bottom:3px;}
+.cat-sub{font-size:12px;color:var(--gray);}
+.cat-controls{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.toggle{position:relative;width:42px;height:24px;}
+.toggle input{display:none;}
+.toggle-track{position:absolute;inset:0;background:#E5E7EB;border-radius:12px;cursor:pointer;transition:background 0.2s;}
+.toggle-track::before{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.toggle input:checked+.toggle-track{background:var(--green);}
+.toggle input:checked+.toggle-track::before{transform:translateX(18px);}
+.ic-btn{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ic-del{background:#FEE2E2;}
+.ic-del svg{stroke:var(--red);width:14px;height:14px;fill:none;stroke-width:2;}
 
-/* CATEGORIES PAGE */
-.categories-list { padding:12px 16px; }
-.category-card { background:white; border-radius:16px; padding:16px; margin-bottom:10px; border:1.5px solid var(--border); display:flex; align-items:center; gap:14px; }
-.cat-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; background:var(--light); overflow:hidden; }
-.cat-icon img { width:100%; height:100%; object-fit:cover; }
-.cat-info { flex:1; }
-.cat-name { font-size:15px; font-weight:700; margin-bottom:2px; }
-.cat-count { font-size:12px; color:var(--gray); }
-.cat-actions { display:flex; gap:8px; align-items:center; }
-.toggle { position:relative; width:42px; height:24px; }
-.toggle input { display:none; }
-.toggle-track { position:absolute; inset:0; background:#E5E7EB; border-radius:12px; cursor:pointer; transition:background 0.2s; }
-.toggle-track::before { content:''; position:absolute; width:18px; height:18px; background:white; border-radius:50%; top:3px; left:3px; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
-.toggle input:checked+.toggle-track { background:var(--green); }
-.toggle input:checked+.toggle-track::before { transform:translateX(18px); }
-.ic-btn { width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.ic-del { background:#FEF2F2; }
-.ic-del svg { stroke:var(--red); width:14px; height:14px; fill:none; stroke-width:2; }
+/* BANNERS */
+.banner-card{background:white;border-radius:18px;padding:16px;margin-bottom:10px;border:1px solid var(--border);}
+.banner-img{width:100%;height:120px;border-radius:12px;background:linear-gradient(135deg,var(--yellow),var(--orange));overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,0.8);font-weight:500;margin-bottom:12px;position:relative;cursor:pointer;}
+.banner-img img{width:100%;height:100%;object-fit:cover;}
+.banner-link-badge{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.5);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;}
+.banner-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.banner-title{font-size:15px;font-weight:700;}
+.banner-status{font-size:12px;color:var(--gray);}
+.banner-footer{display:flex;align-items:center;justify-content:space-between;}
+.banner-del{background:#FEE2E2;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;}
 
-/* MARKETING PAGE (NOTICE & BANNERS) */
-.marketing-content { padding:16px; }
-.notice-card { background:white; border-radius:18px; border:1.5px solid var(--border); overflow:hidden; margin-bottom:24px; }
-.nc-header { display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid var(--border); background:var(--light); }
-.nc-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:700; }
-.nc-status { font-size:11px; font-weight:600; margin-top:2px; }
-.nc-status.active-txt { color:var(--green); }
-.nc-status.inactive-txt { color:var(--gray); }
-.nc-body { padding:16px; }
-.nc-img-prev { width:100%; height:120px; border-radius:12px; object-fit:cover; margin-bottom:12px; display:none; }
-.nc-msg-title { font-size:16px; font-weight:700; margin-bottom:4px; }
-.nc-msg-desc { font-size:13px; color:var(--gray); line-height:1.5; }
-.nc-empty { font-size:13px; color:#9CA3AF; text-align:center; padding:20px 0; font-style:italic; }
-.nc-footer { padding:12px 16px; border-top:1px solid var(--border); }
-.btn-edit-notice { width:100%; background:var(--dark); color:white; border:none; border-radius:10px; padding:12px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
-
-.banners-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.banners-title { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; }
-
-.banner-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1.5px solid var(--border); }
-.banner-preview { width:100%; height:120px; border-radius:12px; background:linear-gradient(135deg,var(--yellow),var(--orange)); margin-bottom:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,0.7); font-weight:500; position:relative; }
-.banner-preview img { width:100%; height:100%; object-fit:cover; }
-.banner-info-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-.banner-title-text { font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px; }
-.link-icon { width:14px; height:14px; stroke:var(--blue); fill:none; stroke-width:2; }
-.banner-link-text { font-size:12px; color:var(--blue); margin-bottom:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; display:block; }
-.banner-footer { display:flex; align-items:center; justify-content:space-between; }
-.banner-status { font-size:12px; color:var(--gray); }
-.banner-del { background:#FEF2F2; border:none; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--red); cursor:pointer; }
+/* NOTICE */
+.notice-card{background:white;border-radius:18px;padding:16px;margin:12px 16px;border:1px solid var(--border);}
+.nc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.nc-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;}
+.nc-status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
+.nc-active{background:#DCFCE7;color:#16A34A;}
+.nc-inactive{background:var(--light);color:var(--gray);}
+.nc-msg{font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:10px;}
+.nc-img{width:100%;height:100px;border-radius:10px;object-fit:cover;margin-bottom:10px;display:none;}
+.nc-footer{display:flex;gap:8px;}
+.nc-edit{background:var(--light);border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--dark);cursor:pointer;}
+.nc-del{background:#FEE2E2;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;}
 
 /* PROFILE */
-.profile-hero { background:white; padding:52px 20px 24px; border-bottom:1px solid var(--border); text-align:center; }
-.profile-av { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--yellow),var(--orange)); display:flex; align-items:center; justify-content:center; font-family:'Sora',sans-serif; font-size:26px; font-weight:700; color:white; margin:0 auto 12px; }
-.profile-name { font-family:'Sora',sans-serif; font-size:20px; font-weight:700; color:var(--dark); }
-.profile-role { font-size:12px; background:#FFF9EC; color:#A16207; display:inline-block; padding:4px 14px; border-radius:20px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-top:6px; border:1px solid #FDE68A; }
-.profile-body { padding:20px; }
-.pcard { background:white; border-radius:16px; border:1.5px solid var(--border); overflow:hidden; margin-bottom:12px; }
-.prow { display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--border); }
-.prow:last-child { border-bottom:none; }
-.prow-icon { width:32px; height:32px; border-radius:8px; background:var(--light); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.prow-icon svg { width:15px; height:15px; stroke:var(--gray); fill:none; stroke-width:2; }
-.prow-label { flex:1; font-size:14px; font-weight:600; color:var(--dark); }
-.prow-val { font-size:12px; color:var(--gray); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:'JetBrains Mono',monospace; }
-.logout-btn { width:100%; background:#FEF2F2; border:1px solid #FECACA; border-radius:14px; padding:15px; font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--red); cursor:pointer; }
+.profile-top{background:white;padding:52px 20px 24px;border-bottom:1px solid var(--border);text-align:center;}
+.profile-av{width:72px;height:72px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:white;margin:0 auto 12px;}
+.profile-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;}
+.profile-role{font-size:12px;background:#FEF9C3;color:#A16207;display:inline-block;padding:4px 14px;border-radius:20px;font-weight:700;margin-top:6px;}
+.profile-body{padding:20px;}
+.pcard{background:white;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
+.prow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);}
+.prow:last-child{border-bottom:none;}
+.prow-icon{width:32px;height:32px;border-radius:8px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prow-icon svg{width:16px;height:16px;stroke:var(--gray);fill:none;stroke-width:2;}
+.prow-label{flex:1;font-size:15px;font-weight:500;}
+.prow-val{font-size:13px;color:var(--gray);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.logout-btn{width:100%;background:#FEF2F2;border:1px solid #FECACA;border-radius:14px;padding:15px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;color:var(--red);cursor:pointer;}
 
 /* MODALS */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center;}
@@ -148,26 +128,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .sheet{background:white;border-radius:24px 24px 0 0;padding:20px 20px 44px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1);}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet-handle{width:36px;height:4px;background:#E5E7EB;border-radius:2px;margin:0 auto 18px;}
-.sheet-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;}
-.sheet-sub { font-size:13px; color:var(--gray); margin-bottom:20px; }
+.sheet-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;margin-bottom:18px;}
 .field{margin-bottom:14px;}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px;}
-.field input, .field select, .field textarea{width:100%;background:var(--light);border:1.5px solid transparent;border-radius:12px;padding:13px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);outline:none;transition:all 0.2s;}
-.field input:focus, .field select:focus, .field textarea:focus{background:white;border-color:var(--yellow);}
-.field textarea { resize:vertical; min-height:80px; }
-.field input::placeholder, .field textarea::placeholder { color:#9CA3AF; }
+.field input,.field textarea{width:100%;background:var(--light);border:1.5px solid transparent;border-radius:12px;padding:13px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);outline:none;transition:all 0.2s;}
+.field input:focus,.field textarea:focus{background:white;border-color:var(--yellow);}
+.field input::placeholder,.field textarea::placeholder{color:#9CA3AF;}
+.field textarea{resize:vertical;min-height:100px;}
 .img-prev{width:100%;height:120px;border-radius:12px;object-fit:cover;margin-top:8px;display:none;}
-.info-note { background:#FFF9EC; border:1px solid #FDE68A; border-radius:12px; padding:12px 14px; font-size:13px; color:#92400E; margin-bottom:16px; line-height:1.5; }
+.info-note{background:#FFF9EC;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;font-size:13px;color:#92400E;margin-bottom:16px;line-height:1.5;}
 .sheet-btns{display:flex;gap:10px;margin-top:8px;}
 .btn-cancel{flex:1;background:var(--light);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;}
 .btn-save{flex:2;background:var(--dark);border:none;border-radius:12px;padding:14px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
-
-.empty-box { text-align:center; padding:48px 20px; }
+.btn-save.red{background:var(--red);}
+.empty-box{text-align:center;padding:48px 20px;}
 .empty-icon{width:64px;height:64px;background:var(--light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
 .empty-icon svg{width:28px;height:28px;stroke:#9CA3AF;fill:none;}
-.empty-box h3 { font-family:'Sora',sans-serif; font-size:17px; font-weight:700; margin-bottom:6px; }
-.empty-box p { font-size:13px; color:var(--gray); }
-
+.empty-box h3{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;margin-bottom:6px;}
+.empty-box p{font-size:13px;color:var(--gray);}
 .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);color:white;padding:11px 22px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.success{background:var(--green);}
@@ -184,105 +162,70 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
 
+<!-- ANALYTICS -->
 <div id="pageAnalytics" class="page active">
-  <div class="page-header">
-    <div class="ph-row">
-      <div><h2>Dashboard</h2><p>Platform overview</p></div>
-      <div class="live-pill"><div class="live-dot"></div>Live</div>
+  <div class="page-header"><h2>Dashboard</h2><p>Platform overview</p></div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="sc-icon" style="background:#EFF6FF;"><svg viewBox="0 0 24 24" stroke="#3B82F6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="sc-val" id="aUsers">-</div><div class="sc-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:#F0FDF4;"><svg viewBox="0 0 24 24" stroke="#16A34A"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="sc-val" id="aDAU">-</div><div class="sc-label">Active Today</div>
+    </div>
+    <div class="stat-card full">
+      <div class="sc-icon" style="background:#FFF9EC;"><svg viewBox="0 0 24 24" stroke="#A16207"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
+      <div class="sc-val" id="aOrders">-</div><div class="sc-label">Total Orders (Accepted)</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:#F5F3FF;"><svg viewBox="0 0 24 24" stroke="#7C3AED"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+      <div class="sc-val" id="aRests">-</div><div class="sc-label">Restaurants</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-icon" style="background:#ECFEFF;"><svg viewBox="0 0 24 24" stroke="#0891B2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></div>
+      <div class="sc-val" id="aMenu">-</div><div class="sc-label">Menu Items</div>
     </div>
   </div>
-  <div class="analytics-grid">
-    <div class="analytics-card blue">
-      <div class="ac-icon" style="background:#EFF6FF;"><svg viewBox="0 0 24 24" stroke="#3b82f6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-      <div class="ac-val" id="aTotal">-</div>
-      <div class="ac-label">Total Users</div>
-    </div>
-    <div class="analytics-card green">
-      <div class="ac-icon" style="background:#F0FDF4;"><svg viewBox="0 0 24 24" stroke="#10b981"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-      <div class="ac-val" id="aDAU">-</div>
-      <div class="ac-label">Active Today</div>
-    </div>
-    <div class="analytics-card full">
-      <div class="ac-icon" style="background:#FFF9EC;"><svg viewBox="0 0 24 24" stroke="#FFC529"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div>
-      <div class="ac-val" id="aTotalOrders">-</div>
-      <div class="ac-label">Total Orders (Accepted)</div>
-    </div>
-    <div class="analytics-card purple">
-      <div class="ac-icon" style="background:#F5F3FF;"><svg viewBox="0 0 24 24" stroke="#8b5cf6"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <div class="ac-val" id="aRestCount">-</div>
-      <div class="ac-label">Restaurants</div>
-    </div>
-    <div class="analytics-card cyan">
-      <div class="ac-icon" style="background:#ECFEFF;"><svg viewBox="0 0 24 24" stroke="#06b6d4"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-      <div class="ac-val" id="aMenuItems">-</div>
-      <div class="ac-label">Menu Items</div>
-    </div>
-  </div>
-  <div class="section-title">Per Restaurant</div>
-  <div id="restStatsList"></div>
+  <div class="section-head">Per Restaurant</div>
+  <div id="restStats"></div>
 </div>
 
+<!-- OWNERS -->
 <div id="pageOwners" class="page">
   <div class="page-header">
-    <div class="ph-row">
-      <div><h2>Restaurants</h2><p>Owner accounts</p></div>
-      <button class="btn-add" onclick="openAddOwner()">+ Create</button>
-    </div>
+    <div class="ph-row"><div><h2>Restaurants</h2><p>Manage owner accounts</p></div><button class="btn-add" onclick="openAddOwner()">+ Create</button></div>
   </div>
-  <div class="owners-list" id="ownersList">
-    <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><h3>No restaurants</h3><p>Create your first restaurant owner</p></div>
-  </div>
+  <div class="list-wrap" id="ownersList"></div>
 </div>
 
+<!-- CATEGORIES -->
 <div id="pageCategories" class="page">
   <div class="page-header">
-    <div class="ph-row">
-      <div><h2>Categories</h2><p>Shown on customer home</p></div>
-      <button class="btn-add" onclick="openAddCategory()">+ Add</button>
-    </div>
+    <div class="ph-row"><div><h2>Categories</h2><p>Shown on customer home screen</p></div><button class="btn-add" onclick="openAddCat()">+ Add</button></div>
   </div>
-  <div class="categories-list" id="categoriesList">
-    <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><h3>No categories</h3><p>Add categories for customer home screen</p></div>
-  </div>
+  <div class="list-wrap" id="catsList"></div>
 </div>
 
-<div id="pageMarketing" class="page">
+<!-- BANNERS + NOTICE -->
+<div id="pageBanners" class="page">
   <div class="page-header">
-    <div class="ph-row">
-      <div><h2>Marketing</h2><p>Promotions & Announcements</p></div>
-    </div>
+    <div class="ph-row"><div><h2>Banners & Notice</h2><p>Offers + Customer announcements</p></div><button class="btn-add" onclick="openAddBanner()">+ Banner</button></div>
   </div>
-  <div class="marketing-content">
-    
-    <div class="notice-card">
-      <div class="nc-header">
-        <div>
-          <div class="nc-title">App Popup Notice</div>
-          <div class="nc-status" id="noticeStatusText">Inactive</div>
-        </div>
-        <label class="toggle"><input type="checkbox" id="noticeToggle" onchange="toggleNotice(this.checked)"><div class="toggle-track"></div></label>
-      </div>
-      <div class="nc-body" id="noticeBody">
-        <div class="nc-empty">No notice set. Edit to add one.</div>
-      </div>
-      <div class="nc-footer">
-        <button class="btn-edit-notice" onclick="openEditNotice()">Edit Notice</button>
-      </div>
-    </div>
-
-    <div class="banners-header">
-      <div class="banners-title">Offer Slider</div>
-      <button class="btn-add" onclick="openAddBanner()">+ Add Banner</button>
-    </div>
-    <div id="bannersList">
-      <div class="empty-box" style="padding:20px;"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>No banners</h3></div>
-    </div>
-    
+  <div style="padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Sora',sans-serif;font-size:16px;font-weight:700;">Offer Banners</div>
   </div>
+  <div class="list-wrap" id="bannersList"></div>
+  <div style="padding:0 16px 8px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Sora',sans-serif;font-size:16px;font-weight:700;">Broadcast Notice</div>
+    <button class="btn-add" onclick="openAddNotice()" style="padding:7px 14px;font-size:12px;">+ Notice</button>
+  </div>
+  <div id="noticeList"><div style="text-align:center;padding:20px;color:#9CA3AF;font-size:13px;">No active notice</div></div>
 </div>
 
+<!-- PROFILE -->
 <div id="pageProfile" class="page">
-  <div class="profile-hero">
+  <div class="profile-top">
     <div class="profile-av">A</div>
     <div class="profile-name" id="profileName">Admin</div>
     <div class="profile-role">Administrator</div>
@@ -291,78 +234,77 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="pcard">
       <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="prow-label">Email</div><div class="prow-val" id="profileEmail">-</div></div>
       <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="prow-label">Role</div><div class="prow-val">Platform Admin</div></div>
-      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="prow-label">Version</div><div class="prow-val">PureOrder v1.0</div></div>
     </div>
     <button class="logout-btn" onclick="doLogout()">Sign Out</button>
   </div>
 </div>
 
+<!-- NAV -->
 <div class="bottom-nav">
-  <button class="nav-btn active" id="nav-analytics" onclick="goPage('analytics',this)"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div class="nl">Analytics</div></button>
+  <button class="nav-btn active" id="nav-analytics" onclick="goPage('analytics',this)"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div class="nl">Overview</div></button>
   <button class="nav-btn" id="nav-owners" onclick="goPage('owners',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><div class="nl">Restaurants</div></button>
   <button class="nav-btn" id="nav-categories" onclick="goPage('categories',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><div class="nl">Categories</div></button>
-  <button class="nav-btn" id="nav-marketing" onclick="goPage('marketing',this)"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><div class="nl">Marketing</div></button>
+  <button class="nav-btn" id="nav-banners" onclick="goPage('banners',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg><div class="nl">Banners</div></button>
   <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nl">Profile</div></button>
 </div>
 
-<div class="overlay" id="editNoticeModal">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Edit App Notice</div>
-    <div class="sheet-sub">This will pop up when customers open the app.</div>
-    <div class="field"><label>Title</label><input type="text" id="nTitle" placeholder="e.g. Happy Diwali!" /></div>
-    <div class="field"><label>Message</label><textarea id="nMessage" placeholder="Type your announcement here..."></textarea></div>
-    <div class="field"><label>Image URL (optional)</label><input type="url" id="nImage" placeholder="https://..." oninput="prevNoticeImg(this.value)" /><img id="noticeImgPrev" class="img-prev" /></div>
-    <div class="sheet-btns">
-      <button class="btn-cancel" onclick="closeModal('editNoticeModal')">Cancel</button>
-      <button class="btn-save" id="saveNoticeBtn" onclick="saveNotice()">Save Notice</button>
-    </div>
-  </div>
-</div>
-
+<!-- ADD OWNER MODAL -->
 <div class="overlay" id="addOwnerModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Create Restaurant Owner</div>
-    <div class="sheet-sub">Owner will sign in using Google with this email</div>
-    <div class="info-note">Make sure the owner uses this exact Gmail to sign in via Google login on the app.</div>
+    <div class="info-note">Owner will sign in using Google with this Gmail. Make sure the email is correct.</div>
     <div class="field"><label>Restaurant Name</label><input type="text" id="oRestName" placeholder="e.g. Mamu Bhanja Dhaba" /></div>
     <div class="field"><label>Owner Name</label><input type="text" id="oName" placeholder="Full name" /></div>
-    <div class="field"><label>Phone Number</label><input type="tel" id="oPhone" placeholder="10-digit number" /></div>
+    <div class="field"><label>Phone</label><input type="tel" id="oPhone" placeholder="10-digit number" /></div>
     <div class="field"><label>Gmail Address</label><input type="email" id="oEmail" placeholder="owner@gmail.com" /></div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('addOwnerModal')">Cancel</button>
-      <button class="btn-save" id="saveOwnerBtn" onclick="createOwner()">Create Account</button>
+      <button class="btn-save" id="saveOwnerBtn" onclick="createOwner()">Create</button>
     </div>
   </div>
 </div>
 
+<!-- ADD CATEGORY MODAL -->
 <div class="overlay" id="addCatModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Category</div>
-    <div class="sheet-sub">Will appear on customer home screen</div>
     <div class="field"><label>Category Name</label><input type="text" id="catName" placeholder="e.g. Biryani, Fast Food, Snacks..." /></div>
     <div class="field"><label>Image URL</label><input type="url" id="catImage" placeholder="https://..." oninput="prevCatImg(this.value)" /><img id="catImgPrev" class="img-prev" /></div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('addCatModal')">Cancel</button>
-      <button class="btn-save" id="saveCatBtn" onclick="saveCategory()">Add Category</button>
+      <button class="btn-save" id="saveCatBtn" onclick="saveCategory()">Add</button>
     </div>
   </div>
 </div>
 
+<!-- ADD BANNER MODAL -->
 <div class="overlay" id="addBannerModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Offer Banner</div>
-    <div class="sheet-sub">Paste an image URL — will show on customer home slider</div>
-    <div class="field"><label>Image URL</label><input type="url" id="bImage" placeholder="https://..." oninput="prevBanner(this.value)" /><img id="bannerPrev" class="img-prev" /></div>
+    <div class="field"><label>Banner Image URL</label><input type="url" id="bImage" placeholder="https://..." oninput="prevBannerImg(this.value)" /><img id="bannerImgPrev" class="img-prev" /></div>
     <div class="field"><label>Title</label><input type="text" id="bTitle" placeholder="e.g. Weekend Special" /></div>
-    <div class="field"><label>Linked Page URL (optional)</label><input type="url" id="bLink" placeholder="https://..." /></div>
-    <div class="info-note" style="margin-top:4px;">When customers click the offer banner, they will be redirected to the Linked Page above.</div>
+    <div class="field"><label>Linked Page (optional)</label><input type="url" id="bLink" placeholder="https://... or leave blank" /></div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('addBannerModal')">Cancel</button>
       <button class="btn-save" id="saveBannerBtn" onclick="saveBanner()">Add Banner</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD NOTICE MODAL -->
+<div class="overlay" id="addNoticeModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Broadcast Notice</div>
+    <div class="info-note">This message will pop up for all customers when they open the app.</div>
+    <div class="field"><label>Message</label><textarea id="noticeMsg" placeholder="e.g. We are closed today for maintenance. Back tomorrow at 9 AM!"></textarea></div>
+    <div class="field"><label>Image URL (optional)</label><input type="url" id="noticeImage" placeholder="https://..." oninput="prevNoticeImg(this.value)" /><img id="noticeImgPrev" class="img-prev" /></div>
+    <div class="sheet-btns">
+      <button class="btn-cancel" onclick="closeModal('addNoticeModal')">Cancel</button>
+      <button class="btn-save" id="saveNoticeBtn" onclick="saveNotice()">Broadcast</button>
     </div>
   </div>
 </div>
@@ -380,16 +322,14 @@ const firebaseConfig = {
   projectId: "pureorder-eca2b",
   storageBucket: "pureorder-eca2b.firebasestorage.app",
   messagingSenderId: "641924435931",
-  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe",
-  measurementId: "G-DM82V9XC5T"
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe"
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null, userData = null;
-let owners = [], categories = [], banners = [];
-let globalNotice = { active: false, title: '', message: '', imageUrl: '' };
+let owners = [], categories = [], banners = [], notices = [];
 
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
@@ -398,10 +338,9 @@ function showToast(msg, type='') {
 }
 window.closeModal = id => document.getElementById(id).classList.remove('open');
 
-// NAV
 window.goPage = (name, el) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const map = { analytics:'pageAnalytics', owners:'pageOwners', categories:'pageCategories', marketing:'pageMarketing', profile:'pageProfile' };
+  const map = {analytics:'pageAnalytics',owners:'pageOwners',categories:'pageCategories',banners:'pageBanners',profile:'pageProfile'};
   document.getElementById(map[name])?.classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -410,14 +349,13 @@ window.goPage = (name, el) => {
   if (name==='profile') renderProfile();
 };
 
-// AUTH
 const fallback = setTimeout(() => window.location.href = 'index.html', 8000);
 onAuthStateChanged(auth, async user => {
   clearTimeout(fallback);
   if (!user) { window.location.href = 'index.html'; return; }
   currentUser = user;
   try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
+    const snap = await getDoc(doc(db,'users',user.uid));
     if (!snap.exists() || snap.data().role !== 'admin') { window.location.href = 'index.html'; return; }
     userData = snap.data();
   } catch(e) { window.location.href = 'index.html'; return; }
@@ -425,7 +363,7 @@ onAuthStateChanged(auth, async user => {
 });
 
 async function initApp() {
-  await Promise.all([loadOwners(), loadCategories(), loadBanners(), loadNotice()]);
+  await Promise.all([loadOwners(), loadCategories(), loadBanners(), loadNotices()]);
   loadAnalytics();
   setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
 }
@@ -433,359 +371,219 @@ async function initApp() {
 // ANALYTICS
 async function loadAnalytics() {
   try {
-    const usersSnap = await getDocs(collection(db, 'users'));
+    const [usersSnap, restSnap, menuSnap, orderSnap] = await Promise.all([
+      getDocs(collection(db,'users')),
+      getDocs(collection(db,'restaurants')),
+      getDocs(collection(db,'menu')),
+      getDocs(query(collection(db,'orders'), where('status','in',['accepted','preparing','ready','assigned','delivered'])))
+    ]);
     const allUsers = usersSnap.docs.map(d => d.data());
-    document.getElementById('aTotal').textContent = allUsers.length;
-
+    const restaurants = restSnap.docs.map(d => ({id:d.id,...d.data()}));
+    const allOrders = orderSnap.docs.map(d => ({id:d.id,...d.data()}));
     const today = new Date(); today.setHours(0,0,0,0);
     const dau = allUsers.filter(u => u.createdAt?.toDate && u.createdAt.toDate() >= today).length;
+    document.getElementById('aUsers').textContent = allUsers.length;
     document.getElementById('aDAU').textContent = dau;
-
-    const restSnap = await getDocs(collection(db, 'restaurants'));
-    const restaurants = restSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    document.getElementById('aRestCount').textContent = restaurants.length;
-
-    const menuSnap = await getDocs(collection(db, 'menu'));
-    document.getElementById('aMenuItems').textContent = menuSnap.size;
-
-    const orderSnap = await getDocs(query(collection(db, 'orders'), where('status', 'in', ['accepted','preparing','ready','assigned','delivered'])));
-    const allOrders = orderSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    document.getElementById('aTotalOrders').textContent = allOrders.length;
-
-    const el = document.getElementById('restStatsList');
-    if (!restaurants.length) { el.innerHTML = ''; return; }
-    el.innerHTML = restaurants.map(r => {
+    document.getElementById('aOrders').textContent = allOrders.length;
+    document.getElementById('aRests').textContent = restaurants.length;
+    document.getElementById('aMenu').textContent = menuSnap.size;
+    // Filter out mamu-bhanja-dhaba duplicate — show only proper named ones
+    const uniqueRests = restaurants.filter(r => r.name && r.name !== r.id);
+    document.getElementById('restStats').innerHTML = uniqueRests.map(r => {
       const rOrders = allOrders.filter(o => o.restaurantId === r.id);
-      const delivered = rOrders.filter(o => o.status === 'delivered').length;
-      const revenue = rOrders.filter(o => o.status === 'delivered').reduce((s,o) => s + (o.totalAmount||0), 0);
-      return `<div class="rest-stat-card">
-        <div class="rsc-top">
-          <div class="rsc-name">${r.name || 'Restaurant'}</div>
-          <div class="rsc-badge ${r.isOpen !== false ? 'badge-open':'badge-closed'}">${r.isOpen !== false ? 'Open':'Closed'}</div>
-        </div>
-        <div class="rsc-stats">
-          <div class="rsc-stat"><div class="rsc-stat-val">${rOrders.length}</div><div class="rsc-stat-lbl">Orders</div></div>
-          <div class="rsc-stat"><div class="rsc-stat-val">${delivered}</div><div class="rsc-stat-lbl">Delivered</div></div>
-          <div class="rsc-stat"><div class="rsc-stat-val">&#8377;${revenue}</div><div class="rsc-stat-lbl">Revenue</div></div>
+      const delivered = rOrders.filter(o => o.status==='delivered').length;
+      const revenue = rOrders.filter(o => o.status==='delivered').reduce((s,o)=>s+(o.totalAmount||0),0);
+      return `<div class="rest-stat">
+        <div class="rs-top"><div class="rs-name">${r.name}</div><div class="rs-badge ${r.isOpen!==false?'badge-open':'badge-closed'}">${r.isOpen!==false?'Open':'Closed'}</div></div>
+        <div class="rs-grid">
+          <div class="rs-item"><div class="rs-val">${rOrders.length}</div><div class="rs-lbl">Orders</div></div>
+          <div class="rs-item"><div class="rs-val">${delivered}</div><div class="rs-lbl">Delivered</div></div>
+          <div class="rs-item"><div class="rs-val">&#8377;${revenue}</div><div class="rs-lbl">Revenue</div></div>
         </div>
       </div>`;
-    }).join('');
-  } catch(e) { console.error('Analytics error:', e); }
+    }).join('') || '<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:13px;">No restaurant data</div>';
+  } catch(e) { console.error(e); }
 }
-
-// APP NOTICE (POPUP)
-async function loadNotice() {
-  try {
-    const snap = await getDoc(doc(db, 'platformSettings', 'globalNotice'));
-    if (snap.exists()) { globalNotice = { ...globalNotice, ...snap.data() }; }
-    renderNotice();
-  } catch(e) {}
-}
-
-function renderNotice() {
-  document.getElementById('noticeToggle').checked = globalNotice.active;
-  const statusTxt = document.getElementById('noticeStatusText');
-  statusTxt.textContent = globalNotice.active ? 'Active' : 'Inactive';
-  statusTxt.className = `nc-status ${globalNotice.active ? 'active-txt' : 'inactive-txt'}`;
-  
-  const body = document.getElementById('noticeBody');
-  if (!globalNotice.title && !globalNotice.message && !globalNotice.imageUrl) {
-    body.innerHTML = '<div class="nc-empty">No notice set. Edit to add one.</div>';
-  } else {
-    body.innerHTML = `
-      ${globalNotice.imageUrl ? `<img src="${globalNotice.imageUrl}" class="nc-img-prev" style="display:block;">` : ''}
-      ${globalNotice.title ? `<div class="nc-msg-title">${globalNotice.title}</div>` : ''}
-      ${globalNotice.message ? `<div class="nc-msg-desc">${globalNotice.message}</div>` : ''}
-    `;
-  }
-}
-
-window.openEditNotice = () => {
-  document.getElementById('nTitle').value = globalNotice.title || '';
-  document.getElementById('nMessage').value = globalNotice.message || '';
-  document.getElementById('nImage').value = globalNotice.imageUrl || '';
-  window.prevNoticeImg(globalNotice.imageUrl);
-  document.getElementById('editNoticeModal').classList.add('open');
-};
-
-window.prevNoticeImg = url => {
-  const img = document.getElementById('noticeImgPrev');
-  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
-  else img.style.display = 'none';
-};
-
-window.saveNotice = async () => {
-  const title = document.getElementById('nTitle').value.trim();
-  const message = document.getElementById('nMessage').value.trim();
-  const imageUrl = document.getElementById('nImage').value.trim();
-  const btn = document.getElementById('saveNoticeBtn');
-  
-  if (!title && !message) { showToast('Add a title or message', 'error'); return; }
-  
-  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
-  try {
-    const data = { title, message, imageUrl, active: globalNotice.active, updatedAt: serverTimestamp() };
-    await setDoc(doc(db, 'platformSettings', 'globalNotice'), data, { merge: true });
-    globalNotice = { ...globalNotice, ...data };
-    renderNotice();
-    closeModal('editNoticeModal');
-    showToast('Notice saved!', 'success');
-  } catch(e) { showToast('Failed to save', 'error'); }
-  btn.innerHTML = 'Save Notice'; btn.style.pointerEvents = 'auto';
-};
-
-window.toggleNotice = async (val) => {
-  try {
-    await setDoc(doc(db, 'platformSettings', 'globalNotice'), { active: val }, { merge: true });
-    globalNotice.active = val;
-    renderNotice();
-    showToast(val ? 'Notice activated' : 'Notice hidden');
-  } catch(e) { showToast('Failed', 'error'); document.getElementById('noticeToggle').checked = !val; }
-};
-
 
 // OWNERS
 async function loadOwners() {
   try {
-    const snap = await getDocs(query(collection(db, 'users'), where('role', '==', 'owner')));
-    owners = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderOwners();
-  } catch(e) { owners = []; renderOwners(); }
+    const snap = await getDocs(query(collection(db,'users'), where('role','==','owner')));
+    owners = snap.docs.map(d => ({id:d.id,...d.data()}));
+  } catch(e) { owners=[]; }
+  renderOwners();
 }
-
 function renderOwners() {
   const el = document.getElementById('ownersList');
-  if (!owners.length) {
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><h3>No restaurants yet</h3><p>Create your first restaurant owner account</p></div>`;
-    return;
-  }
-  el.innerHTML = owners.map(o => `
+  if (!owners.length) { el.innerHTML=`<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><h3>No restaurants yet</h3><p>Create your first owner account</p></div>`; return; }
+  el.innerHTML = owners.map(o=>`
     <div class="owner-card">
       <div class="owner-av">${(o.name||'O')[0].toUpperCase()}</div>
-      <div class="owner-info">
-        <div class="owner-name">${o.name||'Owner'}</div>
-        <div class="owner-rest">${o.restaurantName||'Restaurant'}</div>
-        <div class="owner-email">${o.email||''}</div>
-      </div>
-      <div class="owner-actions">
-        <div class="active-tag">Active</div>
-        <button class="remove-btn" onclick="deleteOwner('${o.id}','${o.name}')">Remove</button>
-      </div>
+      <div class="owner-info"><div class="owner-name">${o.name||'Owner'}</div><div class="owner-rest">${o.restaurantName||'Restaurant'}</div><div class="owner-email">${o.email||''}</div></div>
+      <div class="owner-right"><div class="active-tag">Active</div><button class="remove-btn" onclick="deleteOwner('${o.id}','${o.name||'Owner'}')">Remove</button></div>
     </div>`).join('');
 }
-
-window.openAddOwner = () => {
-  ['oRestName','oName','oPhone','oEmail'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('addOwnerModal').classList.add('open');
-};
-
+window.openAddOwner = () => { ['oRestName','oName','oPhone','oEmail'].forEach(id=>document.getElementById(id).value=''); document.getElementById('addOwnerModal').classList.add('open'); };
 window.createOwner = async () => {
-  const restName = document.getElementById('oRestName').value.trim();
-  const name = document.getElementById('oName').value.trim();
-  const phone = document.getElementById('oPhone').value.trim();
-  const email = document.getElementById('oEmail').value.trim();
-  const btn = document.getElementById('saveOwnerBtn');
-  if (!restName || !name || !email) { showToast('Fill all required fields', 'error'); return; }
-  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
+  const restName=document.getElementById('oRestName').value.trim();
+  const name=document.getElementById('oName').value.trim();
+  const phone=document.getElementById('oPhone').value.trim();
+  const email=document.getElementById('oEmail').value.trim();
+  const btn=document.getElementById('saveOwnerBtn');
+  if(!restName||!name||!email){showToast('Fill all fields','error');return;}
+  btn.innerHTML='<div class="spinner"></div>';btn.style.pointerEvents='none';
   try {
-    const restId = restName.toLowerCase().replace(/\s+/g, '-');
-    await addDoc(collection(db, 'pending_owners'), {
-      name, email, phone, restaurantName: restName, restaurantId: restId,
-      role: 'owner', createdAt: serverTimestamp(), createdBy: currentUser.uid
-    });
-    await setDoc(doc(db, 'restaurants', restId), {
-      name: restName, ownerId: '', ownerName: name,
-      ownerEmail: email, phone, status:'active', isOpen: true,
-      createdAt: serverTimestamp()
-    });
-    owners.push({ id: restId, name, email, phone, restaurantName: restName });
-    renderOwners();
-    closeModal('addOwnerModal');
-    showToast(`Owner account prepared for ${name}!`, 'success');
-  } catch(e) { showToast('Failed to create account', 'error'); }
-  btn.innerHTML = 'Create Account'; btn.style.pointerEvents = 'auto';
+    const restId=restName.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+    await addDoc(collection(db,'pending_owners'),{name,email,phone,restaurantName:restName,restaurantId:restId,role:'owner',createdAt:serverTimestamp(),createdBy:currentUser.uid});
+    await setDoc(doc(db,'restaurants',restId),{name:restName,ownerEmail:email,ownerName:name,phone,isOpen:true,status:'active',createdAt:serverTimestamp()},{merge:true});
+    owners.push({id:Date.now().toString(),name,email,phone,restaurantName:restName});
+    renderOwners();closeModal('addOwnerModal');showToast(`Owner created for ${name}!`,'success');
+  } catch(e){showToast('Failed','error');}
+  btn.innerHTML='Create';btn.style.pointerEvents='auto';
 };
-
-window.deleteOwner = async (id, name) => {
-  if (!confirm(`Remove ${name}? This cannot be undone.`)) return;
-  try {
-    await deleteDoc(doc(db, 'users', id));
-    owners = owners.filter(o => o.id !== id);
-    renderOwners();
-    showToast('Owner removed', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
+window.deleteOwner = async (id,name) => {
+  if(!confirm(`Remove ${name}?`)) return;
+  try{await deleteDoc(doc(db,'users',id));owners=owners.filter(o=>o.id!==id);renderOwners();showToast('Owner removed','success');}
+  catch(e){showToast('Failed','error');}
 };
 
 // CATEGORIES
 async function loadCategories() {
   try {
-    const snap = await getDocs(collection(db, 'globalCategories'));
-    categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderCategories();
-  } catch(e) { categories = []; renderCategories(); }
+    const snap=await getDocs(collection(db,'globalCategories'));
+    categories=snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e){categories=[];}
+  renderCategories();
 }
-
 function renderCategories() {
-  const el = document.getElementById('categoriesList');
-  if (!categories.length) {
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><h3>No categories yet</h3><p>Add categories for customer home screen</p></div>`;
-    return;
-  }
-  el.innerHTML = categories.map((cat, i) => `
-    <div class="category-card">
-      <div class="cat-icon">${cat.imageUrl ? `<img src="${cat.imageUrl}" onerror="this.style.display='none'">` : '🍽️'}</div>
-      <div class="cat-info">
-        <div class="cat-name">${cat.name}</div>
-        <div class="cat-count">Tap to search in all restaurants</div>
-      </div>
-      <div class="cat-actions">
-        <label class="toggle">
-          <input type="checkbox" ${cat.active!==false?'checked':''} onchange="toggleCategory('${cat.id}',this.checked)">
-          <div class="toggle-track"></div>
-        </label>
-        <button class="ic-btn ic-del" onclick="deleteCategory('${cat.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+  const el=document.getElementById('catsList');
+  if(!categories.length){el.innerHTML=`<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><h3>No categories yet</h3><p>Add categories for customer home screen</p></div>`;return;}
+  el.innerHTML=categories.map(cat=>`
+    <div class="cat-card">
+      <div class="cat-img">${cat.imageUrl?`<img src="${cat.imageUrl}" onerror="this.style.display='none'">`:`<span>${cat.name[0]}</span>`}</div>
+      <div class="cat-info"><div class="cat-name">${cat.name}</div><div class="cat-sub">${cat.active!==false?'Visible on home':'Hidden'}</div></div>
+      <div class="cat-controls">
+        <label class="toggle"><input type="checkbox" ${cat.active!==false?'checked':''} onchange="toggleCat('${cat.id}',this.checked)"><div class="toggle-track"></div></label>
+        <button class="ic-btn ic-del" onclick="deleteCat('${cat.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
       </div>
     </div>`).join('');
 }
-
-window.openAddCategory = () => {
-  document.getElementById('catName').value = '';
-  document.getElementById('catImage').value = '';
-  document.getElementById('catImgPrev').style.display = 'none';
-  document.getElementById('addCatModal').classList.add('open');
-};
-
-window.prevCatImg = url => {
-  const img = document.getElementById('catImgPrev');
-  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
-  else img.style.display = 'none';
-};
-
+window.openAddCat = () => { document.getElementById('catName').value=''; document.getElementById('catImage').value=''; document.getElementById('catImgPrev').style.display='none'; document.getElementById('addCatModal').classList.add('open'); };
+window.prevCatImg = url => { const img=document.getElementById('catImgPrev'); if(url){img.src=url;img.style.display='block';img.onerror=()=>img.style.display='none';}else img.style.display='none'; };
 window.saveCategory = async () => {
-  const name = document.getElementById('catName').value.trim();
-  const imageUrl = document.getElementById('catImage').value.trim();
-  const btn = document.getElementById('saveCatBtn');
-  if (!name) { showToast('Enter category name', 'error'); return; }
-  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
-  try {
-    const ref = await addDoc(collection(db, 'globalCategories'), { name, imageUrl, active: true, createdAt: serverTimestamp() });
-    categories.push({ id: ref.id, name, imageUrl, active: true });
-    renderCategories();
-    closeModal('addCatModal');
-    showToast('Category added!', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
-  btn.innerHTML = 'Add Category'; btn.style.pointerEvents = 'auto';
+  const name=document.getElementById('catName').value.trim();
+  const imageUrl=document.getElementById('catImage').value.trim();
+  const btn=document.getElementById('saveCatBtn');
+  if(!name){showToast('Enter category name','error');return;}
+  btn.innerHTML='<div class="spinner"></div>';btn.style.pointerEvents='none';
+  try{
+    const ref=await addDoc(collection(db,'globalCategories'),{name,imageUrl,active:true,createdAt:serverTimestamp()});
+    categories.push({id:ref.id,name,imageUrl,active:true});
+    renderCategories();closeModal('addCatModal');showToast('Category added!','success');
+  }catch(e){showToast('Failed','error');}
+  btn.innerHTML='Add';btn.style.pointerEvents='auto';
 };
-
-window.toggleCategory = async (id, val) => {
-  try {
-    await updateDoc(doc(db, 'globalCategories', id), { active: val });
-    const cat = categories.find(c => c.id === id);
-    if (cat) cat.active = val;
-    showToast(val ? 'Category visible' : 'Category hidden');
-  } catch(e) { showToast('Failed', 'error'); }
+window.toggleCat = async (id,val) => {
+  try{await updateDoc(doc(db,'globalCategories',id),{active:val});const c=categories.find(x=>x.id===id);if(c)c.active=val;renderCategories();showToast(val?'Visible':'Hidden');}
+  catch(e){showToast('Failed','error');}
 };
-
-window.deleteCategory = async id => {
-  if (!confirm('Delete this category?')) return;
-  try {
-    await deleteDoc(doc(db, 'globalCategories', id));
-    categories = categories.filter(c => c.id !== id);
-    renderCategories();
-    showToast('Category deleted', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
+window.deleteCat = async id => {
+  if(!confirm('Delete this category?')) return;
+  try{await deleteDoc(doc(db,'globalCategories',id));categories=categories.filter(c=>c.id!==id);renderCategories();showToast('Deleted','success');}
+  catch(e){showToast('Failed','error');}
 };
 
 // BANNERS
 async function loadBanners() {
-  try {
-    const snap = await getDocs(collection(db, 'banners'));
-    banners = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderBanners();
-  } catch(e) { banners = []; renderBanners(); }
+  try{const snap=await getDocs(collection(db,'banners'));banners=snap.docs.map(d=>({id:d.id,...d.data()}));}
+  catch(e){banners=[];}
+  renderBanners();
 }
-
 function renderBanners() {
-  const el = document.getElementById('bannersList');
-  if (!banners.length) {
-    el.innerHTML = `<div class="empty-box" style="padding:20px;"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>No banners yet</h3></div>`;
-    return;
-  }
-  el.innerHTML = banners.map(b => `
+  const el=document.getElementById('bannersList');
+  if(!banners.length){el.innerHTML=`<div style="text-align:center;padding:24px;color:#9CA3AF;font-size:13px;">No banners yet</div>`;return;}
+  el.innerHTML=banners.map(b=>`
     <div class="banner-card">
-      <div class="banner-preview">${b.imageUrl ? `<img src="${b.imageUrl}" onerror="this.style.display='none'">` : (b.title||'Banner')}</div>
-      <div class="banner-info-row">
-        <div class="banner-title-text">${b.title||'Untitled'} ${b.linkUrl ? '<svg class="link-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>' : ''}</div>
-        <label class="toggle"><input type="checkbox" ${b.active?'checked':''} onchange="toggleBanner('${b.id}',this.checked)"><div class="toggle-track"></div></label>
-      </div>
-      ${b.linkUrl ? `<a href="${b.linkUrl}" target="_blank" class="banner-link-text">${b.linkUrl}</a>` : ''}
-      <div class="banner-footer">
-        <div class="banner-status">${b.active?'Visible to customers':'Hidden'}</div>
-        <button class="banner-del" onclick="deleteBanner('${b.id}')">Remove</button>
-      </div>
+      <div class="banner-img" ${b.link?`onclick="window.open('${b.link}','_blank')"`:''}>${b.imageUrl?`<img src="${b.imageUrl}" onerror="this.style.display='none'">`:(b.title||'Banner')}${b.link?`<div class="banner-link-badge">Has Link</div>`:''}</div>
+      <div class="banner-row"><div class="banner-title">${b.title||'Untitled'}</div><label class="toggle"><input type="checkbox" ${b.active?'checked':''} onchange="toggleBanner('${b.id}',this.checked)"><div class="toggle-track"></div></label></div>
+      <div class="banner-footer"><div class="banner-status">${b.active?'Visible to customers':'Hidden'}</div><button class="banner-del" onclick="deleteBanner('${b.id}')">Remove</button></div>
     </div>`).join('');
 }
-
-window.openAddBanner = () => {
-  ['bImage','bTitle','bLink'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('bannerPrev').style.display = 'none';
-  document.getElementById('addBannerModal').classList.add('open');
-};
-window.prevBanner = url => {
-  const img = document.getElementById('bannerPrev');
-  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
-  else img.style.display = 'none';
-};
+window.openAddBanner = () => { ['bImage','bTitle','bLink'].forEach(id=>document.getElementById(id).value=''); document.getElementById('bannerImgPrev').style.display='none'; document.getElementById('addBannerModal').classList.add('open'); };
+window.prevBannerImg = url => { const img=document.getElementById('bannerImgPrev'); if(url){img.src=url;img.style.display='block';img.onerror=()=>img.style.display='none';}else img.style.display='none'; };
 window.saveBanner = async () => {
-  const imageUrl = document.getElementById('bImage').value.trim();
-  const title = document.getElementById('bTitle').value.trim();
-  const linkUrl = document.getElementById('bLink').value.trim();
-  const btn = document.getElementById('saveBannerBtn');
-  if (!title) { showToast('Enter a title', 'error'); return; }
-  btn.innerHTML = '<div class="spinner"></div>'; btn.style.pointerEvents = 'none';
-  try {
-    const ref = await addDoc(collection(db, 'banners'), { imageUrl, title, linkUrl, active: true, createdAt: serverTimestamp() });
-    banners.push({ id: ref.id, imageUrl, title, linkUrl, active: true });
-    renderBanners();
-    closeModal('addBannerModal');
-    showToast('Banner added!', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
-  btn.innerHTML = 'Add Banner'; btn.style.pointerEvents = 'auto';
+  const imageUrl=document.getElementById('bImage').value.trim();
+  const title=document.getElementById('bTitle').value.trim();
+  const link=document.getElementById('bLink').value.trim();
+  const btn=document.getElementById('saveBannerBtn');
+  if(!title){showToast('Enter a title','error');return;}
+  btn.innerHTML='<div class="spinner"></div>';btn.style.pointerEvents='none';
+  try{
+    const ref=await addDoc(collection(db,'banners'),{imageUrl,title,link,active:true,createdAt:serverTimestamp()});
+    banners.push({id:ref.id,imageUrl,title,link,active:true});
+    renderBanners();closeModal('addBannerModal');showToast('Banner added!','success');
+  }catch(e){showToast('Failed','error');}
+  btn.innerHTML='Add Banner';btn.style.pointerEvents='auto';
 };
-window.toggleBanner = async (id, val) => {
-  try {
-    await updateDoc(doc(db, 'banners', id), { active: val });
-    const b = banners.find(x => x.id === id);
-    if (b) b.active = val;
-    renderBanners();
-    showToast(val ? 'Banner visible' : 'Banner hidden');
-  } catch(e) { showToast('Failed', 'error'); }
+window.toggleBanner = async (id,val) => {
+  try{await updateDoc(doc(db,'banners',id),{active:val});const b=banners.find(x=>x.id===id);if(b)b.active=val;renderBanners();showToast(val?'Visible':'Hidden');}
+  catch(e){showToast('Failed','error');}
 };
 window.deleteBanner = async id => {
-  if (!confirm('Remove this banner?')) return;
-  try {
-    await deleteDoc(doc(db, 'banners', id));
-    banners = banners.filter(b => b.id !== id);
-    renderBanners();
-    showToast('Banner removed', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
+  if(!confirm('Remove this banner?')) return;
+  try{await deleteDoc(doc(db,'banners',id));banners=banners.filter(b=>b.id!==id);renderBanners();showToast('Removed','success');}
+  catch(e){showToast('Failed','error');}
 };
 
-// PROFILE
+// NOTICES
+async function loadNotices() {
+  try{const snap=await getDocs(collection(db,'notices'));notices=snap.docs.map(d=>({id:d.id,...d.data()}));}
+  catch(e){notices=[];}
+  renderNotices();
+}
+function renderNotices() {
+  const el=document.getElementById('noticeList');
+  const active=notices.filter(n=>n.active);
+  if(!active.length){el.innerHTML=`<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:13px;">No active notice</div>`;return;}
+  el.innerHTML=active.map(n=>`
+    <div class="notice-card">
+      <div class="nc-header"><div class="nc-title">Active Notice</div><div class="nc-status nc-active">Live</div></div>
+      ${n.imageUrl?`<img src="${n.imageUrl}" class="nc-img" style="display:block;" onerror="this.style.display='none'">`:''}
+      <div class="nc-msg">${n.message}</div>
+      <div class="nc-footer"><button class="nc-del" onclick="deleteNotice('${n.id}')">Remove Notice</button></div>
+    </div>`).join('');
+}
+window.openAddNotice = () => { document.getElementById('noticeMsg').value=''; document.getElementById('noticeImage').value=''; document.getElementById('noticeImgPrev').style.display='none'; document.getElementById('addNoticeModal').classList.add('open'); };
+window.prevNoticeImg = url => { const img=document.getElementById('noticeImgPrev'); if(url){img.src=url;img.style.display='block';img.onerror=()=>img.style.display='none';}else img.style.display='none'; };
+window.saveNotice = async () => {
+  const message=document.getElementById('noticeMsg').value.trim();
+  const imageUrl=document.getElementById('noticeImage').value.trim();
+  const btn=document.getElementById('saveNoticeBtn');
+  if(!message){showToast('Write a message','error');return;}
+  btn.innerHTML='<div class="spinner"></div>';btn.style.pointerEvents='none';
+  try{
+    // Deactivate old notices
+    for(const n of notices){try{await updateDoc(doc(db,'notices',n.id),{active:false});}catch(e){}}
+    const ref=await addDoc(collection(db,'notices'),{message,imageUrl,active:true,createdAt:serverTimestamp()});
+    notices=[{id:ref.id,message,imageUrl,active:true}];
+    renderNotices();closeModal('addNoticeModal');showToast('Notice broadcasted!','success');
+  }catch(e){showToast('Failed','error');}
+  btn.innerHTML='Broadcast';btn.style.pointerEvents='auto';
+};
+window.deleteNotice = async id => {
+  if(!confirm('Remove this notice?')) return;
+  try{await deleteDoc(doc(db,'notices',id));notices=notices.filter(n=>n.id!==id);renderNotices();showToast('Notice removed','success');}
+  catch(e){showToast('Failed','error');}
+};
+
 function renderProfile() {
-  document.getElementById('profileName').textContent = userData?.name || 'Admin';
-  document.getElementById('profileEmail').textContent = userData?.email || currentUser?.email || '';
+  document.getElementById('profileName').textContent=userData?.name||'Admin';
+  document.getElementById('profileEmail').textContent=userData?.email||currentUser?.email||'';
 }
 
-window.doLogout = async () => {
-  try { await signOut(auth); window.location.href = 'index.html'; }
-  catch(e) { showToast('Logout failed', 'error'); }
-};
+window.doLogout = async () => { try{await signOut(auth);window.location.href='index.html';}catch(e){showToast('Failed','error');} };
 
-document.querySelectorAll('.overlay').forEach(o => {
-  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-});
+document.querySelectorAll('.overlay').forEach(o=>{ o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}); });
 </script>
 </body>
 </html>
- 
