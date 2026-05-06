@@ -263,7 +263,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <div class="notif-view" onclick="goPage('orders');hideNotif()">View</div>
 </div>
 
-<!-- ORDERS -->
 <div id="pageOrders" class="page active">
   <div class="page-header">
     <div class="ph-row">
@@ -284,7 +283,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- MENU -->
 <div id="pageMenu" class="page">
   <div class="menu-header">
     <div class="menu-header-top">
@@ -299,7 +297,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <div class="menu-list" id="menuList"></div>
 </div>
 
-<!-- HISTORY -->
 <div id="pageHistory" class="page">
   <div class="page-header"><h2>Order History</h2><p>Past orders by date</p></div>
   <div class="htabs">
@@ -310,7 +307,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <div class="history-list" id="historyList"></div>
 </div>
 
-<!-- PROFILE -->
 <div id="pageProfile" class="page">
   <div class="profile-top">
     <div class="rest-img-box" id="restImgBox" onclick="openRestImg()">
@@ -320,7 +316,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="profile-rest" id="profileRest">Restaurant</div>
   </div>
   <div class="profile-body">
-    <!-- OPEN/CLOSE -->
     <div class="status-toggle-card">
       <div class="status-info">
         <div class="status-title">Restaurant Status</div>
@@ -328,12 +323,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
       </div>
       <label class="toggle"><input type="checkbox" id="restToggle" checked onchange="confirmToggle(this)"><div class="toggle-track"></div></label>
     </div>
-    <!-- DELIVERY PARTNERS -->
     <div class="dp-section">
       <div class="dp-header"><h3>Delivery Partners</h3><button class="btn-add" style="padding:7px 14px;font-size:12px;" onclick="openAddDelivery()">+ Add</button></div>
       <div id="dpList"><div style="text-align:center;padding:20px;color:#9CA3AF;font-size:13px;">No partners added</div></div>
     </div>
-    <!-- INFO -->
     <div class="pcard">
       <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="prow-label">Email</div><div class="prow-val" id="profileEmail">-</div></div>
       <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="prow-label">Phone</div><div class="prow-val" id="profilePhone">-</div></div>
@@ -342,7 +335,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <div class="bottom-nav">
   <button class="nav-btn active" id="nav-orders" onclick="goPage('orders',this)"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><div class="nl">Orders</div><div class="nav-badge" id="orderBadge"></div></button>
   <button class="nav-btn" id="nav-menu" onclick="goPage('menu',this)"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg><div class="nl">Menu</div></button>
@@ -350,17 +342,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="nl">Profile</div></button>
 </div>
 
-<!-- ASSIGN MODAL -->
 <div class="overlay" id="assignModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Assign Delivery Partner</div><div id="dbList"></div><button class="btn-cancel" style="width:100%;margin-top:6px;" onclick="closeModal('assignModal')">Cancel</button></div>
 </div>
 
-<!-- REJECT MODAL -->
 <div class="overlay" id="rejectModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Reason for Rejection</div><div class="field"><label>Reason (optional)</label><textarea id="rejectReason" placeholder="e.g. Item not available, restaurant closing soon..."></textarea></div><div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('rejectModal')">Cancel</button><button class="btn-save danger" onclick="confirmReject()">Reject Order</button></div></div>
 </div>
 
-<!-- ADD DISH MODAL -->
 <div class="overlay" id="addDishModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="dishModalTitle">Add Dish</div>
     <div class="field"><label>Dish Name</label><input type="text" id="dName" placeholder="e.g. Dal Tadka" /></div>
@@ -372,12 +361,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- ADD CATEGORY MODAL -->
 <div class="overlay" id="addCatModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Add Category</div><div class="field"><label>Category Name</label><input type="text" id="catName" placeholder="e.g. Non Veg, Biryani, Desserts..." /></div><div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('addCatModal')">Cancel</button><button class="btn-save" onclick="saveCategory()">Add</button></div></div>
 </div>
 
-<!-- ADD DELIVERY MODAL -->
 <div class="overlay" id="addDpModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Add Delivery Partner</div>
     <div class="field"><label>Full Name</label><input type="text" id="dpName" placeholder="Partner's name" /></div>
@@ -387,7 +374,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- STATUS CONFIRM MODAL -->
 <div class="overlay" id="statusModal">
   <div class="sheet"><div class="sheet-handle"></div>
     <div class="confirm-icon" id="confirmIcon" style="background:#FEF9C3;"></div>
@@ -397,12 +383,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<!-- ORDER DETAIL MODAL -->
 <div class="overlay" id="detailModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="detailTitle">Order Details</div><div id="detailContent"></div><button class="btn-cancel" style="width:100%;margin-top:8px;" onclick="closeModal('detailModal')">Close</button></div>
 </div>
 
-<!-- REST IMAGE MODAL -->
 <div class="overlay" id="restImgModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Restaurant Photo</div><div class="field"><label>Image URL</label><input type="url" id="restImgUrl" placeholder="https://..." oninput="prevRestImg(this.value)" /><img id="restImgPrev" class="img-prev" /></div><div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('restImgModal')">Cancel</button><button class="btn-save" onclick="saveRestImg()">Save</button></div></div>
 </div>
@@ -550,17 +534,25 @@ window.applyToggle = async () => {
   pendingToggleVal = null;
 };
 
-// ORDERS — real-time
+// ORDERS — real-time IN MEMORY SORT FIX
 let prevIds = new Set();
 function startOrderListener() {
   const q = query(
     collection(db, 'orders'),
     where('restaurantId', '==', restaurantId),
-    where('status', 'in', ['placed','accepted','preparing','ready','assigned']),
-    orderBy('createdAt', 'desc')
+    where('status', 'in', ['placed','accepted','preparing','ready','assigned'])
   );
+  
   onSnapshot(q, snap => {
     const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    // Sort manually by time to bypass Firebase Index requirement
+    orders.sort((a,b) => {
+      let timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : Date.now()) : Date.now();
+      let timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : Date.now()) : Date.now();
+      return timeB - timeA; 
+    });
+
     // Detect new orders
     orders.forEach(o => {
       if (!prevIds.has(o.id) && o.status === 'placed' && prevIds.size > 0) {
@@ -568,6 +560,7 @@ function startOrderListener() {
         showNotif(`New order from ${o.customerName || 'Customer'}!`);
       }
     });
+    
     prevIds = new Set(orders.map(o => o.id));
     activeOrders = orders;
     updateStats();
@@ -582,7 +575,7 @@ function updateStats() {
   const revenue = activeOrders.filter(o => o.status === 'delivered').reduce((s,o) => s + (o.totalAmount||0), 0);
   document.getElementById('sToday').textContent = todayOrders.length;
   document.getElementById('sActive').textContent = active;
-  document.getElementById('sRevenue').textContent = `&#8377;${revenue}`;
+  document.getElementById('sRevenue').textContent = `₹${revenue}`;
   const newCnt = activeOrders.filter(o => o.status === 'placed').length;
   const badge = document.getElementById('orderBadge');
   badge.textContent = newCnt; badge.style.display = newCnt > 0 ? 'block' : 'none';
@@ -622,7 +615,7 @@ function renderOrders() {
       <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
       <div class="customer-row"><div class="cust-av">${(o.customerName||'C')[0].toUpperCase()}</div><div><div class="cust-name">${o.customerName||'Customer'}</div><div class="cust-phone">${o.customerPhone||''}</div></div></div>
       <div class="address-row"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${o.deliveryAddress||'No address'}</div>
-      <div class="items-box">${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>&#8377;${i.price*i.qty}</span></div>`).join('')}<div class="items-total"><span>Total</span><span style="color:var(--orange)">&#8377;${total}</span></div></div>
+      <div class="items-box">${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>₹${i.price*i.qty}</span></div>`).join('')}<div class="items-total"><span>Total</span><span style="color:var(--orange)">₹${total}</span></div></div>
       ${trackHtml}
       <div class="order-btns">${btns}</div>
     </div>`;
@@ -679,8 +672,8 @@ window.showDetail = id => {
       ${o.locationLink?`<div class="detail-row"><span>Location</span><a href="${o.locationLink}" target="_blank" style="color:var(--blue);font-weight:600;font-size:13px;">Open in Maps</a></div>`:''}
     </div></div>
     <div class="detail-sec"><div class="detail-lbl">Items</div><div class="detail-box">
-      ${(o.items||[]).map(i=>`<div class="detail-row"><span>${i.qty}&times; ${i.name}</span><span>&#8377;${i.price*i.qty}</span></div>`).join('')}
-      <div class="detail-total"><span>Total</span><span style="color:var(--orange)">&#8377;${o.totalAmount||0}</span></div>
+      ${(o.items||[]).map(i=>`<div class="detail-row"><span>${i.qty}&times; ${i.name}</span><span>₹${i.price*i.qty}</span></div>`).join('')}
+      <div class="detail-total"><span>Total</span><span style="color:var(--orange)">₹${o.totalAmount||0}</span></div>
     </div></div>
     <div class="detail-sec"><div class="detail-lbl">Order Info</div><div class="detail-box">
       <div class="detail-row"><span>Status</span><span style="font-weight:700;color:var(--orange)">${o.status}</span></div>
@@ -692,23 +685,33 @@ window.showDetail = id => {
   document.getElementById('detailModal').classList.add('open');
 };
 
-// HISTORY
+// HISTORY (Also fixed for memory sort)
 async function loadHistory() {
   const el = document.getElementById('historyList');
   el.innerHTML = '<div style="text-align:center;padding:40px;color:#9CA3AF;">Loading...</div>';
   try {
-    const q = query(collection(db,'orders'), where('restaurantId','==',restaurantId), where('status','in',['delivered','cancelled']), orderBy('createdAt','desc'));
+    const q = query(collection(db,'orders'), where('restaurantId','==',restaurantId), where('status','in',['delivered','cancelled']));
     const snap = await getDocs(q);
     historyOrders = snap.docs.map(d=>({id:d.id,...d.data()}));
+    
+    // Sort in memory manually
+    historyOrders.sort((a,b) => {
+      let timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : 0) : 0;
+      let timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : 0) : 0;
+      return timeB - timeA; 
+    });
+    
     renderHistory();
   } catch(e) { el.innerHTML='<div style="text-align:center;padding:40px;color:#9CA3AF;">Could not load</div>'; }
 }
+
 window.switchHTab = (tab, el) => {
   histTab = tab;
   document.querySelectorAll('.htab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   renderHistory();
 };
+
 function renderHistory() {
   const filtered = histTab==='all' ? historyOrders : historyOrders.filter(o=>o.status===histTab);
   const el = document.getElementById('historyList');
@@ -729,7 +732,7 @@ function renderHistory() {
       html+=`<div class="history-card" onclick="showDetail('${o.id}')">
         <div class="hc-top"><div class="hc-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="status-pill ${sMap[o.status]||'sp-delivered'}">${o.status}</div></div>
         <div class="hc-customer">${o.customerName||'Customer'} &middot; ${o.customerPhone||''}</div>
-        <div class="hc-bottom"><span style="font-size:13px;color:var(--gray)">${(o.items||[]).length} item(s)</span><div class="hc-total">&#8377;${o.totalAmount||0}</div></div>
+        <div class="hc-bottom"><span style="font-size:13px;color:var(--gray)">${(o.items||[]).length} item(s)</span><div class="hc-total">₹${o.totalAmount||0}</div></div>
       </div>`;
     });
   });
@@ -774,7 +777,7 @@ function renderMenu() {
         <div class="dish-name">${item.name}</div>
         <div class="dish-cat">${item.category||''}</div>
         ${item.description?`<div class="dish-desc">${item.description}</div>`:''}
-        <div class="dish-price">&#8377;${item.price}</div>
+        <div class="dish-price">₹${item.price}</div>
         ${!item.available?'<div class="dish-na">Not available right now</div>':''}
       </div>
       <div class="dish-controls">
