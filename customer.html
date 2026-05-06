@@ -6,7 +6,6 @@
 <meta name="theme-color" content="#ffffff">
 <title>PureOrder</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
 :root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -61,15 +60,17 @@ body{
 .cart-badge{position:absolute;top:6px;right:14px;background:var(--red);color:white;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;display:none;}
 
 /* HOME */
-.home-header{padding:52px 20px 16px;}
-.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.home-header{padding:40px 20px 16px;}
+.top-nav-bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
 .menu-icon-btn{background:white;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
 .menu-icon-btn svg{width:22px;height:22px;stroke:var(--dark);fill:none;stroke-width:2;}
-.deliver-label{font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px;margin-bottom:2px;}
+.notif-icon-btn{background:white;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.notif-icon-btn svg{width:20px;height:20px;stroke:var(--dark);fill:none;stroke-width:2;}
+
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.deliver-label{font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px;margin-bottom:4px;}
 .deliver-label svg{width:12px;height:12px;stroke:var(--orange);fill:none;stroke-width:2.5;}
-.greeting-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.3px;}
-.header-avatar{width:42px;height:42px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:var(--dark);overflow:hidden;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-.header-avatar img{width:100%;height:100%;object-fit:cover;}
+.greeting-name{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.3px;}
 
 .tagline-wrap{margin-bottom:14px;min-height:18px;}
 .tagline{font-size:13px;color:var(--gray);transition:opacity 0.4s ease;}
@@ -216,6 +217,10 @@ body{
 .order-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:800;}
 .track-btn{width:100%;margin-top:12px;background:var(--orange);color:white;border:none;border-radius:10px;padding:11px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
 
+.dp-info-box {background:var(--light); padding:10px 12px; border-radius:10px; margin-bottom:12px; border:1px solid var(--border);}
+.dp-info-title {font-size:11px; color:var(--gray); text-transform:uppercase; letter-spacing:0.5px; font-weight:700; margin-bottom:4px;}
+.dp-info-details {font-size:14px; font-weight:600; color:var(--dark); display:flex; align-items:center; gap:6px;}
+
 /* PROFILE */
 .profile-top{padding:52px 20px 24px;text-align:center;}
 .profile-av{width:80px;height:80px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:30px;font-weight:700;color:var(--dark);margin:0 auto 12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
@@ -246,23 +251,13 @@ body{
 .field input:focus, .field textarea:focus{background:white;border-color:var(--orange); box-shadow:0 0 0 3px rgba(254,114,76,0.15);}
 .field input::placeholder, .field textarea::placeholder{color:#9CA3AF;}
 
-/* LOCATION PICKER / MAP */
+/* LOCATION PICKER */
 .loc-status{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:10px 14px;font-size:13px;color:#16A34A;font-weight:500;margin-bottom:14px;display:none;align-items:center;gap:8px;}
 .loc-status svg{width:16px;height:16px;stroke:#16A34A;fill:none;flex-shrink:0;}
 
-.btn-get-loc{flex:1; background:white; color:var(--dark); border:1.5px solid var(--border); border-radius:12px; padding:12px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s; white-space:nowrap; box-shadow:0 2px 4px rgba(0,0,0,0.02);}
+.btn-get-loc{width:100%; background:white; color:var(--dark); border:1.5px solid var(--border); border-radius:12px; padding:13px; font-family:'Sora',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s; white-space:nowrap; box-shadow:0 2px 4px rgba(0,0,0,0.02);}
 .btn-get-loc:active{background:var(--light);}
 .btn-get-loc svg{width:16px;height:16px;stroke:var(--dark);fill:none;stroke-width:2;}
-
-.map-wrapper {display:none; position:relative; height:240px; border-radius:16px; overflow:hidden; margin-bottom:14px; border:none; box-shadow:0 8px 24px rgba(0,0,0,0.12);}
-.map-container {width:100%; height:100%; z-index:1;}
-.map-pin-overlay {position:absolute; top:50%; left:50%; transform:translate(-50%, -100%); z-index:10; pointer-events:none; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));}
-
-/* Custom Leaflet Zoom Controls to match premium UI */
-.leaflet-control-zoom { border:none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important; border-radius: 8px !important; overflow: hidden; margin: 10px !important; }
-.leaflet-control-zoom a { color: var(--dark) !important; border-bottom: 1px solid var(--border) !important; background: white !important; width:34px !important; height:34px !important; line-height:34px !important; font-family:'DM Sans', sans-serif !important; font-weight:600 !important; }
-.leaflet-control-zoom a:last-child { border-bottom: none !important; }
-.leaflet-control-zoom a:hover { background: var(--light) !important; }
 
 .cod-info{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:12px 14px;font-size:13px;color:#92400E;margin-bottom:8px;font-weight:500;}
 .cancel-warning{font-size:11px;color:var(--gray);text-align:center;margin-bottom:16px;line-height:1.4;padding:0 10px;}
@@ -302,17 +297,19 @@ body{
 
 <div id="pageHome" class="page active">
   <div class="home-header">
+    <div class="top-nav-bar">
+      <button class="menu-icon-btn" onclick="openDrawer()">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <button class="notif-icon-btn" onclick="showToast('No new notifications')">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      </button>
+    </div>
     <div class="header-top">
-      <div style="display:flex; align-items:center; gap:14px;">
-        <button class="menu-icon-btn" onclick="openDrawer()">
-          <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <div>
-          <div class="deliver-label"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Kesinga, Odisha</div>
-          <div class="greeting-name" id="greetingName">Hello!</div>
-        </div>
+      <div>
+        <div class="deliver-label"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Kesinga, Odisha</div>
+        <div class="greeting-name" id="greetingName">Hello!</div>
       </div>
-      <div class="header-avatar" id="headerAvatar" onclick="goPage('profile')"></div>
     </div>
     <div class="tagline-wrap"><div class="tagline" id="tagline">Fresh food, delivered to your door.</div></div>
     <div class="search-bar" onclick="goPage('search')">
@@ -410,29 +407,17 @@ body{
     
     <div class="field" style="margin-bottom: 12px;">
       <label>Delivery Address</label>
-      <textarea id="coAddress" placeholder="Enter complete address or pin your exact location..." style="height:70px; resize:none; margin-bottom:10px;"></textarea>
+      <textarea id="coAddress" placeholder="Enter complete address or use current location..." style="height:70px; resize:none; margin-bottom:10px;"></textarea>
       
-      <div style="display:flex; gap:10px; margin-bottom:12px;">
-        <button class="btn-get-loc" id="btnGps" onclick="useGpsLocation()">
-          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Use GPS
-        </button>
-        <button class="btn-get-loc" id="btnMap" onclick="openMapPicker()">
-          <svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg> Pin on Map
-        </button>
-      </div>
-
-      <div id="mapWrap" class="map-wrapper">
-        <div id="locMap" class="map-container"></div>
-        <div class="map-pin-overlay">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--dark)" stroke="white" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3" fill="white"/></svg>
-        </div>
-      </div>
+      <button class="btn-get-loc" id="btnGps" onclick="useGpsLocation()">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Use Current Location
+      </button>
       
       <div class="loc-status" id="locStatus"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="locStatusText">Location found!</span></div>
     </div>
     
     <div class="cod-info">Payment: Cash on Delivery — Pay when food arrives</div>
-    <div class="cancel-warning">Note: Once an order is placed, it cannot be canceled. Please review your items carefully before proceeding.</div>
+    <div class="cancel-warning">Note: Once an order is successfully placed, it cannot be canceled. Please review your items carefully before proceeding.</div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('checkoutModal')">Cancel</button>
       <button class="btn-confirm" id="placeBtn" onclick="placeOrder()">Place Order</button>
@@ -463,8 +448,6 @@ body{
 </div>
 
 <div class="toast" id="toast"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -589,9 +572,6 @@ onAuthStateChanged(auth, async user => {
 async function initApp() {
   const first = (userData.name || 'Friend').split(' ')[0];
   document.getElementById('greetingName').textContent = `${getGreeting()}, ${first}`;
-  const av = document.getElementById('headerAvatar');
-  if (currentUser.photoURL) av.innerHTML = `<img src="${currentUser.photoURL}">`;
-  else av.textContent = first[0].toUpperCase();
   
   startTaglines();
   loadGlobalNotice();
@@ -805,9 +785,7 @@ function renderCart() {
 }
 window.renderCart = renderCart;
 
-// CHECKOUT & MAP
-let mapInstance = null;
-
+// CHECKOUT
 window.openCheckout = () => {
   if (!isRestOpen) { showToast('Restaurant is currently closed', 'error'); return; }
   document.getElementById('coPhone').value = userData.phone || '';
@@ -815,9 +793,8 @@ window.openCheckout = () => {
   capturedLat = null; capturedLng = null;
   
   document.getElementById('locStatus').style.display = 'none';
-  document.getElementById('mapWrap').style.display = 'none';
   
-  document.getElementById('btnGps').innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Use GPS';
+  document.getElementById('btnGps').innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Use Current Location';
   document.getElementById('btnGps').style.pointerEvents = 'auto';
 
   document.getElementById('checkoutModal').classList.add('open');
@@ -825,7 +802,7 @@ window.openCheckout = () => {
 
 window.useGpsLocation = () => {
   const btn = document.getElementById('btnGps');
-  btn.innerHTML = '<div class="spinner" style="border-top-color:#1D4ED8; width:14px; height:14px;"></div> Locating...';
+  btn.innerHTML = '<div class="spinner" style="border-top-color:var(--dark); width:14px; height:14px;"></div> Locating...';
   btn.style.pointerEvents = 'none';
   
   if (!navigator.geolocation) { 
@@ -846,10 +823,6 @@ window.useGpsLocation = () => {
       }
     } catch(e) {} 
 
-    if (mapInstance) {
-      mapInstance.setView([capturedLat, capturedLng], 17);
-    }
-
     resetGpsBtn();
     const status = document.getElementById('locStatus');
     status.style.display = 'flex';
@@ -862,54 +835,9 @@ window.useGpsLocation = () => {
 
 function resetGpsBtn() {
   const btn = document.getElementById('btnGps');
-  btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Use GPS';
+  btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Use Current Location';
   btn.style.pointerEvents = 'auto';
 }
-
-window.openMapPicker = () => {
-  const wrap = document.getElementById('mapWrap');
-  wrap.style.display = 'block';
-
-  if (!mapInstance) {
-    // Initial center on Kesinga roughly
-    mapInstance = L.map('locMap').setView([20.2012, 83.1678], 15);
-    
-    // PREMIUM MAP TILES: CARTO Voyager
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }).addTo(mapInstance);
-
-    mapInstance.on('moveend', async () => {
-      const center = mapInstance.getCenter();
-      capturedLat = center.lat;
-      capturedLng = center.lng;
-      
-      document.getElementById('locStatusText').textContent = 'Location pinned from map!';
-      document.getElementById('locStatus').style.display = 'flex';
-      
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${capturedLat}&lon=${capturedLng}`);
-        const data = await res.json();
-        if(data && data.display_name) {
-            document.getElementById('coAddress').value = data.display_name;
-        }
-      } catch(e) {}
-    });
-  }
-
-  setTimeout(() => {
-    mapInstance.invalidateSize();
-    if (capturedLat && capturedLng) {
-      mapInstance.setView([capturedLat, capturedLng], 17);
-    } else if (navigator.geolocation) {
-       navigator.geolocation.getCurrentPosition(pos => {
-          mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 17);
-       }, () => {}, {timeout:5000});
-    }
-  }, 200);
-};
 
 window.placeOrder = async () => {
   const phone = document.getElementById('coPhone').value.trim();
@@ -974,6 +902,7 @@ function startOrderListener() {
   
   ordersListenerUnsub = onSnapshot(q, snap => {
     let orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Sort manually
     orders.sort((a,b) => {
         let timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : Date.now()) : Date.now();
         let timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : Date.now()) : Date.now();
@@ -993,13 +922,30 @@ function renderOrders(orders) {
     return;
   }
   const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', 'out for delivery':'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled' };
+  
   el.innerHTML = orders.map(o => {
     const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
     const itemsText = o.items?.map(i => `${i.qty}× ${i.name}`).join(', ') || '';
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'Just now';
+    
+    // Delivery Partner Details HTML
+    let dpInfo = '';
+    if (['assigned', 'out for delivery'].includes(s) && o.deliveryPartnerName) {
+        dpInfo = `
+          <div class="dp-info-box">
+            <div class="dp-info-title">Delivery Partner Assigned</div>
+            <div class="dp-info-details">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--orange)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              ${o.deliveryPartnerName}
+            </div>
+          </div>
+        `;
+    }
+
     return `<div class="order-card">
       <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
       <div class="order-items-text">${itemsText}</div>
+      ${dpInfo}
       <div class="order-total-row"><span>Total</span><span style="color:var(--orange)">₹${o.totalAmount || 0}</span></div>
       ${(s === 'assigned' || s === 'out for delivery') && o.locationLink ? `<button class="track-btn" onclick="window.open('${o.locationLink}','_blank')">Track Delivery on Google Maps</button>` : ''}
     </div>`;
@@ -1024,9 +970,15 @@ function renderProfile() {
   document.getElementById('pName').textContent = name;
   document.getElementById('pPhone').textContent = userData.phone || 'Not set';
   document.getElementById('pAddress').textContent = userData.address || 'Not set';
+  
   const av = document.getElementById('profileAv');
-  if (currentUser.photoURL) av.innerHTML = `<img src="${currentUser.photoURL}">`;
-  else av.textContent = name[0].toUpperCase();
+  if (currentUser.photoURL) {
+    av.innerHTML = `<img src="${currentUser.photoURL}">`;
+    av.style.background = 'transparent';
+  } else {
+    av.textContent = name[0].toUpperCase();
+    av.style.background = 'var(--yellow)';
+  }
 }
 
 window.editField = field => {
