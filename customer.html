@@ -642,9 +642,10 @@ window.goPage = (name, el) => {
   if (el) el.classList.add('active');
   
   if (name === 'cart') renderCart();
-if (name === 'orders') { 
-  document.getElementById('nav-orders').classList.add('active'); 
-  renderOrders();
+  if (name === 'orders') { 
+    document.getElementById('nav-orders').classList.add('active'); 
+    renderOrders();
+  }
   if (name === 'profile') renderProfile();
   if (name === 'search') doSearch(document.getElementById('searchInput').value);
 };
@@ -653,6 +654,7 @@ window.goRestaurant = () => {
   goPage('restaurant');
   renderRestaurantMenu();
 };
+
 
 // CHECKOUT LOCATION
 window.useGpsLocation = () => {
