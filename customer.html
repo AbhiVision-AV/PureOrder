@@ -644,7 +644,8 @@ window.goPage = (name, el) => {
   if (name === 'cart') renderCart();
 if (name === 'orders') { 
   document.getElementById('nav-orders').classList.add('active'); 
-  renderOrders();if (name === 'profile') renderProfile();
+  renderOrders();
+  if (name === 'profile') renderProfile();
   if (name === 'search') doSearch(document.getElementById('searchInput').value);
 };
 
