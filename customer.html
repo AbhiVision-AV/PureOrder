@@ -769,11 +769,12 @@ function listenRestaurant() {
     
     document.getElementById('restaurantCard').innerHTML = `
       <div class="rest-card" onclick="goRestaurant()">
-        <div class="rest-img-box">${imgUrl ? `<img src="${imgUrl}" loading="lazy">` : '<span>Mamu Bhanja Dhaba</span>'}
-          <div class="rest-status-badge ${isRestOpen ? 'badge-open' : 'badge-closed'}">${isRestOpen ? 'Open' : 'Closed'}</div>
-        </div>
+        <div class="rest-img-box">${imgUrl ? `<img src="${imgUrl}" loading="lazy">` : '<span>Mamu Bhanja Dhaba</span>'}</div>
         <div class="rest-info">
-          <div class="rest-name">Mamu Bhanja Dhaba</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+             <div class="rest-name" style="margin-bottom:0;">Mamu Bhanja Dhaba</div>
+             <div style="font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; color:white; background:${isRestOpen ? 'var(--green)' : 'var(--red)'};">${isRestOpen ? 'Open' : 'Closed'}</div>
+          </div>
           <div class="rest-meta"><div class="rest-meta-item">Kesinga</div><div class="meta-dot"></div><div class="rest-meta-item">COD Available</div></div>
         </div>
       </div>`;
@@ -782,6 +783,7 @@ function listenRestaurant() {
     document.getElementById('closedNotice').style.display = isRestOpen ? 'none' : 'block';
   });
 }
+
 
 function listenMenu() {
   onSnapshot(query(collection(db, 'menu'), where('restaurantId', '==', RESTAURANT_ID)), snap => {
@@ -1017,7 +1019,12 @@ window.showOrderDetail = id => {
   let currentStepIdx = steps.indexOf(o.status);
   if(o.status === 'ready' || o.status === 'assigned' || o.status === 'picked up') currentStepIdx = 3; 
 
-  let timelineHtml = '<div class="od-section"><div style="font-size:15px; font-weight:800; margin-bottom:16px;">Track Order</div><div class="timeline">';
+  let timelineHtml = '<div class="od-section"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;"><div style="font-size:15px; font-weight:800;">Track Order</div>';
+  
+  if (['out for delivery', 'assigned', 'picked up'].includes(o.status)) {
+     timelineHtml += `<button style="background:#FFF3E0;color:var(--orange);border:1px solid #FFD8A8;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Map</button>`;
+  }
+  timelineHtml += '</div><div class="timeline">';
   
   if (o.status === 'cancelled' || o.status === 'rejected') {
      timelineHtml += `<div class="tl-item active"><div class="tl-dot" style="background:var(--red); box-shadow:0 0 0 1px var(--red);"></div><div class="tl-title">Order Cancelled</div><div class="tl-time" style="color:var(--red)">${o.cancellationReason || 'Rejected by restaurant'}</div></div>`;
@@ -1029,8 +1036,16 @@ window.showOrderDetail = id => {
 
         let stepLabel = step.charAt(0).toUpperCase() + step.slice(1);
         let timeStr = '';
-        if(idx === 0 && o.createdAt) timeStr = o.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        if(step === o.status && o.updatedAt) timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        
+        if (idx === 0 && o.createdAt) {
+            timeStr = o.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        } else if (o[step + 'At']) {
+            timeStr = o[step + 'At'].toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        } else if (idx === currentStepIdx && o.updatedAt) {
+            timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        } else if (idx < currentStepIdx) {
+            timeStr = '✓ Done';
+        }
 
         timelineHtml += `<div class="tl-item ${stateClass}"><div class="tl-dot"></div><div class="tl-title">${stepLabel}</div><div class="tl-time">${timeStr}</div></div>`;
      });
@@ -1038,14 +1053,25 @@ window.showOrderDetail = id => {
   timelineHtml += '</div></div>';
 
   let dpHtml = '';
-  if (['assigned', 'picked up', 'out for delivery'].includes(o.status) && o.deliveryPartnerName) {
-      dpHtml = `<div class="od-section" style="display:flex; justify-content:space-between; align-items:center;">
-        <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">Delivery Partner</div><div style="font-size:15px; font-weight:700;">${o.deliveryPartnerName}</div></div>
-        ${o.deliveryPartnerPhone ? `<a href="tel:${o.deliveryPartnerPhone}" style="background:#DCFCE7;color:#16A34A;padding:8px 16px;border-radius:10px;font-weight:700;text-decoration:none;">Call</a>` : ''}
+  if (o.status === 'out for delivery' && o.deliveryPartnerName) {
+      dpHtml = `<div class="od-section" style="display:flex; flex-direction:column; gap:12px; background:#F0FDF4; border:1px solid #BBF7D0;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px;">${o.deliveryPartnerName.charAt(0)}</div>
+            <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">Delivery Partner</div><div style="font-size:14px; font-weight:800; color:var(--dark);">${o.deliveryPartnerName}</div></div>
+        </div>
+        ${o.deliveryPartnerPhone ? `<a href="tel:${o.deliveryPartnerPhone}" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#16A34A; color:white; padding:12px; border-radius:12px; text-decoration:none; font-weight:700; font-size:14px; width:100%; box-shadow:0 4px 12px rgba(22,163,74,0.2);"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call ${o.deliveryPartnerName.split(' ')[0]}</a>` : ''}
       </div>`;
   }
 
-  const itemsHtml = `<div class="od-section"><div style="font-size:15px; font-weight:800; margin-bottom:16px;">Bill Details</div>
+  const itemsHtml = `<div class="od-section">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:14px;">
+       <div>
+           <div style="font-size:14px; font-weight:800;">${o.restaurantName || 'Mamu Bhanja Dhaba'}</div>
+           <div style="font-size:12px; color:var(--gray); margin-top:2px;">Bill Details</div>
+       </div>
+       <a href="tel:8984920241" style="background:var(--light); font-size:11px; font-weight:700; color:var(--dark); text-decoration:none; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call Rest.</a>
+    </div>
+    
     ${(o.items||[]).map(i => `
       <div class="receipt-item">
         <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">${i.name}</span>`}</div>
