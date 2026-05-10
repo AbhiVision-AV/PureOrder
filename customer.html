@@ -741,6 +741,7 @@ async function initApp() {
     // DYNAMIC GLOBAL FETCH
     loadGlobalMenu();
     listenAllRestaurants();
+    loadAdminNotice();
 
   } catch(e) {} finally {
       setTimeout(() => {
@@ -762,6 +763,26 @@ function loadGlobalMenu() {
   });
 }
 
+  
+  // --- ADMIN NOTICE LOGIC ---
+async function loadAdminNotice() {
+  try {
+    const snap = await getDoc(doc(db, 'platformSettings', 'globalNotice')); 
+    if (snap.exists()) {
+// ... (aapka poora notice wala code) ...
+          localStorage.setItem('noticeViews', views + 1);
+        }
+      }
+    }
+  } catch(e) { console.log("Notice load error:", e); }
+}
+// --------------------------
+
+// BANNERS
+async function loadBanners() {
+  const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
+  const banners = snap.docs.map(d => d.data());
+  
 // BANNERS
 async function loadBanners() {
   const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
