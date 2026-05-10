@@ -675,7 +675,9 @@ window.goPage = (name, el) => {
 window.openRestaurant = (restId, restName) => {
   if (currentRestId !== restId) {
       cart = {}; 
-      updateBadge();
+      // Galti yahan thi: updateBadge() function exist nahi karta tha
+      // Naya sahi code: Cart badge ko manually hide kar do
+      document.getElementById('cartBadge').style.display = 'none';
   }
   currentRestId = restId;
   currentRestName = restName;
