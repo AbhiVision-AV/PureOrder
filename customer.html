@@ -136,7 +136,8 @@ body{
 .rest-card:active{transform:scale(0.99);}
 .rest-img-box{width:100%;height:160px;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#9CA3AF;overflow:hidden;position:relative;}
 .rest-img-box img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;}
-.rest-status-badge{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;color:white;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:2;}
+/* FIXED: Badge Moved to Right Side */
+.rest-status-badge{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;color:white;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:2;}
 .badge-open{background:var(--green);}
 .badge-closed{background:var(--red);}
 .rest-info{padding:14px 16px; position:relative; z-index:2;}
@@ -380,6 +381,10 @@ body{
   </div>
 
   <div class="section">
+    <div class="section-header"><div class="section-title">Popular Now</div></div>
+    <div class="popular-scroll" id="popularScroll"></div>
+  </div>
+  <div class="section">
     <div class="section-header"><div class="section-title">Restaurants</div></div>
     <div class="rest-list" id="restaurantList">
       <div style="text-align:center;color:#9CA3AF;font-size:13px;padding:20px;">Loading...</div>
@@ -509,6 +514,16 @@ body{
   </div>
 </div>
 
+<div class="overlay" id="noticeModal" style="z-index: 9999;">
+  <div class="sheet" style="padding-bottom: 24px;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="gnTitle">Notice</div>
+    <img id="gnImage" style="width:100%; height:auto; max-height:200px; object-fit:cover; border-radius:14px; margin-bottom:14px; display:none;" />
+    <div style="font-size:14px; color:var(--gray); margin-bottom: 24px; line-height:1.6;" id="gnMessage"></div>
+    <button class="btn-confirm" style="width:100%" onclick="closeModal('noticeModal')">Understood</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -528,10 +543,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// REMOVED HARDCODED RESTAURANT_ID
 let currentUser = null, userData = null;
-let currentRestId = null; // Store which restaurant is currently opened
+let currentRestId = null; 
 let currentRestName = '';
 let allRestaurants = []; 
+let windowGlobalMenuItems = []; // Dynamic Global Menus for Search & Popular
 let menuItems = [], cart = {}, currentEditField = '';
 let capturedLat = null, capturedLng = null;
 let isRestOpen = true;
@@ -569,7 +586,7 @@ async function setupPushNotifications() {
       playNotifSound();
       showToast(payload.notification.title);
     });
-  } catch(e) {}
+  } catch(e) { console.log("FCM Setup Skipped."); }
 }
 
 function saveNotifLocally(title, body) {
@@ -622,7 +639,6 @@ function getGreeting() {
   return 'Good Night';
 }
 
-// TAGLINE
 const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.', 'Good food, tap away.', 'Something delicious!', 'Real food, real fast.', 'Hunger stops here.', 'We got you.'];
 function startTaglines() {
   let tlIdx = 0;
@@ -647,7 +663,10 @@ window.goPage = (name, el) => {
   if (el) el.classList.add('active');
   
   if (name === 'cart') renderCart();
-  if (name === 'orders') { document.getElementById('nav-orders').classList.add('active'); renderOrders(); }
+  if (name === 'orders') { 
+    document.getElementById('nav-orders').classList.add('active'); 
+    renderOrders();
+  }
   if (name === 'profile') renderProfile();
   if (name === 'search') doSearch(document.getElementById('searchInput').value);
 };
@@ -655,7 +674,7 @@ window.goPage = (name, el) => {
 // DYNAMIC RESTAURANT OPENER
 window.openRestaurant = (restId, restName) => {
   if (currentRestId !== restId) {
-      cart = {}; // Empty cart if opening a different restaurant
+      cart = {}; 
       updateBadge();
   }
   currentRestId = restId;
@@ -675,6 +694,7 @@ window.useGpsLocation = () => {
     capturedLng = pos.coords.longitude;
     btn.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor" stroke-width="2"/></svg> Location Captured';
     btn.classList.add('success');
+    document.getElementById('placeBtn').disabled = false;
   }, () => {
     btn.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg> Use Current Location';
     btn.classList.remove('success');
@@ -715,6 +735,9 @@ async function initApp() {
     listenOrders();
     loadBanners();
     loadCategories();
+    
+    // DYNAMIC GLOBAL FETCH
+    loadGlobalMenu();
     listenAllRestaurants();
 
   } catch(e) {} finally {
@@ -723,6 +746,18 @@ async function initApp() {
           if(loader) loader.classList.add('hide');
       }, 900);
   }
+}
+
+// GLOBAL MENUS (For Search and Popular Items)
+function loadGlobalMenu() {
+  onSnapshot(collection(db, 'menu'), snap => {
+    windowGlobalMenuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    const pop = windowGlobalMenuItems.filter(i => i.popular && i.available).slice(0, 10);
+    document.getElementById('popularScroll').innerHTML = pop.length 
+      ? pop.map(i => `<div class="popular-card" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">₹${i.price}</div></div></div>`).join('') 
+      : '<div style="color:#9CA3AF;font-size:13px;padding:10px 0;">No popular items yet</div>';
+  });
 }
 
 // BANNERS
@@ -772,8 +807,8 @@ function listenAllRestaurants() {
     allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     
     document.getElementById('restaurantList').innerHTML = allRestaurants.map(r => `
-      <div class="rest-card" onclick="openRestaurant('${r.id}', '${r.name}')">
-        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy">` : `<span>${r.name}</span>`}
+      <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
+        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span>${r.name}</span>`}
           <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
         </div>
         <div class="rest-info">
@@ -787,6 +822,7 @@ function listenAllRestaurants() {
   });
 }
 
+let menuUnsub = null;
 function listenSpecificRestaurant(restId) {
   onSnapshot(doc(db, 'restaurants', restId), snap => {
     if (!snap.exists()) return;
@@ -794,7 +830,7 @@ function listenSpecificRestaurant(restId) {
     isRestOpen = data.isOpen !== false;
     const imgUrl = data.imageUrl || data.restaurantImageUrl || '';
     
-    document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}">` : `<div class="rest-hero-placeholder">${data.name}</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
+    document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}" onerror="this.style.display='none'">` : `<div class="rest-hero-placeholder">${data.name}</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
     document.getElementById('activeRestName').textContent = data.name;
     document.getElementById('activeRestTagline').textContent = `${data.tagline || 'Fresh Food'} · Cash on Delivery`;
     document.getElementById('closedNotice').style.display = isRestOpen ? 'none' : 'block';
@@ -803,11 +839,12 @@ function listenSpecificRestaurant(restId) {
   });
 }
 
+
 function listenSpecificMenu(restId) {
-  onSnapshot(query(collection(db, 'menu'), where('restaurantId', '==', restId)), snap => {
+  if (menuUnsub) menuUnsub();
+  menuUnsub = onSnapshot(query(collection(db, 'menu'), where('restaurantId', '==', restId)), snap => {
     menuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     
-    // Render Tabs
     const cats = ['All', ...new Set(menuItems.map(i => i.category).filter(Boolean))];
     document.getElementById('catTabs').innerHTML = cats.map((c, i) => `<button class="cat-tab ${i === 0 ? 'active' : ''}" onclick="filterCat('${c === 'All' ? 'all' : c.toLowerCase()}',this)">${c}</button>`).join('');
     
@@ -835,7 +872,7 @@ function renderRestaurantMenu() {
       const qty = cart[item.id]?.qty || 0;
       const canAdd = item.available && isRestOpen;
       html += `<div class="menu-item">
-        <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy">` : `<span style="font-size:11px;color:#9ca3af;padding:4px;text-align:center;">${item.name}</span>`}</div>
+        <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:11px;color:#9ca3af;padding:4px;text-align:center;">${item.name}</span>`}</div>
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
           ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
@@ -874,7 +911,7 @@ function renderCart() {
   const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
   
-  el.innerHTML = `<div class="cart-list">${items.map(i => `<div class="cart-item"><div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <span style="color:var(--dark)">₹${i.price * i.qty}</span></div></div><div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',-1)">−</button><div class="qty-num">${i.qty}</div><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',1)">+</button></div></div>`).join('')}</div>
+  el.innerHTML = `<div class="cart-list">${items.map(i => `<div class="cart-item"><div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <span style="color:var(--dark)">₹${i.price * i.qty}</span></div></div><div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',-1)">−</button><div class="qty-num">${i.qty}</div><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',1)">+</button></div></div>`).join('')}</div>
   <div class="cart-summary">
     <div class="summary-row"><span>Item Total</span><span>₹${itemTotal}</span></div>
     <div class="summary-row"><span>Delivery Fee</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
@@ -928,7 +965,7 @@ window.placeOrder = async () => {
     
     const orderData = {
       customerId: currentUser.uid, customerName: userData.name || 'Customer', customerPhone: phone, deliveryAddress: address,
-      restaurantId: currentRestId, // Dynamic Routing to the active Restaurant
+      restaurantId: currentRestId, 
       restaurantName: currentRestName,
       items: items.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
       itemTotal: itemTotal, deliveryFee: dynDeliveryFee, discount: dynDiscount, totalAmount: finalTotal,
@@ -952,7 +989,7 @@ window.placeOrder = async () => {
     }, 2000);
     
   } catch(e) {
-    showToast('Failed to place order.', 'error');
+    showToast('Failed to place order. Check connection.', 'error');
     btn.innerHTML = 'Place Order'; btn.style.pointerEvents = 'auto';
   }
 };
@@ -1049,25 +1086,35 @@ window.showOrderDetail = id => {
 
         let stepLabel = step.charAt(0).toUpperCase() + step.slice(1);
         let timeStr = '';
-        if (idx === 0 && o.createdAt) timeStr = o.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        else if (o[step + 'At']) timeStr = o[step + 'At'].toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        else if (idx === currentStepIdx && o.updatedAt) timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        else if (idx < currentStepIdx) timeStr = '✓ Done';
+        
+        if (idx === 0 && o.createdAt) {
+            timeStr = o.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        } else if (o[step + 'At']) {
+            timeStr = o[step + 'At'].toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        } else if (idx === currentStepIdx && o.updatedAt) {
+            timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        } else if (idx < currentStepIdx) {
+            timeStr = '✓ Done';
+        }
 
         timelineHtml += `<div class="tl-item ${stateClass}"><div class="tl-dot"></div><div class="tl-title">${stepLabel}</div><div class="tl-time">${timeStr}</div></div>`;
      });
   }
   timelineHtml += '</div></div>';
 
-  // TRACK LIVE LOCATION BUTTON (Now Functional)
+  // TRACK LIVE LOCATION BUTTON
   let trackBtnHtml = '';
-  if (['out for delivery', 'assigned', 'picked up'].includes(o.status) && o.locationLink) {
-      trackBtnHtml = `<div style="margin:0 20px 16px;"><a href="${o.locationLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#FFF3E0; color:var(--orange); padding:14px; border-radius:12px; text-decoration:none; font-weight:800; font-size:15px; border:1px solid #FFD8A8; box-shadow:0 4px 10px rgba(254,114,76,0.15);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Live location</a></div>`;
+  if (['out for delivery', 'assigned', 'picked up'].includes(o.status)) {
+      const trackLink = o.trackingLink || o.locationLink || '#'; 
+      if (trackLink && trackLink !== '#') {
+         trackBtnHtml = `<div style="margin:0 20px 16px;"><a href="${trackLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#FFF3E0; color:var(--orange); padding:14px; border-radius:12px; text-decoration:none; font-weight:800; font-size:15px; border:1px solid #FFD8A8; box-shadow:0 4px 10px rgba(254,114,76,0.15);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Live location</a></div>`;
+      }
   }
 
   let dpHtml = '';
   if (['assigned', 'picked up', 'out for delivery'].includes(o.status) && o.deliveryPartnerName) {
       const callIconHtml = o.deliveryPartnerPhone ? `<a href="tel:${o.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
+
       dpHtml = `<div class="od-section" style="display:flex; justify-content:space-between; align-items:center; background:#F0FDF4; border:1px solid #BBF7D0;">
         <div style="display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; flex-shrink:0;">${o.deliveryPartnerName.charAt(0)}</div>
@@ -1082,9 +1129,10 @@ window.showOrderDetail = id => {
        <div style="font-size:14px; font-weight:800;">${o.restaurantName || 'Restaurant'}</div>
        <div style="font-size:12px; color:var(--gray); margin-top:2px;">Bill Details</div>
     </div>
+    
     ${(o.items||[]).map(i => `
       <div class="receipt-item">
-        <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">${i.name}</span>`}</div>
+        <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">${i.name}</span>`}</div>
         <div class="ri-info"><div class="ri-name">${i.name}</div><div class="ri-qty">${i.qty} × ₹${i.price}</div></div>
         <div class="ri-price">₹${i.price * i.qty}</div>
       </div>
@@ -1101,26 +1149,28 @@ window.showOrderDetail = id => {
   document.getElementById('odContent').innerHTML = timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
 
-// SEARCH - Made Dynamic to Search Across ALL Restaurants if on Home, or specific if in Restaurant
+// SEARCH (Global Search)
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { 
     el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke="currentColor" fill="none" stroke-width="2"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>`; 
     return; 
   }
-  
-  // Fetch from DB actively so it searches ALL restaurants globally
-  getDocs(collection(db, 'menu')).then(snap => {
-      let allMenu = snap.docs.map(d => d.data());
-      const res = allMenu.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
-      
-      el.innerHTML = res.length
-        ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', 'Restaurant')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
-        : `<div style="text-align:center;padding:40px;color:var(--gray);">No results found</div>`;
-  });
+  const res = windowGlobalMenuItems.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
+  el.innerHTML = res.length
+    ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
+    : `<div style="text-align:center;padding:40px;color:var(--gray);">No results found</div>`;
 };
 
 // PROFILE
+function renderProfile() {
+  const name = userData.name || currentUser.displayName || 'User';
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('pName').textContent = name;
+  document.getElementById('pPhone').textContent = userData.phone || 'Not set';
+  document.getElementById('pAddress').textContent = userData.address || 'Not set';
+}
+
 window.editField = field => {
   currentEditField = field;
   const labels = { name: 'Your Name', phone: 'Phone Number', address: 'Delivery Address' };
@@ -1149,8 +1199,6 @@ window.saveProfile = async () => {
   } catch(e) { showToast('Failed to save', 'error'); }
 };
 
-function renderProfile() {} // Cleanup
-
 window.doLogout = async () => {
   try { await signOut(auth); window.location.href = 'index.html'; }
   catch(e) { showToast('Logout failed', 'error'); }
@@ -1159,6 +1207,15 @@ window.doLogout = async () => {
 document.querySelectorAll('.overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker Registered'))
+        .catch(err => console.log('Service Worker Error', err));
+    });
+  }
 </script>
 </body>
 </html>
