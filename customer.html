@@ -6,13 +6,6 @@
 <meta name="theme-color" content="#ffffff">
 <title>PureOrder</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<meta charset="UTF-8">
-  <title>PureOrder</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  
-  <link href="https://fonts.googleapis.com/css2..." rel="stylesheet">
 <style>
 :root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -138,9 +131,10 @@ body{
 .popular-price{font-size:14px;font-weight:800;color:var(--dark);}
 
 /* RESTAURANT CARD */
+.rest-list { display:flex; flex-direction:column; gap:16px; }
 .rest-card{background:white;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.15s;}
 .rest-card:active{transform:scale(0.99);}
-.rest-img-box{width:100%;height:160px;background:linear-gradient(135deg,#FFF9EC,#FFE8CC);display:flex;align-items:center;justify-content:center;font-size:13px;color:#9CA3AF;overflow:hidden;position:relative;}
+.rest-img-box{width:100%;height:160px;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#9CA3AF;overflow:hidden;position:relative;}
 .rest-img-box img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;}
 .rest-status-badge{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;color:white;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:2;}
 .badge-open{background:var(--green);}
@@ -363,7 +357,7 @@ body{
         <div class="greeting-name" id="greetingName">Hello!</div>
       </div>
     </div>
-    <div class="tagline-wrap"><div class="tagline" id="tagline">Fresh food, delivered to your door.</div></div>
+    <div class="tagline-wrap"><div class="tagline" id="tagline">Fresh food, delivered.</div></div>
     
     <div class="search-bar" onclick="goPage('search')">
       <svg viewBox="0 0 24 24" width="17"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -386,12 +380,10 @@ body{
   </div>
 
   <div class="section">
-    <div class="section-header"><div class="section-title">Popular Now</div></div>
-    <div class="popular-scroll" id="popularScroll"><div style="color:#9CA3AF;font-size:13px;padding:10px 0;">Loading menu...</div></div>
-  </div>
-  <div class="section">
     <div class="section-header"><div class="section-title">Restaurants</div></div>
-    <div id="restaurantCard"><div style="background:white;border-radius:20px;padding:40px;text-align:center;color:#9CA3AF;font-size:13px;">Loading...</div></div>
+    <div class="rest-list" id="restaurantList">
+      <div style="text-align:center;color:#9CA3AF;font-size:13px;padding:20px;">Loading...</div>
+    </div>
   </div>
 </div>
 
@@ -417,9 +409,12 @@ body{
 
 <div id="pageRestaurant" class="page">
   <div class="rest-page">
-    <div class="rest-hero" id="restHero"><div class="rest-hero-placeholder">Mamu Bhanja Dhaba</div><button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button></div>
+    <div class="rest-hero" id="restHero"></div>
     <div class="closed-notice" id="closedNotice">This restaurant is currently closed. You can browse the menu but cannot place orders.</div>
-    <div class="rest-details-box"><h2>Mamu Bhanja Dhaba</h2><p>Kesinga · Fresh homestyle food · Cash on Delivery</p></div>
+    <div class="rest-details-box">
+        <h2 id="activeRestName">Restaurant</h2>
+        <p id="activeRestTagline">Fresh food · Cash on Delivery</p>
+    </div>
     <div class="cat-tabs" id="catTabs"><button class="cat-tab active" onclick="filterCat('all',this)">All</button></div>
     <div class="menu-list" id="menuList"></div>
     <div style="height:16px;"></div>
@@ -509,7 +504,7 @@ body{
     <div class="sheet-title" id="editTitle">Edit</div>
     <div class="field"><input type="text" id="editInput" /></div>
     <div class="sheet-btns">
-      <button class="btn-confirm" onclick="saveProfile()">Save</button>
+      <button class="btn-confirm" onclick="saveProfile()" style="width:100%">Save</button>
     </div>
   </div>
 </div>
@@ -533,8 +528,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const RESTAURANT_ID = 'mamu-bhanja-dhaba';
 let currentUser = null, userData = null;
+let currentRestId = null; // Store which restaurant is currently opened
+let currentRestName = '';
+let allRestaurants = []; 
 let menuItems = [], cart = {}, currentEditField = '';
 let capturedLat = null, capturedLng = null;
 let isRestOpen = true;
@@ -572,7 +569,7 @@ async function setupPushNotifications() {
       playNotifSound();
       showToast(payload.notification.title);
     });
-  } catch(e) { console.log("FCM Setup Skipped."); }
+  } catch(e) {}
 }
 
 function saveNotifLocally(title, body) {
@@ -625,9 +622,10 @@ function getGreeting() {
   return 'Good Night';
 }
 
+// TAGLINE
 const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.', 'Good food, tap away.', 'Something delicious!', 'Real food, real fast.', 'Hunger stops here.', 'We got you.'];
-  let tlIdx = 0; 
 function startTaglines() {
+  let tlIdx = 0;
   setInterval(() => {
     const el = document.getElementById('tagline');
     if(!el) return;
@@ -649,19 +647,22 @@ window.goPage = (name, el) => {
   if (el) el.classList.add('active');
   
   if (name === 'cart') renderCart();
-  if (name === 'orders') { 
-    document.getElementById('nav-orders').classList.add('active'); 
-    renderOrders();
-  }
+  if (name === 'orders') { document.getElementById('nav-orders').classList.add('active'); renderOrders(); }
   if (name === 'profile') renderProfile();
   if (name === 'search') doSearch(document.getElementById('searchInput').value);
 };
 
-window.goRestaurant = () => {
+// DYNAMIC RESTAURANT OPENER
+window.openRestaurant = (restId, restName) => {
+  if (currentRestId !== restId) {
+      cart = {}; // Empty cart if opening a different restaurant
+      updateBadge();
+  }
+  currentRestId = restId;
+  currentRestName = restName;
   goPage('restaurant');
-  renderRestaurantMenu();
+  listenSpecificRestaurant(restId);
 };
-
 
 // CHECKOUT LOCATION
 window.useGpsLocation = () => {
@@ -714,8 +715,7 @@ async function initApp() {
     listenOrders();
     loadBanners();
     loadCategories();
-    listenRestaurant();
-    listenMenu();
+    listenAllRestaurants();
 
   } catch(e) {} finally {
       setTimeout(() => {
@@ -766,41 +766,51 @@ async function loadCategories() {
   }).join('');
 }
 
-// RESTAURANT & MENU
-function listenRestaurant() {
-  onSnapshot(doc(db, 'restaurants', RESTAURANT_ID), snap => {
+// RESTAURANTS
+function listenAllRestaurants() {
+  onSnapshot(query(collection(db, 'restaurants'), where('status', '==', 'active')), snap => {
+    allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    document.getElementById('restaurantList').innerHTML = allRestaurants.map(r => `
+      <div class="rest-card" onclick="openRestaurant('${r.id}', '${r.name}')">
+        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy">` : `<span>${r.name}</span>`}
+          <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
+        </div>
+        <div class="rest-info">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+             <div class="rest-name" style="margin-bottom:0;">${r.name}</div>
+          </div>
+          <div class="rest-meta"><div class="rest-meta-item">${r.tagline || 'Fresh Food'}</div><div class="meta-dot"></div><div class="rest-meta-item">COD Available</div></div>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function listenSpecificRestaurant(restId) {
+  onSnapshot(doc(db, 'restaurants', restId), snap => {
     if (!snap.exists()) return;
     const data = snap.data();
     isRestOpen = data.isOpen !== false;
     const imgUrl = data.imageUrl || data.restaurantImageUrl || '';
     
-    document.getElementById('restaurantCard').innerHTML = `
-      <div class="rest-card" onclick="goRestaurant()">
-        <div class="rest-img-box">${imgUrl ? `<img src="${imgUrl}" loading="lazy">` : '<span>Mamu Bhanja Dhaba</span>'}</div>
-        <div class="rest-info">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-             <div class="rest-name" style="margin-bottom:0;">Mamu Bhanja Dhaba</div>
-             <div style="font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; color:white; background:${isRestOpen ? 'var(--green)' : 'var(--red)'};">${isRestOpen ? 'Open' : 'Closed'}</div>
-          </div>
-          <div class="rest-meta"><div class="rest-meta-item">Kesinga</div><div class="meta-dot"></div><div class="rest-meta-item">COD Available</div></div>
-        </div>
-      </div>`;
-    
-    document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}">` : `<div class="rest-hero-placeholder">Mamu Bhanja Dhaba</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
+    document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}">` : `<div class="rest-hero-placeholder">${data.name}</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
+    document.getElementById('activeRestName').textContent = data.name;
+    document.getElementById('activeRestTagline').textContent = `${data.tagline || 'Fresh Food'} · Cash on Delivery`;
     document.getElementById('closedNotice').style.display = isRestOpen ? 'none' : 'block';
+    
+    listenSpecificMenu(restId);
   });
 }
 
-
-function listenMenu() {
-  onSnapshot(query(collection(db, 'menu'), where('restaurantId', '==', RESTAURANT_ID)), snap => {
+function listenSpecificMenu(restId) {
+  onSnapshot(query(collection(db, 'menu'), where('restaurantId', '==', restId)), snap => {
     menuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     
-    const pop = menuItems.filter(i => i.popular && i.available);
-    document.getElementById('popularScroll').innerHTML = pop.map(i => `<div class="popular-card" onclick="goRestaurant()"><div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy">` : `<span style="padding:10px;text-align:center;">${i.name}</span>`}</div><div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">₹${i.price}</div></div></div>`).join('');
+    // Render Tabs
+    const cats = ['All', ...new Set(menuItems.map(i => i.category).filter(Boolean))];
+    document.getElementById('catTabs').innerHTML = cats.map((c, i) => `<button class="cat-tab ${i === 0 ? 'active' : ''}" onclick="filterCat('${c === 'All' ? 'all' : c.toLowerCase()}',this)">${c}</button>`).join('');
     
-    document.getElementById('catTabs').innerHTML = `<button class="cat-tab active" onclick="filterCat('all',this)">All</button>` + 
-      [...new Set(menuItems.map(i=>i.category).filter(Boolean))].map(c=>`<button class="cat-tab" onclick="filterCat('${c.toLowerCase()}',this)">${c}</button>`).join('');
     renderRestaurantMenu();
   });
 }
@@ -832,14 +842,14 @@ function renderRestaurantMenu() {
           <div class="menu-item-price">₹${item.price}</div>
           ${!item.available ? '<div class="menu-item-na">Not available</div>' : ''}
         </div>
-        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',-1)">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">Add</button>`) : ''}</div>
+        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',-1)">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">Add</button>`) : (!isRestOpen ? `<span style="font-size:11px;color:#9CA3AF;">Closed</span>` : '')}</div>
       </div>`;
     });
   });
-  document.getElementById('menuList').innerHTML = html;
+  document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gray);">No items found in this restaurant</div>';
 }
 
-// CART & CHECKOUT
+// CART
 window.updateCart = (id, name, price, imageUrl, delta) => {
   if (!cart[id]) cart[id] = { id, name, price, imageUrl, qty: 0 };
   cart[id].qty = Math.max(0, cart[id].qty + delta);
@@ -848,6 +858,7 @@ window.updateCart = (id, name, price, imageUrl, delta) => {
   const totalQty = Object.values(cart).reduce((s, i) => s + i.qty, 0);
   const b = document.getElementById('cartBadge');
   b.textContent = totalQty; b.style.display = totalQty > 0 ? 'block' : 'none';
+  
   renderRestaurantMenu();
   if(document.getElementById('pageCart').classList.contains('active')) renderCart();
 };
@@ -917,7 +928,8 @@ window.placeOrder = async () => {
     
     const orderData = {
       customerId: currentUser.uid, customerName: userData.name || 'Customer', customerPhone: phone, deliveryAddress: address,
-      restaurantId: RESTAURANT_ID, restaurantName: 'Mamu Bhanja Dhaba',
+      restaurantId: currentRestId, // Dynamic Routing to the active Restaurant
+      restaurantName: currentRestName,
       items: items.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
       itemTotal: itemTotal, deliveryFee: dynDeliveryFee, discount: dynDiscount, totalAmount: finalTotal,
       paymentType: 'COD', status: 'placed', latitude: capturedLat, longitude: capturedLng,
@@ -927,12 +939,11 @@ window.placeOrder = async () => {
     await addDoc(collection(db, 'orders'), orderData);
     
     cart = {}; 
-document.getElementById('cartBadge').style.display = 'none';
-closeModal('checkoutModal');
-
+    document.getElementById('cartBadge').style.display = 'none';
+    closeModal('checkoutModal');
     
     document.getElementById('orderSuccessScreen').style.display = 'flex';
-    saveNotifLocally("Order Placed Successfully", "We've received your order and sent it to the restaurant.");
+    saveNotifLocally("Order Placed Successfully", `We've sent your order to ${currentRestName}.`);
     playNotifSound();
     
     setTimeout(() => {
@@ -941,9 +952,9 @@ closeModal('checkoutModal');
     }, 2000);
     
   } catch(e) {
-    showToast('Failed to place order. Check connection.', 'error');
+    showToast('Failed to place order.', 'error');
+    btn.innerHTML = 'Place Order'; btn.style.pointerEvents = 'auto';
   }
-  btn.innerHTML = 'Place Order'; btn.style.pointerEvents = 'auto';
 };
 
 // AUTOMATED LOCAL NOTIFICATIONS & ORDERS LIST
@@ -1006,7 +1017,7 @@ function renderOrders() {
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'Just now';
     
     return `<div class="order-card" onclick="showOrderDetail('${o.id}')">
-      <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
+      <div class="order-top"><div><div class="order-id">${o.restaurantName||'Order'} #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
       <div class="order-items-text">${itemsText}</div>
       <div class="order-total-row"><span>Total</span><span style="color:var(--dark)">₹${o.totalAmount || 0}</span></div>
     </div>`;
@@ -1026,7 +1037,6 @@ window.showOrderDetail = id => {
   let currentStepIdx = steps.indexOf(o.status);
   if(o.status === 'ready' || o.status === 'assigned' || o.status === 'picked up') currentStepIdx = 3; 
 
-  // 1. TRACK ORDER HEADING (Bold + Icon) & TIMELINE
   let timelineHtml = '<div class="od-section"><div style="display:flex; align-items:center; gap:8px; font-size:16px; font-weight:800; margin-bottom:16px; text-transform:uppercase; letter-spacing:0.5px; color:var(--dark);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> TRACK ORDER</div><div class="timeline">';
   
   if (o.status === 'cancelled' || o.status === 'rejected') {
@@ -1039,35 +1049,25 @@ window.showOrderDetail = id => {
 
         let stepLabel = step.charAt(0).toUpperCase() + step.slice(1);
         let timeStr = '';
-        
-        if (idx === 0 && o.createdAt) {
-            timeStr = o.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        } else if (o[step + 'At']) {
-            timeStr = o[step + 'At'].toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        } else if (idx === currentStepIdx && o.updatedAt) {
-            timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        } else if (idx < currentStepIdx) {
-            timeStr = '✓ Done';
-        }
+        if (idx === 0 && o.createdAt) timeStr = o.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        else if (o[step + 'At']) timeStr = o[step + 'At'].toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        else if (idx === currentStepIdx && o.updatedAt) timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        else if (idx < currentStepIdx) timeStr = '✓ Done';
 
         timelineHtml += `<div class="tl-item ${stateClass}"><div class="tl-dot"></div><div class="tl-title">${stepLabel}</div><div class="tl-time">${timeStr}</div></div>`;
      });
   }
   timelineHtml += '</div></div>';
 
-  // 2. TRACK LIVE LOCATION BUTTON
+  // TRACK LIVE LOCATION BUTTON (Now Functional)
   let trackBtnHtml = '';
-  if (['out for delivery', 'assigned', 'picked up'].includes(o.status)) {
-      const trackLink = o.trackingLink || '#'; 
-      trackBtnHtml = `<div style="margin:0 20px 16px;"><a href="${trackLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#FFF3E0; color:var(--orange); padding:14px; border-radius:12px; text-decoration:none; font-weight:800; font-size:15px; border:1px solid #FFD8A8; box-shadow:0 4px 10px rgba(254,114,76,0.15);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Live location</a></div>`;
+  if (['out for delivery', 'assigned', 'picked up'].includes(o.status) && o.locationLink) {
+      trackBtnHtml = `<div style="margin:0 20px 16px;"><a href="${o.locationLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#FFF3E0; color:var(--orange); padding:14px; border-radius:12px; text-decoration:none; font-weight:800; font-size:15px; border:1px solid #FFD8A8; box-shadow:0 4px 10px rgba(254,114,76,0.15);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Live location</a></div>`;
   }
 
-  // 3. DELIVERY PARTNER CARD (Call icon on the right side)
   let dpHtml = '';
-  if (['out for delivery', 'assigned', 'picked up'].includes(o.status) && o.deliveryPartnerName) {
-      // Icon sirf tab dikhega jab partner ka phone number available hoga
+  if (['assigned', 'picked up', 'out for delivery'].includes(o.status) && o.deliveryPartnerName) {
       const callIconHtml = o.deliveryPartnerPhone ? `<a href="tel:${o.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
-
       dpHtml = `<div class="od-section" style="display:flex; justify-content:space-between; align-items:center; background:#F0FDF4; border:1px solid #BBF7D0;">
         <div style="display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; flex-shrink:0;">${o.deliveryPartnerName.charAt(0)}</div>
@@ -1077,13 +1077,11 @@ window.showOrderDetail = id => {
       </div>`;
   }
 
-  // 4. BILL DETAILS (Removed Call Rest button)
   const itemsHtml = `<div class="od-section">
     <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:14px;">
-       <div style="font-size:14px; font-weight:800;">${o.restaurantName || 'Mamu Bhanja Dhaba'}</div>
+       <div style="font-size:14px; font-weight:800;">${o.restaurantName || 'Restaurant'}</div>
        <div style="font-size:12px; color:var(--gray); margin-top:2px;">Bill Details</div>
     </div>
-    
     ${(o.items||[]).map(i => `
       <div class="receipt-item">
         <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">${i.name}</span>`}</div>
@@ -1100,38 +1098,33 @@ window.showOrderDetail = id => {
     </div>
   </div>`;
 
-  // Merge all sections
   document.getElementById('odContent').innerHTML = timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
 
-  
-// SEARCH
+// SEARCH - Made Dynamic to Search Across ALL Restaurants if on Home, or specific if in Restaurant
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { 
     el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke="currentColor" fill="none" stroke-width="2"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>`; 
     return; 
   }
-  const res = menuItems.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
-  el.innerHTML = res.length
-    ? res.map(i => `<div class="search-item" onclick="goRestaurant()"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
-    : `<div style="text-align:center;padding:40px;color:var(--gray);">No results found</div>`;
+  
+  // Fetch from DB actively so it searches ALL restaurants globally
+  getDocs(collection(db, 'menu')).then(snap => {
+      let allMenu = snap.docs.map(d => d.data());
+      const res = allMenu.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
+      
+      el.innerHTML = res.length
+        ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', 'Restaurant')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
+        : `<div style="text-align:center;padding:40px;color:var(--gray);">No results found</div>`;
+  });
 };
 
 // PROFILE
-function renderProfile() {
-  const name = userData.name || currentUser.displayName || 'User';
-  document.getElementById('profileName').textContent = name;
-  document.getElementById('pName').textContent = name;
-  document.getElementById('pPhone').textContent = userData.phone || 'Not set';
-  document.getElementById('pAddress').textContent = userData.address || 'Not set';
-}
-
 window.editField = field => {
   currentEditField = field;
   const labels = { name: 'Your Name', phone: 'Phone Number', address: 'Delivery Address' };
   document.getElementById('editTitle').textContent = `Edit ${labels[field]}`;
-  
   document.getElementById('editInput').value = userData[field] || '';
   document.getElementById('editInput').type = field === 'phone' ? 'tel' : 'text';
   document.getElementById('editModal').classList.add('open');
@@ -1156,6 +1149,8 @@ window.saveProfile = async () => {
   } catch(e) { showToast('Failed to save', 'error'); }
 };
 
+function renderProfile() {} // Cleanup
+
 window.doLogout = async () => {
   try { await signOut(auth); window.location.href = 'index.html'; }
   catch(e) { showToast('Logout failed', 'error'); }
@@ -1164,15 +1159,6 @@ window.doLogout = async () => {
 document.querySelectorAll('.overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker Registered'))
-        .catch(err => console.log('Service Worker Error', err));
-    });
-  }
 </script>
 </body>
 </html>
