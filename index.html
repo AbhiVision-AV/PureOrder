@@ -1,17 +1,14 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
-<meta name="theme-color" content="#ffffff">  
-<title>PureOrder</title>  
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">  
-  <meta charset="UTF-8">
-  <title>PureOrder</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<title>PureOrder</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-  
-  <link href="https://fonts.googleapis.com/css2..." rel="stylesheet">
 
   <style>  
 :root {  
@@ -26,7 +23,9 @@
   --red: #FF3B30;  
 }  
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }  
-body { font-family:'DM Sans',sans-serif; background:var(--white); color:var(--dark); min-height:100vh; max-width:430px; margin:0 auto; }  #loadingScreen { position:fixed; inset:0; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
+body { font-family:'DM Sans',sans-serif; background:var(--white); color:var(--dark); min-height:100vh; max-width:430px; margin:0 auto; }  
+
+#loadingScreen { position:fixed; inset:0; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; transition:opacity 0.4s; }
 #loadingScreen.hide { opacity:0; pointer-events:none; }
 .loader-logo { font-family:'Sora',sans-serif; font-size:32px; font-weight:800; }
 .loader-logo span { color:var(--orange); }
@@ -68,10 +67,14 @@ body { font-family:'DM Sans',sans-serif; background:var(--white); color:var(--da
 </style>
 
 </head>  
-<body>  <div id="loadingScreen">  
+<body>  
+  
+<div id="loadingScreen">  
   <div class="loader-logo">Pure<span>Order</span></div>  
   <div class="loader-bar"><div class="loader-fill"></div></div>  
-</div>  <div id="loginScreen" style="display:none;">  
+</div>  
+
+<div id="loginScreen" style="display:none;">  
   <div class="hero">  
     <div class="brand">  
       <div class="brand-icon">🍽️</div>  
@@ -91,10 +94,12 @@ body { font-family:'DM Sans',sans-serif; background:var(--white); color:var(--da
     </div>  
     <div class="error-toast" id="errBox"></div>  
   </div>  
-</div>  <script type="module">  
+</div>  
+
+<script type="module">  
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";  
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";  
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";  
+import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";  
   
 const firebaseConfig = {  
   apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",  
@@ -125,24 +130,77 @@ const fallback = setTimeout(() => {
   document.getElementById('loginScreen').style.display = 'flex';  
   document.getElementById('loginScreen').style.flexDirection = 'column';  
 }, 5000);  
+
+// CENTRALIZED LOGIN PROCESSOR
+async function processLogin(user) {
+  const email = user.email ? user.email.toLowerCase() : '';
+  const userRef = doc(db, 'users', user.uid);
+  const snap = await getDoc(userRef);
+
+  if (snap.exists()) {
+    const userData = snap.data();
+    // Special Check: If an existing customer was later promoted to an owner by the admin
+    if (userData.role === 'customer') {
+      const pendingSnap = await getDoc(doc(db, 'pending_owners', email));
+      if (pendingSnap.exists()) {
+        const pData = pendingSnap.data();
+        await setDoc(userRef, {
+          role: 'owner',
+          restaurantId: pData.restaurantId,
+          restaurantName: pData.restaurantName,
+          phone: pData.phone || userData.phone
+        }, { merge: true });
+        
+        // Link owner to the restaurant document securely
+        try { await updateDoc(doc(db, 'restaurants', pData.restaurantId), { ownerId: user.uid }); } catch(err){}
+        
+        redirectTo('owner');
+        return;
+      }
+    }
+    // Existing users just proceed to their designated role dashboard
+    redirectTo(userData.role || 'customer');
+  } else {
+    // BRAND NEW USER - Checking if Admin pre-approved them as an Owner
+    const pendingSnap = await getDoc(doc(db, 'pending_owners', email));
+
+    if (pendingSnap.exists()) {
+      // Create Owner Profile
+      const pData = pendingSnap.data();
+      await setDoc(userRef, {
+        uid: user.uid, 
+        name: pData.name || user.displayName || 'Owner',  
+        email: email, 
+        photo: user.photoURL || '',  
+        phone: pData.phone || '', 
+        address: '', 
+        role: 'owner', 
+        restaurantId: pData.restaurantId, 
+        restaurantName: pData.restaurantName,
+        createdAt: serverTimestamp()  
+      });
+      // Link owner to the restaurant document
+      try { await updateDoc(doc(db, 'restaurants', pData.restaurantId), { ownerId: user.uid }); } catch(err){}
+      
+      redirectTo('owner');
+    } else {
+      // Create Standard Customer Profile
+      await setDoc(userRef, {  
+        uid: user.uid, name: user.displayName||'User',  
+        email: email, photo: user.photoURL||'',  
+        phone:'', address:'', role:'customer',  
+        createdAt: serverTimestamp()  
+      });  
+      redirectTo('customer');  
+    }
+  }
+}
   
 onAuthStateChanged(auth, async user => {  
   clearTimeout(fallback);  
   if (user) {  
     try {  
-      const snap = await getDoc(doc(db, 'users', user.uid));  
-      if (snap.exists()) {  
-        redirectTo(snap.data().role || 'customer');  
-      } else {  
-        // New user — save as customer  
-        await setDoc(doc(db, 'users', user.uid), {  
-          uid: user.uid, name: user.displayName||'User',  
-          email: user.email, photo: user.photoURL||'',  
-          phone:'', address:'', role:'customer',  
-          createdAt: serverTimestamp()  
-        });  
-        redirectTo('customer');  
-      }  
+      await processLogin(user);
     } catch(e) {  
       document.getElementById('loadingScreen').classList.add('hide');  
       document.getElementById('loginScreen').style.display = 'flex';  
@@ -162,18 +220,7 @@ window.loginWithGoogle = async () => {
   try {  
     const provider = new GoogleAuthProvider();  
     const result = await signInWithPopup(auth, provider);  
-    const snap = await getDoc(doc(db, 'users', result.user.uid));  
-    if (snap.exists()) {  
-      redirectTo(snap.data().role || 'customer');  
-    } else {  
-      await setDoc(doc(db, 'users', result.user.uid), {  
-        uid: result.user.uid, name: result.user.displayName||'User',  
-        email: result.user.email, photo: result.user.photoURL||'',  
-        phone:'', address:'', role:'customer',  
-        createdAt: serverTimestamp()  
-      });  
-      redirectTo('customer');  
-    }  
+    await processLogin(result.user);
   } catch(e) {  
     btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Continue with Google';  
     btn.classList.remove('loading');  
@@ -182,14 +229,13 @@ window.loginWithGoogle = async () => {
 };  
 </script>  
 
-
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
+        navigator.serviceWorker.register('firebase-messaging-sw.js');
       });
     }
   </script>
 
 </body>  
-</html> 
+</html>
