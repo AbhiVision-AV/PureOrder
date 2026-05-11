@@ -764,12 +764,33 @@ function loadGlobalMenu() {
 }
 
   
-  // --- ADMIN NOTICE LOGIC ---
+ // --- ADMIN NOTICE LOGIC ---
 async function loadAdminNotice() {
   try {
     const snap = await getDoc(doc(db, 'platformSettings', 'globalNotice')); 
     if (snap.exists()) {
-// ... (aapka poora notice wala code) ...
+      const data = snap.data();
+      
+      if (data.active && (data.message || data.title || data.imageUrl)) {
+        let views = parseInt(localStorage.getItem('noticeViews') || '0');
+        let maxViews = data.showCount || 1; 
+        
+        let lastNoticeId = localStorage.getItem('lastNoticeId');
+        if (lastNoticeId !== data.noticeId) {
+          views = 0;
+          localStorage.setItem('lastNoticeId', data.noticeId);
+        }
+
+        if (views < maxViews) {
+          const imgEl = document.getElementById('gnImage');
+          const titleEl = document.getElementById('gnTitle');
+          const msgEl = document.getElementById('gnMessage');
+
+          if (data.imageUrl) { imgEl.src = data.imageUrl; imgEl.style.display = 'block'; } else { imgEl.style.display = 'none'; }
+          if (data.title) { titleEl.textContent = data.title; titleEl.style.display = 'block'; } else { titleEl.style.display = 'none'; }
+          if (data.message) { msgEl.innerHTML = data.message; msgEl.style.display = 'block'; } else { msgEl.style.display = 'none'; }
+
+          document.getElementById('noticeModal').classList.add('open');
           localStorage.setItem('noticeViews', views + 1);
         }
       }
@@ -778,11 +799,8 @@ async function loadAdminNotice() {
 }
 // --------------------------
 
-// BANNERS
-async function loadBanners() {
-  const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
-  const banners = snap.docs.map(d => d.data());
-  
+
+
 // BANNERS
 async function loadBanners() {
   const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
