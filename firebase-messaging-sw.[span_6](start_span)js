@@ -1,0 +1,25 @@
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
+  authDomain: "pureorder-eca2b.firebaseapp.com",
+  projectId: "pureorder-eca2b",
+  storageBucket: "pureorder-eca2b.firebasestorage.app",
+  messagingSenderId: "641924435931",
+  appId: "1:641924435931:web:2f015b60ad7bd935fd61fe"
+};
+
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function(payload) {
+  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: '/icon-192.png'
+  };
+
+  return self.registration.showNotification(notificationTitle, notificationOptions);
+});
