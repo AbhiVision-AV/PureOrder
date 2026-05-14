@@ -529,8 +529,7 @@ body{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, onSnapshot, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
   authDomain: "pureorder-eca2b.firebaseapp.com",
@@ -571,87 +570,61 @@ window.closeModal = id => document.getElementById(id).classList.remove('open');
 window.openDrawer = () => { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('mainDrawer').classList.add('open'); };
 window.closeDrawer = () => { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('mainDrawer').classList.remove('open'); };
 
-// PUSH NOTIFICATIONS
+// STEP 2: Push Notification Setup with your VAPID Key
 async function setupPushNotifications() {
   try {
     const { getMessaging, getToken, onMessage } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js");
     const messaging = getMessaging(app);
     const permission = await Notification.requestPermission();
+    
     if (permission === 'granted') {
-      const currentToken = await getToken(messaging);
-      if (currentToken) await setDoc(doc(db, 'users', currentUser.uid), { fcmToken: currentToken }, { merge: true });
+      // Aapki exact VAPID key yahan set hai
+      const currentToken = await getToken(messaging, { 
+          vapidKey: "BNU3CGv8fDbnHMh61d2L8uam1DQiffr25u8sFlSNkDhVMT27PEb-TzfgE5s0atanC3XDH12hZHFT-_jfTf0cPBs" 
+      });
+      
+      if (currentToken) {
+        await setDoc(doc(db, 'users', currentUser.uid), { fcmToken: currentToken }, { merge: true });
+        console.log("Push Token Saved Successfully!");
+      }
     }
+    
     onMessage(messaging, (payload) => {
       saveNotifLocally(payload.notification.title, payload.notification.body);
       playNotifSound();
       showToast(payload.notification.title);
     });
-  } catch(e) { console.log("FCM Setup Skipped."); }
+  } catch(e) { console.log("FCM Setup Error:", e); }
 }
 
-function saveNotifLocally(title, body) {
-    let logs = JSON.parse(localStorage.getItem('notifLogs') || '[]');
-    const now = new Date();
-    const timeStr = now.toLocaleDateString('en-IN') + ' ' + now.toLocaleTimeString('en-IN', {hour: '2-digit', minute:'2-digit'});
-    logs.unshift({ title, body, time: timeStr, read: false });
-    localStorage.setItem('notifLogs', JSON.stringify(logs.slice(0, 20)));
-    updateNotifBadge();
-}
-
-function updateNotifBadge() {
-    const logs = JSON.parse(localStorage.getItem('notifLogs') || '[]');
-    const unread = logs.filter(l => !l.read).length;
-    const badge = document.getElementById('notifBadge');
-    badge.textContent = unread > 9 ? '9+' : unread;
-    badge.style.display = unread > 0 ? 'flex' : 'none';
-}
-
-function renderNotifPage() {
-    const list = JSON.parse(localStorage.getItem('notifLogs') || '[]');
-    const el = document.getElementById('notifListContainer');
-    if (!list.length) { 
-        el.innerHTML = '<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div><h3>No notifications</h3></div>'; 
-        return; 
-    }
-    el.innerHTML = list.map(n => `
-        <div class="notif-card ${n.read ? '' : 'unread'}">
-            <div class="notif-title">${n.title}</div>
-            <div class="notif-body">${n.body}</div>
-            <div class="notif-time">${n.time}</div>
-        </div>
-    `).join('');
-}
-
-window.openNotifications = () => {
-    let logs = JSON.parse(localStorage.getItem('notifLogs') || '[]');
-    logs.forEach(l => l.read = true);
-    localStorage.setItem('notifLogs', JSON.stringify(logs));
-    updateNotifBadge();
-    goPage('notifications');
-    renderNotifPage();
-};
-
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good Morning';
-  if (h < 17) return 'Good Afternoon';
-  if (h < 21) return 'Good Evening';
-  return 'Good Night';
-}
-
-const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.', 'Good food, tap away.', 'Something delicious!', 'Real food, real fast.', 'Hunger stops here.', 'We got you.'];
-function startTaglines() {
-  let tlIdx = 0;
-  setInterval(() => {
-    const el = document.getElementById('tagline');
-    if(!el) return;
-    el.classList.add('fade');
-    setTimeout(() => {
-      tlIdx = (tlIdx + 1) % TAGLINES_ARRAY.length;
-      el.textContent = TAGLINES_ARRAY[tlIdx];
-      el.classList.remove('fade');
-    }, 400);
-  }, 4000);
+// STEP 3: Admin Message Catcher (Listener)
+function listenAdminNotifications() {
+  // Yahan se wo 'const' waali line delete kar di hai
+  const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(1));
+  let isFirstLoad = true;
+  
+  onSnapshot(q, snap => {
+    if (isFirstLoad) { isFirstLoad = false; return; }
+    
+    snap.docChanges().forEach(change => {
+      if (change.type === 'added') {
+        const data = change.doc.data();
+        saveNotifLocally(data.title, data.body);
+        playNotifSound();
+        showToast(data.title, 'success');
+        
+        if (Notification.permission === 'granted') {
+          navigator.serviceWorker.ready.then(function(registration) {
+            registration.showNotification(data.title, {
+              body: data.body,
+              icon: data.image || '/icon-192.png',
+              vibrate: [200, 100, 200]
+            });
+          });
+        }
+      }
+    });
+  });
 }
 
 // NAVIGATION
@@ -733,6 +706,7 @@ async function initApp() {
     
     startTaglines();
     setupPushNotifications();
+    listenAdminNotifications();
     updateNotifBadge();
     listenOrders();
     loadBanners();
