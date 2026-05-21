@@ -19,7 +19,7 @@ body{
   max-width:430px;
   margin:0 auto;
   overflow-x:hidden;
-  padding-bottom:80px; 
+  padding-bottom:140px; /* Safe padding for bottom nav and floating cart */
 }
 
 /* PREMIUM SPLASH SCREEN */
@@ -85,8 +85,8 @@ body{
 .mini-cart-strip { position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(150%); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:99; box-shadow:0 8px 24px rgba(0,0,0,0.25); transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor:pointer; }
 .mini-cart-strip.show { transform:translateX(-50%) translateY(0); }
 .mc-details { color:white; }
-.mc-count { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; }
-.mc-rest { font-size:12px; color:#9CA3AF; font-weight:500; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
+.mc-count { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; margin-bottom:2px;}
+.mc-rest { font-size:12px; color:#9CA3AF; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
 .mc-btn { display:flex; align-items:center; gap:6px; color:white; font-family:'Sora',sans-serif; font-size:14px; font-weight:800; background:none; border:none; cursor:pointer; }
 .mc-btn svg { width:18px; height:18px; stroke:white; fill:none; stroke-width:2.5; }
 
@@ -229,7 +229,7 @@ body{
 /* EMPTY STATES */
 .empty-box{text-align:center;padding:60px 20px;}
 .empty-icon{width:64px;height:64px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 12px rgba(0,0,0,0.05);}
-.empty-icon svg{width:28px;height:28px;stroke:#9CA3AF;fill:none;stroke-width:2;}
+.empty-icon svg{width:28px;height:28px;stroke:#9CA3AF;fill:none;}
 .empty-box h3{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;}
 .empty-box p{font-size:14px;color:var(--gray);}
 
@@ -352,7 +352,7 @@ body{
   </div>
   <h2 style="font-family:'Sora',sans-serif; font-weight:800; font-size:22px; color:var(--dark); margin-top:20px;">Order Placed!</h2>
 </div>
-  
+
 <div id="loadingScreen">
   <div class="splash-logo">🍽️</div>
   <div class="splash-text">Pure<span style="color:var(--orange);">Order</span></div>
@@ -458,7 +458,7 @@ body{
         <h2 id="activeRestName">Restaurant</h2>
         <p id="activeRestTagline">Fresh food · Cash on Delivery</p>
     </div>
-    <div class="cat-tabs" id="catTabs"></div>
+    <div class="cat-tabs" id="catTabs"><button class="cat-tab active" onclick="filterCat('all',this)">All</button></div>
     <div class="menu-list" id="menuList"></div>
     <div style="height:16px;"></div>
   </div>
@@ -648,9 +648,10 @@ let prevOrderStates = {};
 let dynDeliveryFee = 0; 
 let dynDiscount = 0;
 
+// SOUND & TOAST
 function playNotifSound() {
   const audio = document.getElementById('appSound');
-  if(audio) audio.play().catch(e => console.log("Audio autoplay blocked"));
+  if(audio) audio.play().catch(e => console.log("Audio autoplay blocked by browser"));
 }
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
@@ -661,26 +662,24 @@ window.closeModal = id => document.getElementById(id).classList.remove('open');
 window.openDrawer = () => { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('mainDrawer').classList.add('open'); };
 window.closeDrawer = () => { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('mainDrawer').classList.remove('open'); };
 
+// PUSH NOTIFICATIONS
 async function setupPushNotifications() {
   try {
     const { getMessaging, getToken, onMessage } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js");
     const messaging = getMessaging(app);
     const permission = await Notification.requestPermission();
-    
     if (permission === 'granted') {
       const currentToken = await getToken(messaging, { 
           vapidKey: "BNU3CGv8fDbnHMh61d2L8uam1DQiffr25u8sFlSNkDhVMT27PEb-TzfgE5s0atanC3XDH12hZHFT-_jfTf0cPBs" 
       });
-      if (currentToken) {
-        await setDoc(doc(db, 'users', currentUser.uid), { fcmToken: currentToken }, { merge: true });
-      }
+      if (currentToken) await setDoc(doc(db, 'users', currentUser.uid), { fcmToken: currentToken }, { merge: true });
     }
     onMessage(messaging, (payload) => {
       saveNotifLocally(payload.notification.title, payload.notification.body);
       playNotifSound();
       showToast(payload.notification.title);
     });
-  } catch(e) { console.log("FCM Setup Error:", e); }
+  } catch(e) { console.log("FCM Setup Skipped."); }
 }
 
 function listenAdminNotifications() {
@@ -752,9 +751,9 @@ function getGreeting() {
   return 'Good Night';
 }
 
-const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.'];
 function startTaglines() {
   let tlIdx = 0;
+  const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.', 'Good food, tap away.', 'Something delicious!', 'Real food, real fast.', 'Hunger stops here.', 'We got you.'];
   setInterval(() => {
     const el = document.getElementById('tagline');
     if(!el) return;
@@ -772,16 +771,20 @@ function updateMiniCartStrip() {
   const strip = document.getElementById('miniCartStrip');
   const items = Object.values(cart);
   const totalQty = items.reduce((s, i) => s + i.qty, 0);
+  const totalPrice = items.reduce((s, i) => s + (i.price * i.qty), 0);
   
   if (totalQty > 0) {
-    document.getElementById('mcCountText').textContent = `${totalQty} Item${totalQty > 1 ? 's' : ''} Added`;
-    document.getElementById('mcRestText').textContent = `From ${currentRestName}`;
+    document.getElementById('mcCountText').textContent = `${totalQty} ITEM${totalQty > 1 ? 'S' : ''} | ₹${totalPrice}`;
+    // Find all distinct restaurant names in cart (should be 1 or more)
+    const rests = [...new Set(items.map(i => i.restaurantName))];
+    document.getElementById('mcRestText').textContent = `From ${rests.join(' & ')}`;
     strip.classList.add('show');
   } else {
     strip.classList.remove('show');
   }
 }
 
+// NAVIGATION
 window.goPage = (name, el) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const target = 'page' + name.charAt(0).toUpperCase() + name.slice(1);
@@ -808,20 +811,15 @@ window.goPage = (name, el) => {
   if (name === 'search') doSearch(document.getElementById('searchInput').value);
 };
 
+// DYNAMIC RESTAURANT OPENER
 window.openRestaurant = (restId, restName) => {
-  if (currentRestId && currentRestId !== restId && Object.keys(cart).length > 0) {
-      if(!confirm("Clear your cart to add items from another restaurant?")) {
-         return;
-      }
-      cart = {};
-      updateMiniCartStrip();
-  }
   currentRestId = restId;
   currentRestName = restName;
   goPage('restaurant');
   listenSpecificRestaurant(restId);
 };
 
+// CHECKOUT LOCATION
 window.useGpsLocation = () => {
   const btn = document.getElementById('btnGps');
   btn.innerHTML = '<div class="spinner" style="border-top-color:var(--dark);"></div>';
@@ -841,6 +839,7 @@ window.useGpsLocation = () => {
   }, { timeout: 10000 });
 };
 
+// AUTH
 onAuthStateChanged(auth, async user => {
   if (!user) { window.location.href = 'index.html'; return; }
   currentUser = user;
@@ -873,6 +872,7 @@ async function initApp() {
     listenOrders();
     loadBanners();
     loadCategories();
+    
     loadGlobalMenu();
     listenAllRestaurants();
     loadAdminNotice();
@@ -929,7 +929,7 @@ async function loadBanners() {
   const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
   const banners = snap.docs.map(d => d.data());
   document.getElementById('bannerScroll').innerHTML = banners.map(b => `
-    <div class="banner-card" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')"` : ''}>
+    <div class="banner-card" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')" style="cursor:pointer;"` : ''}>
       <img src="${b.imageUrl}" loading="lazy">
       <div class="banner-gradient"></div>
       <div class="banner-title">${b.title || ''}</div>
@@ -943,12 +943,11 @@ async function loadBanners() {
         const idx = Math.round(scroll.scrollLeft / scroll.clientWidth);
         dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     });
-    
-    // Ensure automatic seamless looping mechanism
     setInterval(() => {
         if(!scroll || !scroll.children.length) return;
+        let maxScroll = scroll.scrollWidth - scroll.clientWidth;
         let nextScroll = scroll.scrollLeft + scroll.clientWidth;
-        if (nextScroll >= scroll.scrollWidth - 10) nextScroll = 0;
+        if (nextScroll > maxScroll + 10) nextScroll = 0;
         scroll.scrollTo({ left: nextScroll, behavior: 'smooth' });
     }, 3500);
   }
@@ -959,7 +958,7 @@ async function loadCategories() {
   document.getElementById('homeCategories').innerHTML = snap.docs.map(d => {
     const c = d.data();
     return `<div class="cat-circle-card" onclick="goPage('search'); document.getElementById('searchInput').value='${c.name}'; doSearch('${c.name}');">
-      <div class="cat-circle-img">${c.imageUrl ? `<img src="${c.imageUrl}" loading="lazy">` : `<span style="font-size:12px;color:var(--gray)">${c.name}</span>`}</div>
+      <div class="cat-circle-img">${c.imageUrl ? `<img src="${c.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:12px;color:var(--gray)">${c.name}</span>`}</div>
       <span class="cat-circle-name">${c.name}</span>
     </div>`;
   }).join('');
@@ -1038,15 +1037,16 @@ function renderRestaurantMenu() {
           <div class="menu-item-price">₹${item.price}</div>
           ${!item.available ? '<div class="menu-item-na">Not available</div>' : ''}
         </div>
-        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',-1)">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1)">Add</button>`) : (!isRestOpen ? `<span style="font-size:11px;color:#9CA3AF;">Closed</span>` : '')}</div>
+        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',-1,'${item.restaurantId}','${item.restaurantName}')">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1,'${item.restaurantId}','${item.restaurantName}')">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${item.name}',${item.price},'${item.imageUrl||''}',1,'${item.restaurantId}','${item.restaurantName}')">Add</button>`) : (!isRestOpen ? `<span style="font-size:11px;color:#9CA3AF;">Closed</span>` : '')}</div>
       </div>`;
     });
   });
   document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gray);">No items found in this restaurant</div>';
 }
 
-window.updateCart = (id, name, price, imageUrl, delta) => {
-  if (!cart[id]) cart[id] = { id, name, price, imageUrl, qty: 0 };
+// TRUE MULTI-RESTAURANT CART
+window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
+  if (!cart[id]) cart[id] = { id, name, price, imageUrl, qty: 0, restaurantId: restId || currentRestId, restaurantName: restName || currentRestName };
   cart[id].qty = Math.max(0, cart[id].qty + delta);
   if (cart[id].qty === 0) delete cart[id];
   
@@ -1063,61 +1063,78 @@ function renderCart() {
   const items = Object.values(cart);
   const el = document.getElementById('cartContent');
   if (!items.length) { 
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><h3 style="font-size:16px;">Cart is empty</h3><p>Add items from the restaurant</p></div>`; 
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><h3 style="font-size:16px;">Cart is empty</h3><p>Add items from any restaurant</p></div>`; 
     return; 
   }
   
-  const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const taxesFees = Math.round(itemTotal * 0.05); // Dynamic Platform Calcs
-  const finalTotal = itemTotal + dynDeliveryFee + taxesFees - dynDiscount;
+  // Group cart items by Restaurant Name
+  const groupedCart = {};
+  items.forEach(i => {
+     if(!groupedCart[i.restaurantId]) groupedCart[i.restaurantId] = { name: i.restaurantName, items: [] };
+     groupedCart[i.restaurantId].items.push(i);
+  });
   
-  /* PROFESSIONAL BILLING LOOK WITH RESTAURANT NAME GROUPING */
-  el.innerHTML = `
-  <div class="cart-list">
-    <div class="cart-restaurant-group">
-      <div class="cart-rest-title">
-        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        ${currentRestName}
-      </div>
-      ${items.map(i => `
-        <div class="cart-item">
-          <div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;text-align:center;">${i.name}</span>`}</div>
-          <div class="cart-item-info">
-            <div class="cart-item-name">${i.name}</div>
-            <div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <b>₹${i.price * i.qty}</b></div>
-          </div>
-          <div class="qty-ctrl">
-            <button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',-1)">−</button>
-            <div class="qty-num">${i.qty}</div>
-            <button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',1)">+</button>
-          </div>
+  let cartHtml = '<div class="cart-list">';
+  Object.values(groupedCart).forEach(g => {
+      cartHtml += `
+      <div class="cart-restaurant-group">
+        <div class="cart-rest-title">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${g.name || 'Restaurant'}
         </div>
-      `).join('')}
-    </div>
-  </div>
+        ${g.items.map(i => `
+          <div class="cart-item">
+            <div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;text-align:center;">${i.name}</span>`}</div>
+            <div class="cart-item-info">
+              <div class="cart-item-name">${i.name}</div>
+              <div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <span style="color:var(--dark)">₹${i.price * i.qty}</span></div>
+            </div>
+            <div class="qty-ctrl">
+              <button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',-1)">−</button>
+              <div class="qty-num">${i.qty}</div>
+              <button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',1)">+</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+  });
+  cartHtml += '</div>';
+
+  const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const numRestaurants = Object.keys(groupedCart).length;
+  dynDeliveryFee = numRestaurants * 40; // Charge per restaurant
+  const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
+  
+  cartHtml += `
   <div class="cart-summary">
-    <div class="summary-row"><span>Item Total</span><span>₹${itemTotal}</span></div>
-    <div class="summary-row"><span>Delivery Partner Fee</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
-    <div class="summary-row"><span>Platform Taxes & Fees</span><span>₹${taxesFees}</span></div>
-    ${dynDiscount > 0 ? `<div class="summary-row" style="color:var(--green)"><span>Discount Saved</span><span>-₹${dynDiscount}</span></div>` : ''}
+    <div class="summary-row"><span>Items Subtotal</span><span>₹${itemTotal}</span></div>
+    <div class="summary-row"><span>Delivery Fee (${numRestaurants} locations)</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
+    ${dynDiscount > 0 ? `<div class="summary-row" style="color:var(--green)"><span>Discount</span><span>-₹${dynDiscount}</span></div>` : ''}
     <div class="summary-total"><span>Grand Total</span><span>₹${finalTotal}</span></div>
   </div>
   <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>`;
+  
+  el.innerHTML = cartHtml;
 }
 
+// STRICT CHECKOUT 
 window.openCheckout = () => {
-  if (!isRestOpen) { showToast('Restaurant is currently closed', 'error'); return; }
   document.getElementById('coPhone').value = userData.phone || '';
   document.getElementById('coAddress').value = userData.address || '';
-  capturedLat = null; capturedLng = null;
+  
+  capturedLat = null; 
+  capturedLng = null;
+  
   ['errPhone','errAddress','errGps'].forEach(id => document.getElementById(id).style.display = 'none');
   
   const btnGps = document.getElementById('btnGps');
   btnGps.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg> Use Current Location';
   btnGps.classList.remove('success');
+
   document.getElementById('checkoutModal').classList.add('open');
 };
 
+// MULTI-RESTAURANT PLACE ORDER
 window.placeOrder = async () => {
   const phone = document.getElementById('coPhone').value.trim();
   const address = document.getElementById('coAddress').value.trim();
@@ -1134,56 +1151,73 @@ window.placeOrder = async () => {
   
   try {
     const items = Object.values(cart);
-    const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-    const taxesFees = Math.round(itemTotal * 0.05);
-    const finalTotal = itemTotal + dynDeliveryFee + taxesFees - dynDiscount;
-    
+    const groupedCart = {};
+    items.forEach(i => {
+       if(!groupedCart[i.restaurantId]) groupedCart[i.restaurantId] = { name: i.restaurantName, items: [] };
+       groupedCart[i.restaurantId].items.push(i);
+    });
+
     await setDoc(doc(db, 'users', currentUser.uid), { phone, address }, { merge: true });
     userData.phone = phone; userData.address = address;
     
-    const orderData = {
-      customerId: currentUser.uid, customerName: userData.name || 'Customer', customerPhone: phone, deliveryAddress: address,
-      restaurantId: currentRestId, restaurantName: currentRestName,
-      items: items.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
-      itemTotal: itemTotal, deliveryFee: dynDeliveryFee, taxAmount: taxesFees, discount: dynDiscount, totalAmount: finalTotal,
-      paymentType: 'COD', status: 'placed', latitude: capturedLat, longitude: capturedLng,
-      createdAt: serverTimestamp(), updatedAt: serverTimestamp()
-    };
+    // Create a shared unique Batch ID to group them in the customer UI
+    const batchId = 'GRP_' + Date.now();
+    const batchTime = serverTimestamp();
+    const promises = [];
     
-    await addDoc(collection(db, 'orders'), orderData);
+    // Create separate order documents for each restaurant!
+    for (const [rId, rData] of Object.entries(groupedCart)) {
+        const rItems = rData.items;
+        const rItemTotal = rItems.reduce((s, i) => s + i.price * i.qty, 0);
+        const rDelivery = 40; 
+        const rDiscount = 0; 
+        const rTotal = rItemTotal + rDelivery - rDiscount;
+        
+        const orderData = {
+          customerId: currentUser.uid, customerName: userData.name || 'Customer', customerPhone: phone, deliveryAddress: address,
+          restaurantId: rId, restaurantName: rData.name,
+          items: rItems.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
+          itemTotal: rItemTotal, deliveryFee: rDelivery, discount: rDiscount, totalAmount: rTotal,
+          paymentType: 'COD', status: 'placed', latitude: capturedLat, longitude: capturedLng,
+          createdAt: batchTime, updatedAt: batchTime, groupId: batchId
+        };
+        promises.push(addDoc(collection(db, 'orders'), orderData));
+    }
+    
+    await Promise.all(promises);
+    
     cart = {}; 
     document.getElementById('cartBadge').style.display = 'none';
     updateMiniCartStrip();
     closeModal('checkoutModal');
     
     document.getElementById('orderSuccessScreen').style.display = 'flex';
-    saveNotifLocally("Order Placed Successfully", `Dispatched to ${currentRestName}.`);
+    saveNotifLocally("Order Placed Successfully", "We've received your order and sent it to the restaurant.");
     playNotifSound();
     
     setTimeout(() => {
         document.getElementById('orderSuccessScreen').style.display = 'none';
         goPage('orders');
     }, 2000);
+    
   } catch(e) {
-    showToast('Failed to place order', 'error');
+    showToast('Failed to place order. Check connection.', 'error');
     btn.innerHTML = 'Place Order'; btn.style.pointerEvents = 'auto';
   }
 };
 
+// GROUPED AUTOMATED LOCAL NOTIFICATIONS & ORDERS LIST
 function listenOrders() {
   const q = query(collection(db, 'orders'), where('customerId', '==', currentUser.uid));
   onSnapshot(q, snap => {
     activeOrdersData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
     activeOrdersData.forEach(o => {
        const oldState = prevOrderStates[o.id];
        if (oldState && oldState !== o.status) { triggerLocalOrderNotification(o); }
        prevOrderStates[o.id] = o.status;
     });
-    activeOrdersData.sort((a,b) => {
-        let timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : Date.now()) : Date.now();
-        let timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : Date.now()) : Date.now();
-        return timeB - timeA; 
-    });
+
     if(document.getElementById('pageOrders').classList.contains('active')) renderOrders();
     if(document.getElementById('pageOrderDetail').classList.contains('active')) {
       const currentViewId = document.getElementById('odTitle').dataset.id;
@@ -1194,13 +1228,17 @@ function listenOrders() {
 
 function triggerLocalOrderNotification(o) {
     let title = "Order Update";
-    let body = `Your order #${o.id.slice(-5).toUpperCase()} is ${o.status}.`;
+    let body = `Your order #${o.id.slice(-5).toUpperCase()} status changed to ${o.status}.`;
+    
     switch(o.status) {
-        case 'accepted': title = "Order Accepted!"; body = "The restaurant is preparing your meal."; break;
-        case 'preparing': title = "Preparing Food"; body = "Chef has started cooking your food."; break;
-        case 'ready': title = "Food Ready!"; body = "Order packed. Waiting for pick up."; break;
-        case 'out for delivery': title = "Out for Delivery!"; body = "Your food is arriving soon!"; break;
-        case 'delivered': title = "Order Delivered!"; body = "Enjoy your fresh meal!"; break;
+        case 'accepted': title = "Order Accepted!"; body = `${o.restaurantName} is preparing your meal.`; break;
+        case 'rejected':
+        case 'cancelled': title = "Order Cancelled"; body = `Reason: ${o.cancellationReason || 'Rejected by restaurant'}`; break;
+        case 'preparing': title = "Food is Preparing"; body = "The chef is working their magic."; break;
+        case 'ready': title = "Order is Ready!"; body = "Waiting for the delivery partner to pick it up."; break;
+        case 'out for delivery': title = "Out for Delivery!"; body = "Track your order, your food is on the way!"; break;
+        case 'delivered': title = "Delivered!"; body = "Thanks for ordering with PureOrder. Enjoy your meal!"; break;
+        case 'assigned': title = "Delivery Partner Assigned"; body = `${o.deliveryPartnerName || 'A partner'} has been assigned to your order.`; break;
     }
     saveNotifLocally(title, body);
     playNotifSound();
@@ -1209,46 +1247,63 @@ function triggerLocalOrderNotification(o) {
 function renderOrders() {
   const el = document.getElementById('ordersList');
   if (!activeOrdersData.length) {
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3>No orders yet</h3></div>`;
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3 style="font-size:16px;">No orders yet</h3><p>Your order history will appear here</p></div>`;
     return;
   }
+  
+  // Grouping the orders visually by their shared GroupId
+  const groupedOrders = {};
+  activeOrdersData.forEach(o => {
+      const gId = o.groupId || o.id;
+      if(!groupedOrders[gId]) {
+          groupedOrders[gId] = {
+              id: gId, status: o.status, createdAt: o.createdAt, totalAmount: 0,
+              restaurants: new Set(), itemsText: [],
+          };
+      }
+      groupedOrders[gId].totalAmount += (o.totalAmount || 0);
+      groupedOrders[gId].restaurants.add(o.restaurantName || 'Restaurant');
+      (o.items||[]).forEach(i => groupedOrders[gId].itemsText.push(`${i.qty}× ${i.name}`));
+  });
+  
+  const orderedList = Object.values(groupedOrders).sort((a,b) => (b.createdAt?.toMillis()||0) - (a.createdAt?.toMillis()||0));
+  
   const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', 'picked up':'sp-assigned', 'out for delivery':'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled', rejected:'sp-cancelled' };
   
-  el.innerHTML = activeOrdersData.map(o => {
+  el.innerHTML = orderedList.map(o => {
     const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
-    const itemsText = o.items?.map(i => `${i.qty}× ${i.name}`).join(', ') || '';
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'Just now';
+    const restNames = Array.from(o.restaurants).join(' & ');
+    
     return `<div class="order-card" onclick="showOrderDetail('${o.id}')">
-      <div class="order-top"><div><div class="order-id">${o.restaurantName || 'PureOrder'} #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
-      <div class="order-items-text">${itemsText}</div>
-      <div class="order-total-row"><span>Grand Total</span><span style="color:var(--dark)">₹${o.totalAmount || 0}</span></div>
+      <div class="order-top"><div><div class="order-id">${restNames}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
+      <div class="order-items-text">${o.itemsText.join(', ')}</div>
+      <div class="order-total-row"><span>Grand Total</span><span style="color:var(--dark)">₹${o.totalAmount}</span></div>
     </div>`;
   }).join('');
 }
 
-window.showOrderDetail = id => {
-  const o = activeOrdersData.find(x => x.id === id);
-  if(!o) return;
+// ORDER DETAILS - GROUPED UI
+window.showOrderDetail = gId => {
+  // Grab all actual documents belonging to this group
+  const groupDocs = activeOrdersData.filter(x => (x.groupId || x.id) === gId);
+  if(!groupDocs.length) return;
+  
+  // Use the primary doc for status/timeline rendering
+  const primaryDoc = groupDocs[0];
   
   goPage('orderDetail');
-  document.getElementById('odTitle').textContent = `Order #${o.id.slice(-5).toUpperCase()}`;
-  document.getElementById('odTitle').dataset.id = o.id; 
+  document.getElementById('odTitle').textContent = `Order Details`;
+  document.getElementById('odTitle').dataset.id = gId; 
 
   const steps = ['placed', 'accepted', 'preparing', 'out for delivery', 'delivered'];
-  let currentStepIdx = steps.indexOf(o.status);
-  if(['ready', 'assigned', 'picked up'].includes(o.status)) currentStepIdx = 3; 
+  let currentStepIdx = steps.indexOf(primaryDoc.status);
+  if(['ready', 'assigned', 'picked up'].includes(primaryDoc.status)) currentStepIdx = 3; 
 
-  /* RE-DESIGNED LIVE TRACK TIMELINE LOOK */
-  let timelineHtml = `
-  <div class="od-section">
-    <div class="professional-track-title">
-      <svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      Live Tracking Status
-    </div>
-    <div class="timeline">`;
+  let timelineHtml = '<div class="od-section"><div class="professional-track-title"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Live Tracking Status</div><div class="timeline">';
   
-  if (o.status === 'cancelled' || o.status === 'rejected') {
-     timelineHtml += `<div class="tl-item active"><div class="tl-dot" style="background:var(--red); box-shadow:0 0 0 1px var(--red);"></div><div class="tl-title">Order Cancelled</div><div class="tl-time" style="color:var(--red)">${o.cancellationReason || 'Cancelled by merchant node'}</div></div>`;
+  if (primaryDoc.status === 'cancelled' || primaryDoc.status === 'rejected') {
+     timelineHtml += `<div class="tl-item active"><div class="tl-dot" style="background:var(--red); box-shadow:0 0 0 1px var(--red);"></div><div class="tl-title">Order Cancelled</div><div class="tl-time" style="color:var(--red)">${primaryDoc.cancellationReason || 'Cancelled by merchant'}</div></div>`;
   } else {
      steps.forEach((step, idx) => {
         let stateClass = '';
@@ -1259,64 +1314,71 @@ window.showOrderDetail = id => {
         if(step==='out for delivery') stepLabel="Out For Delivery";
         let timeStr = '';
         
-        if (idx === 0 && o.createdAt) {
-            timeStr = o.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        } else if (o[step + 'At']) {
-            timeStr = o[step + 'At'].toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        } else if (idx === currentStepIdx && o.updatedAt) {
-            timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        } else if (idx < currentStepIdx) {
-            timeStr = '✓ Completed';
-        }
+        if (idx === 0 && primaryDoc.createdAt) timeStr = primaryDoc.createdAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        else if (primaryDoc[step + 'At']) timeStr = primaryDoc[step + 'At'].toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        else if (idx === currentStepIdx && primaryDoc.updatedAt) timeStr = primaryDoc.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        else if (idx < currentStepIdx) timeStr = '✓ Completed';
+
         timelineHtml += `<div class="tl-item ${stateClass}"><div class="tl-dot"></div><div class="tl-title">${stepLabel}</div><div class="tl-time">${timeStr}</div></div>`;
      });
   }
   timelineHtml += '</div></div>';
 
   let trackBtnHtml = '';
-  if (['out for delivery', 'assigned', 'picked up'].includes(o.status)) {
-      const trackLink = o.trackingLink || o.locationLink || '#'; 
+  if (['out for delivery', 'assigned', 'picked up'].includes(primaryDoc.status)) {
+      const trackLink = primaryDoc.trackingLink || primaryDoc.locationLink || '#'; 
       if (trackLink && trackLink !== '#') {
          trackBtnHtml = `<div style="margin:0 20px 16px;"><a href="${trackLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#FFF3E0; color:var(--orange); padding:14px; border-radius:12px; text-decoration:none; font-weight:800; font-size:15px; border:1px solid #FFD8A8; box-shadow:0 4px 10px rgba(254,114,76,0.15);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Live Location</a></div>`;
       }
   }
 
   let dpHtml = '';
-  if (['assigned', 'picked up', 'out for delivery'].includes(o.status) && o.deliveryPartnerName) {
-      const callIconHtml = o.deliveryPartnerPhone ? `<a href="tel:${o.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
+  if (['assigned', 'picked up', 'out for delivery'].includes(primaryDoc.status) && primaryDoc.deliveryPartnerName) {
+      const callIconHtml = primaryDoc.deliveryPartnerPhone ? `<a href="tel:${primaryDoc.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
       dpHtml = `<div class="od-section" style="display:flex; justify-content:space-between; align-items:center; background:#F0FDF4; border:1px solid #BBF7D0;">
         <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; flex-shrink:0;">${o.deliveryPartnerName.charAt(0)}</div>
-            <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">Rider Assigned</div><div style="font-size:14px; font-weight:800; color:var(--dark);">${o.deliveryPartnerName}</div></div>
+            <div style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; flex-shrink:0;">${primaryDoc.deliveryPartnerName.charAt(0)}</div>
+            <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">Rider Assigned</div><div style="font-size:14px; font-weight:800; color:var(--dark);">${primaryDoc.deliveryPartnerName}</div></div>
         </div>
         ${callIconHtml}
       </div>`;
   }
 
-  const itemsHtml = `<div class="od-section">
-    <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:14px;">
-       <div style="font-size:15px; font-weight:800; color:var(--dark);">${o.restaurantName || 'Restaurant Order'}</div>
-       <div style="font-size:12px; color:var(--gray); margin-top:2px;">Detailed Receipt Breakdown</div>
-    </div>
-    ${(o.items||[]).map(i => `
-      <div class="receipt-item">
-        <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;text-align:center;">${i.name}</span>`}</div>
-        <div class="ri-info"><div class="ri-name">${i.name}</div><div class="ri-qty">${i.qty} × ₹${i.price}</div></div>
-        <div class="ri-price">₹${i.price * i.qty}</div>
+  let finalGrandTotal = 0;
+  
+  // Combine all items and calculations seamlessly
+  let itemsHtml = `<div class="od-section">`;
+  groupDocs.forEach(docOrder => {
+      finalGrandTotal += (docOrder.totalAmount || 0);
+      itemsHtml += `
+      <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:14px;">
+         <div style="font-size:15px; font-weight:800; color:var(--dark); display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--orange)" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${docOrder.restaurantName || 'Restaurant'}</div>
+         <div style="font-size:12px; color:var(--gray); margin-top:2px;">Receipt Breakdown</div>
       </div>
-    `).join('')}
-    <div style="border-top:1px dashed var(--border); margin:16px 0; padding-top:16px;">
-      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Items Subtotal</span><span>₹${o.itemTotal||0}</span></div>
-      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Delivery Fee Charges</span><span>₹${o.deliveryFee || 0}</span></div>
-      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Taxes & Conveniences</span><span>₹${o.taxAmount || 0}</span></div>
-      ${o.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Campaign Rebate</span><span>-₹${o.discount}</span></div>` : ''}
-      <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);"><span>Grand Total Paid</span><span style="color:var(--dark)">₹${o.totalAmount}</span></div>
+      ${(docOrder.items||[]).map(i => `
+        <div class="receipt-item">
+          <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;text-align:center;">${i.name}</span>`}</div>
+          <div class="ri-info"><div class="ri-name">${i.name}</div><div class="ri-qty">${i.qty} × ₹${i.price}</div></div>
+          <div class="ri-price">₹${i.price * i.qty}</div>
+        </div>
+      `).join('')}
+      <div style="margin:16px 0 24px; padding-top:16px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Subtotal</span><span>₹${docOrder.itemTotal||0}</span></div>
+        <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Delivery Fee</span><span style="color:var(--green)">${docOrder.deliveryFee === 0 ? 'Free' : '₹'+docOrder.deliveryFee}</span></div>
+      </div>`;
+  });
+
+  itemsHtml += `
+    <div style="border-top:1px solid var(--border); padding-top:16px;">
+      <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800;"><span>Total Amount Paid</span><span style="color:var(--dark)">₹${finalGrandTotal}</span></div>
+      <div style="font-size:11px; text-align:center; color:var(--gray); margin-top:16px;">Payment Mode: Cash on Delivery</div>
     </div>
   </div>`;
 
   document.getElementById('odContent').innerHTML = timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
 
+// SEARCH
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { 
@@ -1325,10 +1387,11 @@ window.doSearch = val => {
   }
   const res = windowGlobalMenuItems.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
   el.innerHTML = res.length
-    ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
-    : `<div style="text-align:center;padding:40px;color:var(--gray);">No items matched</div>`;
+    ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
+    : `<div style="text-align:center;padding:40px;color:var(--gray);">No results found</div>`;
 };
 
+// PROFILE
 function renderProfile() {
   const name = userData.name || currentUser.displayName || 'User';
   document.getElementById('profileName').textContent = name;
@@ -1362,11 +1425,12 @@ window.saveProfile = async () => {
     if (currentEditField === 'address') document.getElementById('pAddress').textContent = val;
     closeModal('editModal');
     showToast('Saved!', 'success');
-  } catch(e) { showToast('Error saving profile'); }
+  } catch(e) { showToast('Failed to save', 'error'); }
 };
 
 window.doLogout = async () => {
-  try { await signOut(auth); window.location.href = 'index.html'; } catch(e) {}
+  try { await signOut(auth); window.location.href = 'index.html'; }
+  catch(e) { showToast('Logout failed', 'error'); }
 };
 
 document.querySelectorAll('.overlay').forEach(o => {
