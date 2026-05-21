@@ -22,14 +22,17 @@ body{
   padding-bottom:80px; 
 }
 
-/* GLOBAL LOADERS */
-#loadingScreen{position:fixed;inset:0;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s;}
-#loadingScreen.hide{opacity:0;pointer-events:none;}
-.loader-logo{font-family:'Sora',sans-serif;font-size:30px;font-weight:800;}
-.loader-logo span{color:var(--orange);}
-.loader-bar{width:80px;height:3px;background:var(--light);border-radius:2px;overflow:hidden;margin-top:16px;}
-.loader-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));animation:ld 1.4s ease forwards;}
-@keyframes ld{from{width:0}to{width:100%}}
+/* PREMIUM SPLASH SCREEN */
+#loadingScreen { position:fixed; inset:0; background:var(--orange); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s; }
+#loadingScreen.hide { opacity:0; visibility:hidden; pointer-events:none; }
+.splash-logo { width:90px; height:90px; background:white; border-radius:24px; display:flex; align-items:center; justify-content:center; font-size:45px; margin-bottom:24px; box-shadow:0 12px 32px rgba(0,0,0,0.2); animation:pulseLogo 1.2s infinite alternate; }
+.splash-text { font-family:'Sora',sans-serif; font-size:32px; font-weight:800; color:white; letter-spacing:-0.5px; }
+@keyframes pulseLogo { 
+  0% { transform: scale(0.95); box-shadow:0 8px 24px rgba(0,0,0,0.1); } 
+  100% { transform: scale(1.05); box-shadow:0 16px 40px rgba(0,0,0,0.3); } 
+}
+
+/* BUTTON SPINNERS (DON'T DELETE) */
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:var(--dark);border-radius:50%;animation:spin 0.7s linear infinite;}
 .spinner.white{border-top-color:white;}
 @keyframes spin{to{transform:rotate(360deg)}}
