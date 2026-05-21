@@ -19,7 +19,7 @@ body{
   max-width:430px;
   margin:0 auto;
   overflow-x:hidden;
-  padding-bottom:80px; 
+  padding-bottom:100px; 
 }
 
 /* PREMIUM SPLASH SCREEN */
@@ -32,7 +32,7 @@ body{
   100% { transform: scale(1.05); box-shadow:0 16px 40px rgba(0,0,0,0.3); } 
 }
 
-/* BUTTON SPINNERS (DON'T DELETE) */
+/* BUTTON SPINNERS */
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:var(--dark);border-radius:50%;animation:spin 0.7s linear infinite;}
 .spinner.white{border-top-color:white;}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -48,7 +48,7 @@ body{
 .page.active{display:block;animation:fadeIn 0.2s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 
-/* TOP BAR (Highest Order) */
+/* TOP BAR */
 .top-bar { display:flex; justify-content:space-between; align-items:center; padding:20px 20px 10px; z-index:100;}
 .icon-btn{background:white; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.04); width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:transform 0.1s;}
 .icon-btn:active{transform:scale(0.95);}
@@ -64,7 +64,7 @@ body{
 .drawer-close{background:var(--light);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .drawer-close svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2;}
 .drawer-links{flex:1;padding:20px 0;overflow-y:auto;}
-.drawer-link{display:flex;align-items:center;gap:14px;padding:16px 24px;color:var(--dark);text-decoration:none;font-size:15px;font-weight:600;transition:background 0.2s;}
+.drawer-link{display:flex;align-items:center;gap:14px;padding:16px 24px;color:var(--dark);text-decoration:none;font-size:15px;font-weight:600;transition:background 0.2s;cursor:pointer;}
 .drawer-link:active{background:var(--light);}
 .drawer-link svg{width:20px;height:20px;stroke:var(--gray);fill:none;stroke-width:2;}
 .drawer-footer{padding:24px;border-top:1px solid var(--border);background:#FAFAFA;text-align:center;}
@@ -79,6 +79,15 @@ body{
 .nav-btn.active svg{stroke:var(--orange);}
 .nav-btn.active .nl{color:var(--orange);}
 .cart-badge{position:absolute;top:6px;right:14px;background:var(--red);color:white;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;display:none;}
+
+/* SWIGGY STYLE MINI CART POPUP */
+.mini-cart-strip { position:fixed; bottom:75px; left:50%; transform:translateX(-50%) translateY(120%); width:calc(100% - 32px); max-width:398px; background:var(--green); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:101; box-shadow:0 8px 24px rgba(52,199,89,0.35); transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.mini-cart-strip.show { transform:translateX(-50%) translateY(0); }
+.mc-details { color:white; }
+.mc-count { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; }
+.mc-rest { font-size:11px; opacity:0.9; font-weight:500; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
+.mc-btn { display:flex; align-items:center; gap:6px; color:white; font-family:'Sora',sans-serif; font-size:14px; font-weight:800; background:none; border:none; cursor:pointer; }
+.mc-btn svg { width:18px; height:18px; stroke:white; fill:none; stroke-width:2.5; }
 
 /* HOME CONTENT */
 .home-header{padding:10px 20px 16px;}
@@ -139,7 +148,6 @@ body{
 .rest-card:active{transform:scale(0.99);}
 .rest-img-box{width:100%;height:160px;background:var(--light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#9CA3AF;overflow:hidden;position:relative;}
 .rest-img-box img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;}
-/* FIXED: Badge Moved to Right Side */
 .rest-status-badge{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;color:white;box-shadow:0 2px 6px rgba(0,0,0,0.2);z-index:2;}
 .badge-open{background:var(--green);}
 .badge-closed{background:var(--red);}
@@ -188,7 +196,8 @@ body{
 .menu-item-img img{width:100%;height:100%;object-fit:cover;}
 .menu-item-info{flex:1;min-width:0;}
 .menu-item-name{font-size:15px;font-weight:700;margin-bottom:2px;}
-.menu-item-desc{font-size:12px;color:var(--gray);line-height:1.4;margin-bottom:6px;}
+/* FIX: Long Description Bug */
+.menu-item-desc{font-size:12px;color:var(--gray);line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;}
 .menu-item-price{font-size:15px;font-weight:800;color:var(--dark);}
 .menu-item-na{font-size:11px;color:var(--red);font-weight:600;background:#FEE2E2;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
 .menu-item-actions{flex-shrink:0;display:flex;align-items:flex-end;}
@@ -203,14 +212,17 @@ body{
 
 /* CART */
 .cart-list{padding:0 20px 16px;}
-.cart-item{background:white;border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
-.cart-item-img{width:52px;height:52px;border-radius:10px;background:var(--light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9CA3AF;text-align:center;padding:3px;}
+.cart-restaurant-group { background:white; border-radius:20px; padding:16px; margin-bottom:16px; box-shadow:0 4px 14px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.02); }
+.cart-rest-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; color:var(--dark); display:flex; align-items:center; gap:6px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--light); }
+.cart-rest-title svg { width:16px; height:16px; stroke:var(--orange); fill:none; stroke-width:2.5; }
+.cart-item{background:var(--light);border-radius:14px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:none;}
+.cart-item-img{width:52px;height:52px;border-radius:10px;background:white;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9CA3AF;text-align:center;padding:3px;}
 .cart-item-img img{width:100%;height:100%;object-fit:cover;}
 .cart-item-info{flex:1;}
 .cart-item-name{font-size:14px;font-weight:700;margin-bottom:3px;}
 .cart-item-price{font-size:13px;color:var(--gray);font-weight:600;}
 .cart-summary{background:white;margin:0 20px 16px;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
-.summary-row{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;color:var(--gray);}
+.summary-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:var(--gray);font-weight:500;}
 .summary-total{display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--dark);padding-top:12px;margin-top:6px;border-top:1px dashed var(--border);}
 .checkout-btn{display:block;width:calc(100% - 40px);margin:0 auto;background:var(--orange);color:white;border:none;border-radius:14px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-align:center;box-shadow:0 4px 12px rgba(254,114,76,0.3);}
 
@@ -238,17 +250,21 @@ body{
 .order-items-text{font-size:13px;color:var(--gray);margin-bottom:10px;line-height:1.6;}
 .order-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:800;}
 
-.od-section { background:white; padding:20px; border-radius:16px; margin:0 20px 16px; box-shadow:0 2px 10px rgba(0,0,0,0.03); }
-.timeline { position:relative; padding-left:24px; margin:10px 0; }
+/* PROFESSIONAL TRACK LIVE UI */
+.od-section { background:white; padding:20px; border-radius:20px; margin:0 20px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.01); }
+.professional-track-title { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; color:var(--dark); letter-spacing:0.3px; display:flex; align-items:center; gap:8px; margin-bottom:20px; text-transform:uppercase; border-bottom:1px solid var(--light); padding-bottom:12px; }
+.professional-track-title svg { stroke:var(--orange); fill:none; stroke-width:2.5; }
+.timeline { position:relative; padding-left:26px; margin:5px 0; }
 .timeline::before { content:''; position:absolute; left:7px; top:4px; bottom:4px; width:2px; background:var(--border); }
-.tl-item { position:relative; margin-bottom:16px; }
+.tl-item { position:relative; margin-bottom:24px; opacity:0.55; transition:all 0.3s ease; }
 .tl-item:last-child { margin-bottom:0; }
-.tl-dot { position:absolute; left:-24px; top:2px; width:16px; height:16px; border-radius:50%; background:var(--light); border:3px solid white; box-shadow:0 0 0 1px var(--border); z-index:2; }
+.tl-item.active, .tl-item.current { opacity:1; }
+.tl-dot { position:absolute; left:-26px; top:2px; width:16px; height:16px; border-radius:50%; background:var(--light); border:3px solid white; box-shadow:0 0 0 1px var(--border); z-index:2; transition:all 0.3s; }
 .tl-item.active .tl-dot { background:var(--green); box-shadow:0 0 0 1px var(--green); }
 .tl-item.current .tl-dot { background:var(--orange); box-shadow:0 0 0 1px var(--orange); animation: pulse 1.5s infinite; }
-.tl-title { font-weight:700; font-size:14px; color:var(--dark); margin-bottom:2px;}
-.tl-time { font-size:11px; color:var(--gray); }
-@keyframes pulse { 0% {box-shadow:0 0 0 0 rgba(254,114,76,0.4);} 70% {box-shadow:0 0 0 6px rgba(254,114,76,0);} 100% {box-shadow:0 0 0 0 rgba(254,114,76,0);} }
+.tl-title { font-weight:700; font-size:14px; color:var(--dark); margin-bottom:3px;}
+.tl-time { font-size:11px; color:var(--gray); font-weight:500; }
+@keyframes pulse { 0% {box-shadow:0 0 0 0 rgba(254,114,76,0.45);} 70% {box-shadow:0 0 0 8px rgba(254,114,76,0);} 100% {box-shadow:0 0 0 0 rgba(254,114,76,0);} }
 
 .receipt-item { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
 .ri-img { width:48px; height:48px; border-radius:10px; background:var(--light); overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; color:#9CA3AF; text-align:center; padding:2px;}
@@ -260,6 +276,11 @@ body{
 
 .track-btn{width:100%;margin-top:12px;background:var(--orange);color:white;border:none;border-radius:10px;padding:11px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
 
+/* EXTRA DRAWER PAGES CONTENT LOOK */
+.drawer-page-box { padding:24px 20px; background:white; border-radius:20px; margin:0 20px 20px; box-shadow:0 4px 12px rgba(0,0,0,0.03); }
+.dp-paragraph { font-size:14px; color:var(--gray); line-height:1.6; margin-bottom:16px; font-weight:400; }
+.dp-subtitle { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; margin:18px 0 8px; color:var(--dark); }
+
 /* NOTIFICATIONS PAGE */
 .notif-list { padding:0 20px 20px; }
 .notif-card { background:white; border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:relative; overflow:hidden;}
@@ -268,7 +289,7 @@ body{
 .notif-body { font-size:13px; color:var(--gray); line-height:1.5; }
 .notif-time { font-size:11px; color:#A1A1AA; margin-top:8px; }
 
-/* PROFILE - Gradient Avatar */
+/* PROFILE */
 .profile-top{padding:52px 20px 24px;text-align:center;}
 .profile-letter-av{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg, var(--orange) 30%, var(--yellow) 100%);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:36px;font-weight:800;color:white;margin:0 auto 16px;box-shadow:0 4px 12px rgba(254,114,76,0.3);}
 .profile-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;}
@@ -316,6 +337,18 @@ body{
 
 <audio id="appSound" src="./notification.mp3" preload="auto"></audio>
 
+<!-- SWIGGY STYLE BOTTOM BAR STRIP -->
+<div class="mini-cart-strip" id="miniCartStrip">
+  <div class="mc-details">
+    <div class="mc-count" id="mcCountText">0 Items Added</div>
+    <div class="mc-rest" id="mcRestText">From Restaurant</div>
+  </div>
+  <button class="mc-btn" onclick="goPage('cart')">
+    View Cart 
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
 <div class="success-overlay" id="orderSuccessScreen">
   <div class="success-circle">
      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -331,14 +364,17 @@ body{
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="mainDrawer">
   <div class="drawer-header">
-    <div class="loader-logo" style="font-size:22px;">Pure<span>Order</span></div>
+    <div class="loader-logo" style="font-size:22px; font-weight:800; font-family:'Sora',sans-serif;">Pure<span style="color:var(--orange)">Order</span></div>
     <button class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div class="drawer-links">
     <a href="https://abhivision.in" target="_blank" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>AV Frames</a>
-    <a href="#" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
-    <a href="#" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
-    <a href="#" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>About Us</a>
+    
+    <!-- SEQUENTIAL MENU ADDITION -->
+    <a onclick="closeDrawer(); goPage('privacyPolicy')" class="drawer-link"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
+    <a onclick="closeDrawer(); goPage('termsConditions')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
+    <a onclick="closeDrawer(); goPage('helpSupport')" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
+    <a onclick="closeDrawer(); goPage('aboutUs')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>About Us</a>
   </div>
   <div class="drawer-footer">
     <div class="df-text">Made By Abhishek Sahoo</div>
@@ -399,7 +435,7 @@ body{
 </div>
 
 <div id="pageNotifications" class="page">
-  <div class="page-header" style="display:flex; align-items:center; gap:12px;">
+  <div class="page-header">
     <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
     <h2 style="margin:0;">Notifications</h2>
   </div>
@@ -448,6 +484,61 @@ body{
     <h2 style="margin:0;" id="odTitle">Order Details</h2>
   </div>
   <div id="odContent"></div>
+</div>
+
+<!-- DYNAMIC SIDE MENU PAGES -->
+<div id="pagePrivacyPolicy" class="page">
+  <div class="page-header" style="padding-top:40px;">
+    <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <h2>Privacy Policy</h2>
+  </div>
+  <div class="drawer-page-box">
+    <div class="dp-paragraph">Welcome to PureOrder. We respect your privacy and are committed to protecting your personal data.</div>
+    <div class="dp-subtitle">1. Data Collected</div>
+    <div class="dp-paragraph">We collect your profile name, delivery address, phone numbers and device geolocation tokens explicitly to map accurate deliveries.</div>
+    <div class="dp-subtitle">2. Usage Purpose</div>
+    <div class="dp-paragraph">Your data helps customize logistics parameters and enables native system level processing notifications for live updates.</div>
+  </div>
+</div>
+
+<div id="pageTermsConditions" class="page">
+  <div class="page-header" style="padding-top:40px;">
+    <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <h2>Terms & Conditions</h2>
+  </div>
+  <div class="drawer-page-box">
+    <div class="dp-paragraph">Please read these Terms and Conditions carefully before using our digital storefront application logic.</div>
+    <div class="dp-subtitle">1. Order Cancellations</div>
+    <div class="dp-paragraph">Once an order is captured by Cloud Architect Nodes and pushed to restaurant dashboards, cancellations are not permitted under any condition.</div>
+    <div class="dp-subtitle">2. Deliveries & Service</div>
+    <div class="dp-paragraph">Delays due to uncontrollable architectural contingencies or kitchen failures do not warrant structural reversals.</div>
+  </div>
+</div>
+
+<div id="pageHelpSupport" class="page">
+  <div class="page-header" style="padding-top:40px;">
+    <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <h2>Help & Support</h2>
+  </div>
+  <div class="drawer-page-box" style="text-align: center; padding:40px 20px;">
+    <div style="font-size:48px; margin-bottom:16px;">💬</div>
+    <div class="dp-subtitle" style="font-size:18px;">Need Immediate Assistance?</div>
+    <div class="dp-paragraph" style="margin-bottom:24px;">Our dynamic support channels are available 24/7 to resolve transactional and dispatch grievances.</div>
+    <a href="mailto:support@pureorder.in" style="display:block; background:var(--orange); color:white; text-decoration:none; padding:14px; border-radius:12px; font-weight:700; font-family:'Sora',sans-serif; box-shadow:0 4px 12px rgba(254,114,76,0.25);">Contact Support</a>
+  </div>
+</div>
+
+<div id="pageAboutUs" class="page">
+  <div class="page-header" style="padding-top:40px;">
+    <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <h2>About Us</h2>
+  </div>
+  <div class="drawer-page-box">
+    <div style="font-weight:800; font-family:'Sora',sans-serif; font-size:22px; color:var(--orange); text-center:center; margin-bottom:14px;">PureOrder</div>
+    <div class="dp-paragraph">PureOrder is Kesinga's premium culinary connectivity node, single-handedly engineered to remove friction between gourmet kitchens and hungry patrons.</div>
+    <div class="dp-subtitle">Our Vision</div>
+    <div class="dp-paragraph">Deploying robust cloud instances to democratize tracking mechanics and give localized restaurants enterprise-grade dispatch management.</div>
+  </div>
 </div>
 
 <div id="pageProfile" class="page">
@@ -549,12 +640,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// REMOVED HARDCODED RESTAURANT_ID
 let currentUser = null, userData = null;
 let currentRestId = null; 
 let currentRestName = '';
 let allRestaurants = []; 
-let windowGlobalMenuItems = []; // Dynamic Global Menus for Search & Popular
+let windowGlobalMenuItems = []; 
 let menuItems = [], cart = {}, currentEditField = '';
 let capturedLat = null, capturedLng = null;
 let isRestOpen = true;
@@ -563,10 +653,9 @@ let prevOrderStates = {};
 let dynDeliveryFee = 0; 
 let dynDiscount = 0;
 
-// SOUND & TOAST
 function playNotifSound() {
   const audio = document.getElementById('appSound');
-  if(audio) audio.play().catch(e => console.log("Audio autoplay blocked by browser"));
+  if(audio) audio.play().catch(e => console.log("Audio autoplay blocked"));
 }
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
@@ -577,7 +666,6 @@ window.closeModal = id => document.getElementById(id).classList.remove('open');
 window.openDrawer = () => { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('mainDrawer').classList.add('open'); };
 window.closeDrawer = () => { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('mainDrawer').classList.remove('open'); };
 
-// STEP 2: Push Notification Setup with your VAPID Key
 async function setupPushNotifications() {
   try {
     const { getMessaging, getToken, onMessage } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js");
@@ -585,17 +673,13 @@ async function setupPushNotifications() {
     const permission = await Notification.requestPermission();
     
     if (permission === 'granted') {
-      // Aapki exact VAPID key yahan set hai
       const currentToken = await getToken(messaging, { 
           vapidKey: "BNU3CGv8fDbnHMh61d2L8uam1DQiffr25u8sFlSNkDhVMT27PEb-TzfgE5s0atanC3XDH12hZHFT-_jfTf0cPBs" 
       });
-      
       if (currentToken) {
         await setDoc(doc(db, 'users', currentUser.uid), { fcmToken: currentToken }, { merge: true });
-        console.log("Push Token Saved Successfully!");
       }
     }
-    
     onMessage(messaging, (payload) => {
       saveNotifLocally(payload.notification.title, payload.notification.body);
       playNotifSound();
@@ -604,37 +688,22 @@ async function setupPushNotifications() {
   } catch(e) { console.log("FCM Setup Error:", e); }
 }
 
-// STEP 3: Admin Message Catcher (Listener)
 function listenAdminNotifications() {
-  // Yahan se wo 'const' waali line delete kar di hai
   const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(1));
   let isFirstLoad = true;
-  
   onSnapshot(q, snap => {
     if (isFirstLoad) { isFirstLoad = false; return; }
-    
     snap.docChanges().forEach(change => {
       if (change.type === 'added') {
         const data = change.doc.data();
         saveNotifLocally(data.title, data.body);
         playNotifSound();
         showToast(data.title, 'success');
-        
-        if (Notification.permission === 'granted') {
-          navigator.serviceWorker.ready.then(function(registration) {
-            registration.showNotification(data.title, {
-              body: data.body,
-              icon: data.image || '/icon-192.png',
-              vibrate: [200, 100, 200]
-            });
-          });
-        }
       }
     });
   });
 }
 
-  // --- MISSING FUNCTIONS WAPAS AA GAYE ---
 function saveNotifLocally(title, body) {
     let logs = JSON.parse(localStorage.getItem('notifLogs') || '[]');
     const now = new Date();
@@ -688,7 +757,7 @@ function getGreeting() {
   return 'Good Night';
 }
 
-const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.', 'Good food, tap away.', 'Something delicious!', 'Real food, real fast.', 'Hunger stops here.', 'We got you.'];
+const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.'];
 function startTaglines() {
   let tlIdx = 0;
   setInterval(() => {
@@ -702,34 +771,48 @@ function startTaglines() {
     }, 400);
   }, 4000);
 }
-// ----------------------------------------
 
-
+// SWIGGY STRIP UPDATE CONTROLLER
+function updateMiniCartStrip() {
+  const strip = document.getElementById('miniCartStrip');
+  const items = Object.values(cart);
+  const totalQty = items.reduce((s, i) => s + i.qty, 0);
   
-// NAVIGATION
+  if (totalQty > 0) {
+    document.getElementById('mcCountText').textContent = `${totalQty} Item${totalQty > 1 ? 's' : ''} Added`;
+    document.getElementById('mcRestText').textContent = `From ${currentRestName}`;
+    strip.classList.add('show');
+  } else {
+    strip.classList.remove('show');
+  }
+}
+
 window.goPage = (name, el) => {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const target = 'page' + name.charAt(0).toUpperCase() + name.slice(1);
-  document.getElementById(target).classList.add('active');
+  const targetEl = document.getElementById(target);
+  if (targetEl) targetEl.classList.add('active');
+  
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
   
   if (name === 'cart') renderCart();
   if (name === 'orders') { 
-    document.getElementById('nav-orders').classList.add('active'); 
+    const orderBtn = document.getElementById('nav-orders');
+    if (orderBtn) orderBtn.classList.add('active'); 
     renderOrders();
   }
   if (name === 'profile') renderProfile();
   if (name === 'search') doSearch(document.getElementById('searchInput').value);
 };
 
-// DYNAMIC RESTAURANT OPENER
 window.openRestaurant = (restId, restName) => {
-  if (currentRestId !== restId) {
-      cart = {}; 
-      // Galti yahan thi: updateBadge() function exist nahi karta tha
-      // Naya sahi code: Cart badge ko manually hide kar do
-      document.getElementById('cartBadge').style.display = 'none';
+  if (currentRestId && currentRestId !== restId && Object.keys(cart).length > 0) {
+      if(!confirm("Clear your cart to add items from another restaurant?")) {
+         return;
+      }
+      cart = {};
+      updateMiniCartStrip();
   }
   currentRestId = restId;
   currentRestName = restName;
@@ -737,7 +820,6 @@ window.openRestaurant = (restId, restName) => {
   listenSpecificRestaurant(restId);
 };
 
-// CHECKOUT LOCATION
 window.useGpsLocation = () => {
   const btn = document.getElementById('btnGps');
   btn.innerHTML = '<div class="spinner" style="border-top-color:var(--dark);"></div>';
@@ -757,7 +839,6 @@ window.useGpsLocation = () => {
   }, { timeout: 10000 });
 };
 
-// AUTH
 onAuthStateChanged(auth, async user => {
   if (!user) { window.location.href = 'index.html'; return; }
   currentUser = user;
@@ -790,8 +871,6 @@ async function initApp() {
     listenOrders();
     loadBanners();
     loadCategories();
-    
-    // DYNAMIC GLOBAL FETCH
     loadGlobalMenu();
     listenAllRestaurants();
     loadAdminNotice();
@@ -804,11 +883,9 @@ async function initApp() {
   }
 }
 
-// GLOBAL MENUS (For Search and Popular Items)
 function loadGlobalMenu() {
   onSnapshot(collection(db, 'menu'), snap => {
     windowGlobalMenuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    
     const pop = windowGlobalMenuItems.filter(i => i.popular && i.available).slice(0, 10);
     document.getElementById('popularScroll').innerHTML = pop.length 
       ? pop.map(i => `<div class="popular-card" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">₹${i.price}</div></div></div>`).join('') 
@@ -816,24 +893,19 @@ function loadGlobalMenu() {
   });
 }
 
-  
- // --- ADMIN NOTICE LOGIC ---
 async function loadAdminNotice() {
   try {
     const snap = await getDoc(doc(db, 'platformSettings', 'globalNotice')); 
     if (snap.exists()) {
       const data = snap.data();
-      
       if (data.active && (data.message || data.title || data.imageUrl)) {
         let views = parseInt(localStorage.getItem('noticeViews') || '0');
         let maxViews = data.showCount || 1; 
-        
         let lastNoticeId = localStorage.getItem('lastNoticeId');
         if (lastNoticeId !== data.noticeId) {
           views = 0;
           localStorage.setItem('lastNoticeId', data.noticeId);
         }
-
         if (views < maxViews) {
           const imgEl = document.getElementById('gnImage');
           const titleEl = document.getElementById('gnTitle');
@@ -848,18 +920,14 @@ async function loadAdminNotice() {
         }
       }
     }
-  } catch(e) { console.log("Notice load error:", e); }
+  } catch(e) {}
 }
-// --------------------------
 
-
-
-// BANNERS
 async function loadBanners() {
   const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
   const banners = snap.docs.map(d => d.data());
   document.getElementById('bannerScroll').innerHTML = banners.map(b => `
-    <div class="banner-card" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')" style="cursor:pointer;"` : ''}>
+    <div class="banner-card" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')"` : ''}>
       <img src="${b.imageUrl}" loading="lazy">
       <div class="banner-gradient"></div>
       <div class="banner-title">${b.title || ''}</div>
@@ -873,6 +941,7 @@ async function loadBanners() {
         const idx = Math.round(scroll.scrollLeft / scroll.clientWidth);
         dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     });
+    /* FIXED FIXED INTERVAL TIMER FOR AUTOMATIC MOVEMENT */
     setInterval(() => {
         if(!scroll || !scroll.children.length) return;
         let maxScroll = scroll.scrollWidth - scroll.clientWidth;
@@ -883,7 +952,6 @@ async function loadBanners() {
   }
 }
 
-// CATEGORIES
 async function loadCategories() {
   const snap = await getDocs(query(collection(db, 'globalCategories'), where('active', '==', true)));
   document.getElementById('homeCategories').innerHTML = snap.docs.map(d => {
@@ -895,20 +963,16 @@ async function loadCategories() {
   }).join('');
 }
 
-// RESTAURANTS
 function listenAllRestaurants() {
   onSnapshot(query(collection(db, 'restaurants'), where('status', '==', 'active')), snap => {
     allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    
     document.getElementById('restaurantList').innerHTML = allRestaurants.map(r => `
       <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
-        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span>${r.name}</span>`}
+        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy">` : `<span>${r.name}</span>`}
           <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
         </div>
         <div class="rest-info">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-             <div class="rest-name" style="margin-bottom:0;">${r.name}</div>
-          </div>
+          <div class="rest-name">${r.name}</div>
           <div class="rest-meta"><div class="rest-meta-item">${r.tagline || 'Fresh Food'}</div><div class="meta-dot"></div><div class="rest-meta-item">COD Available</div></div>
         </div>
       </div>
@@ -924,7 +988,7 @@ function listenSpecificRestaurant(restId) {
     isRestOpen = data.isOpen !== false;
     const imgUrl = data.imageUrl || data.restaurantImageUrl || '';
     
-    document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}" onerror="this.style.display='none'">` : `<div class="rest-hero-placeholder">${data.name}</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
+    document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}">` : `<div class="rest-hero-placeholder">${data.name}</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
     document.getElementById('activeRestName').textContent = data.name;
     document.getElementById('activeRestTagline').textContent = `${data.tagline || 'Fresh Food'} · Cash on Delivery`;
     document.getElementById('closedNotice').style.display = isRestOpen ? 'none' : 'block';
@@ -933,15 +997,12 @@ function listenSpecificRestaurant(restId) {
   });
 }
 
-
 function listenSpecificMenu(restId) {
   if (menuUnsub) menuUnsub();
   menuUnsub = onSnapshot(query(collection(db, 'menu'), where('restaurantId', '==', restId)), snap => {
     menuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    
     const cats = ['All', ...new Set(menuItems.map(i => i.category).filter(Boolean))];
     document.getElementById('catTabs').innerHTML = cats.map((c, i) => `<button class="cat-tab ${i === 0 ? 'active' : ''}" onclick="filterCat('${c === 'All' ? 'all' : c.toLowerCase()}',this)">${c}</button>`).join('');
-    
     renderRestaurantMenu();
   });
 }
@@ -966,7 +1027,7 @@ function renderRestaurantMenu() {
       const qty = cart[item.id]?.qty || 0;
       const canAdd = item.available && isRestOpen;
       html += `<div class="menu-item">
-        <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:11px;color:#9ca3af;padding:4px;text-align:center;">${item.name}</span>`}</div>
+        <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy">` : `<span style="font-size:11px;color:#9ca3af;padding:4px;text-align:center;">${item.name}</span>`}</div>
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
           ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
@@ -977,10 +1038,9 @@ function renderRestaurantMenu() {
       </div>`;
     });
   });
-  document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gray);">No items found in this restaurant</div>';
+  document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gray);">No items found</div>';
 }
 
-// CART
 window.updateCart = (id, name, price, imageUrl, delta) => {
   if (!cart[id]) cart[id] = { id, name, price, imageUrl, qty: 0 };
   cart[id].qty = Math.max(0, cart[id].qty + delta);
@@ -991,6 +1051,7 @@ window.updateCart = (id, name, price, imageUrl, delta) => {
   b.textContent = totalQty; b.style.display = totalQty > 0 ? 'block' : 'none';
   
   renderRestaurantMenu();
+  updateMiniCartStrip();
   if(document.getElementById('pageCart').classList.contains('active')) renderCart();
 };
 
@@ -998,38 +1059,58 @@ function renderCart() {
   const items = Object.values(cart);
   const el = document.getElementById('cartContent');
   if (!items.length) { 
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><h3 style="font-size:16px;">Cart is empty</h3><p>Add items from the restaurant</p></div>`; 
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div><h3 style="font-size:16px;">Cart is empty</h3><p>Add items from a restaurant</p></div>`; 
     return; 
   }
   
   const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
+  const taxesFees = Math.round(itemTotal * 0.05); // Dynamic Platform Calcs
+  const finalTotal = itemTotal + dynDeliveryFee + taxesFees - dynDiscount;
   
-  el.innerHTML = `<div class="cart-list">${items.map(i => `<div class="cart-item"><div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <span style="color:var(--dark)">₹${i.price * i.qty}</span></div></div><div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',-1)">−</button><div class="qty-num">${i.qty}</div><button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',1)">+</button></div></div>`).join('')}</div>
+  /* PROFESSIONAL BILLING LOOK WITH RESTAURANT NAME GROUPING */
+  el.innerHTML = `
+  <div class="cart-list">
+    <div class="cart-restaurant-group">
+      <div class="cart-rest-title">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${currentRestName}
+      </div>
+      ${items.map(i => `
+        <div class="cart-item">
+          <div class="cart-item-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;color:#9ca3af;text-align:center;">${i.name}</span>`}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${i.name}</div>
+            <div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <b>₹${i.price * i.qty}</b></div>
+          </div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',-1)">−</button>
+            <div class="qty-num">${i.qty}</div>
+            <button class="qty-btn" onclick="updateCart('${i.id}','${i.name}',${i.price},'',1)">+</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
   <div class="cart-summary">
     <div class="summary-row"><span>Item Total</span><span>₹${itemTotal}</span></div>
-    <div class="summary-row"><span>Delivery Fee</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
-    ${dynDiscount > 0 ? `<div class="summary-row" style="color:var(--green)"><span>Discount</span><span>-₹${dynDiscount}</span></div>` : ''}
-    <div class="summary-total"><span>Subtotal</span><span>₹${finalTotal}</span></div>
+    <div class="summary-row"><span>Delivery Partner Fee</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
+    <div class="summary-row"><span>Platform Taxes & Fees</span><span>₹${taxesFees}</span></div>
+    ${dynDiscount > 0 ? `<div class="summary-row" style="color:var(--green)"><span>Discount Saved</span><span>-₹${dynDiscount}</span></div>` : ''}
+    <div class="summary-total"><span>Grand Total</span><span>₹${finalTotal}</span></div>
   </div>
   <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>`;
 }
 
-// STRICT CHECKOUT 
 window.openCheckout = () => {
   if (!isRestOpen) { showToast('Restaurant is currently closed', 'error'); return; }
   document.getElementById('coPhone').value = userData.phone || '';
   document.getElementById('coAddress').value = userData.address || '';
-  
-  capturedLat = null; 
-  capturedLng = null;
-  
+  capturedLat = null; capturedLng = null;
   ['errPhone','errAddress','errGps'].forEach(id => document.getElementById(id).style.display = 'none');
   
   const btnGps = document.getElementById('btnGps');
   btnGps.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg> Use Current Location';
   btnGps.classList.remove('success');
-
   document.getElementById('checkoutModal').classList.add('open');
 };
 
@@ -1039,11 +1120,9 @@ window.placeOrder = async () => {
   let isValid = true;
   
   ['errPhone','errAddress','errGps'].forEach(id => document.getElementById(id).style.display = 'none');
-  
   if (!phone || phone.length !== 10) { document.getElementById('errPhone').style.display = 'block'; isValid = false; }
   if (!address) { document.getElementById('errAddress').style.display = 'block'; isValid = false; }
   if (!capturedLat) { document.getElementById('errGps').style.display = 'block'; isValid = false; }
-  
   if(!isValid) return;
 
   const btn = document.getElementById('placeBtn');
@@ -1052,61 +1131,55 @@ window.placeOrder = async () => {
   try {
     const items = Object.values(cart);
     const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-    const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
+    const taxesFees = Math.round(itemTotal * 0.05);
+    const finalTotal = itemTotal + dynDeliveryFee + taxesFees - dynDiscount;
     
     await setDoc(doc(db, 'users', currentUser.uid), { phone, address }, { merge: true });
     userData.phone = phone; userData.address = address;
     
     const orderData = {
       customerId: currentUser.uid, customerName: userData.name || 'Customer', customerPhone: phone, deliveryAddress: address,
-      restaurantId: currentRestId, 
-      restaurantName: currentRestName,
+      restaurantId: currentRestId, restaurantName: currentRestName,
       items: items.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
-      itemTotal: itemTotal, deliveryFee: dynDeliveryFee, discount: dynDiscount, totalAmount: finalTotal,
+      itemTotal: itemTotal, deliveryFee: dynDeliveryFee, taxAmount: taxesFees, discount: dynDiscount, totalAmount: finalTotal,
       paymentType: 'COD', status: 'placed', latitude: capturedLat, longitude: capturedLng,
       createdAt: serverTimestamp(), updatedAt: serverTimestamp()
     };
     
     await addDoc(collection(db, 'orders'), orderData);
-    
     cart = {}; 
     document.getElementById('cartBadge').style.display = 'none';
+    updateMiniCartStrip();
     closeModal('checkoutModal');
     
     document.getElementById('orderSuccessScreen').style.display = 'flex';
-    saveNotifLocally("Order Placed Successfully", `We've sent your order to ${currentRestName}.`);
+    saveNotifLocally("Order Placed Successfully", `Dispatched to ${currentRestName}.`);
     playNotifSound();
     
     setTimeout(() => {
         document.getElementById('orderSuccessScreen').style.display = 'none';
         goPage('orders');
     }, 2000);
-    
   } catch(e) {
-    showToast('Failed to place order. Check connection.', 'error');
+    showToast('Failed to place order', 'error');
     btn.innerHTML = 'Place Order'; btn.style.pointerEvents = 'auto';
   }
 };
 
-// AUTOMATED LOCAL NOTIFICATIONS & ORDERS LIST
 function listenOrders() {
   const q = query(collection(db, 'orders'), where('customerId', '==', currentUser.uid));
-  
   onSnapshot(q, snap => {
     activeOrdersData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    
     activeOrdersData.forEach(o => {
        const oldState = prevOrderStates[o.id];
        if (oldState && oldState !== o.status) { triggerLocalOrderNotification(o); }
        prevOrderStates[o.id] = o.status;
     });
-
     activeOrdersData.sort((a,b) => {
         let timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : Date.now()) : Date.now();
         let timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : Date.now()) : Date.now();
         return timeB - timeA; 
     });
-    
     if(document.getElementById('pageOrders').classList.contains('active')) renderOrders();
     if(document.getElementById('pageOrderDetail').classList.contains('active')) {
       const currentViewId = document.getElementById('odTitle').dataset.id;
@@ -1117,19 +1190,14 @@ function listenOrders() {
 
 function triggerLocalOrderNotification(o) {
     let title = "Order Update";
-    let body = `Your order #${o.id.slice(-5).toUpperCase()} status changed to ${o.status}.`;
-    
+    let body = `Your order #${o.id.slice(-5).toUpperCase()} is ${o.status}.`;
     switch(o.status) {
-        case 'accepted': title = "Order Accepted!"; body = "The restaurant has accepted your order and is preparing it."; break;
-        case 'rejected':
-        case 'cancelled': title = "Order Rejected"; body = `Reason: ${o.cancellationReason || 'Rejected by restaurant'}`; break;
-        case 'preparing': title = "Food is Preparing"; body = "The chef is working their magic."; break;
-        case 'ready': title = "Order is Ready!"; body = "Waiting for the delivery partner to pick it up."; break;
-        case 'out for delivery': title = "Out for Delivery!"; body = "Track your order, your food is on the way!"; break;
-        case 'delivered': title = "Delivered!"; body = "Thanks for ordering with PureOrder. Enjoy your meal!"; break;
-        case 'assigned': title = "Delivery Partner Assigned"; body = `${o.deliveryPartnerName || 'A partner'} has been assigned to your order.`; break;
+        case 'accepted': title = "Order Accepted!"; body = "The restaurant is preparing your meal."; break;
+        case 'preparing': title = "Preparing Food"; body = "Chef has started cooking your food."; break;
+        case 'ready': title = "Food Ready!"; body = "Order packed. Waiting for pick up."; break;
+        case 'out for delivery': title = "Out for Delivery!"; body = "Your food is arriving soon!"; break;
+        case 'delivered': title = "Order Delivered!"; body = "Enjoy your fresh meal!"; break;
     }
-
     saveNotifLocally(title, body);
     playNotifSound();
 }
@@ -1137,7 +1205,7 @@ function triggerLocalOrderNotification(o) {
 function renderOrders() {
   const el = document.getElementById('ordersList');
   if (!activeOrdersData.length) {
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3 style="font-size:16px;">No orders yet</h3><p>Your order history will appear here</p></div>`;
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3>No orders yet</h3></div>`;
     return;
   }
   const sMap = { placed:'sp-placed', accepted:'sp-accepted', preparing:'sp-preparing', ready:'sp-ready', assigned:'sp-assigned', 'picked up':'sp-assigned', 'out for delivery':'sp-assigned', delivered:'sp-delivered', cancelled:'sp-cancelled', rejected:'sp-cancelled' };
@@ -1146,16 +1214,14 @@ function renderOrders() {
     const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
     const itemsText = o.items?.map(i => `${i.qty}× ${i.name}`).join(', ') || '';
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : 'Just now';
-    
     return `<div class="order-card" onclick="showOrderDetail('${o.id}')">
-      <div class="order-top"><div><div class="order-id">${o.restaurantName||'Order'} #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
+      <div class="order-top"><div><div class="order-id">${o.restaurantName || 'PureOrder'} #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
       <div class="order-items-text">${itemsText}</div>
-      <div class="order-total-row"><span>Total</span><span style="color:var(--dark)">₹${o.totalAmount || 0}</span></div>
+      <div class="order-total-row"><span>Grand Total</span><span style="color:var(--dark)">₹${o.totalAmount || 0}</span></div>
     </div>`;
   }).join('');
 }
 
-// ORDER DETAILS
 window.showOrderDetail = id => {
   const o = activeOrdersData.find(x => x.id === id);
   if(!o) return;
@@ -1166,12 +1232,19 @@ window.showOrderDetail = id => {
 
   const steps = ['placed', 'accepted', 'preparing', 'out for delivery', 'delivered'];
   let currentStepIdx = steps.indexOf(o.status);
-  if(o.status === 'ready' || o.status === 'assigned' || o.status === 'picked up') currentStepIdx = 3; 
+  if(['ready', 'assigned', 'picked up'].includes(o.status)) currentStepIdx = 3; 
 
-  let timelineHtml = '<div class="od-section"><div style="display:flex; align-items:center; gap:8px; font-size:16px; font-weight:800; margin-bottom:16px; text-transform:uppercase; letter-spacing:0.5px; color:var(--dark);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> TRACK ORDER</div><div class="timeline">';
+  /* RE-DESIGNED LIVE TRACK TIMELINE LOOK */
+  let timelineHtml = `
+  <div class="od-section">
+    <div class="professional-track-title">
+      <svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Live Tracking Status
+    </div>
+    <div class="timeline">`;
   
   if (o.status === 'cancelled' || o.status === 'rejected') {
-     timelineHtml += `<div class="tl-item active"><div class="tl-dot" style="background:var(--red); box-shadow:0 0 0 1px var(--red);"></div><div class="tl-title">Order Cancelled</div><div class="tl-time" style="color:var(--red)">${o.cancellationReason || 'Rejected by restaurant'}</div></div>`;
+     timelineHtml += `<div class="tl-item active"><div class="tl-dot" style="background:var(--red); box-shadow:0 0 0 1px var(--red);"></div><div class="tl-title">Order Cancelled</div><div class="tl-time" style="color:var(--red)">${o.cancellationReason || 'Cancelled by merchant node'}</div></div>`;
   } else {
      steps.forEach((step, idx) => {
         let stateClass = '';
@@ -1179,6 +1252,7 @@ window.showOrderDetail = id => {
         if (idx === currentStepIdx) stateClass = 'current'; 
 
         let stepLabel = step.charAt(0).toUpperCase() + step.slice(1);
+        if(step==='out for delivery') stepLabel="Out For Delivery";
         let timeStr = '';
         
         if (idx === 0 && o.createdAt) {
@@ -1188,31 +1262,28 @@ window.showOrderDetail = id => {
         } else if (idx === currentStepIdx && o.updatedAt) {
             timeStr = o.updatedAt.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         } else if (idx < currentStepIdx) {
-            timeStr = '✓ Done';
+            timeStr = '✓ Completed';
         }
-
         timelineHtml += `<div class="tl-item ${stateClass}"><div class="tl-dot"></div><div class="tl-title">${stepLabel}</div><div class="tl-time">${timeStr}</div></div>`;
      });
   }
   timelineHtml += '</div></div>';
 
-  // TRACK LIVE LOCATION BUTTON
   let trackBtnHtml = '';
   if (['out for delivery', 'assigned', 'picked up'].includes(o.status)) {
       const trackLink = o.trackingLink || o.locationLink || '#'; 
       if (trackLink && trackLink !== '#') {
-         trackBtnHtml = `<div style="margin:0 20px 16px;"><a href="${trackLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#FFF3E0; color:var(--orange); padding:14px; border-radius:12px; text-decoration:none; font-weight:800; font-size:15px; border:1px solid #FFD8A8; box-shadow:0 4px 10px rgba(254,114,76,0.15);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Live location</a></div>`;
+         trackBtnHtml = `<div style="margin:0 20px 16px;"><a href="${trackLink}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#FFF3E0; color:var(--orange); padding:14px; border-radius:12px; text-decoration:none; font-weight:800; font-size:15px; border:1px solid #FFD8A8; box-shadow:0 4px 10px rgba(254,114,76,0.15);"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Track Live Location</a></div>`;
       }
   }
 
   let dpHtml = '';
   if (['assigned', 'picked up', 'out for delivery'].includes(o.status) && o.deliveryPartnerName) {
       const callIconHtml = o.deliveryPartnerPhone ? `<a href="tel:${o.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
-
       dpHtml = `<div class="od-section" style="display:flex; justify-content:space-between; align-items:center; background:#F0FDF4; border:1px solid #BBF7D0;">
         <div style="display:flex; align-items:center; gap:12px;">
             <div style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; flex-shrink:0;">${o.deliveryPartnerName.charAt(0)}</div>
-            <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">Delivery Partner</div><div style="font-size:14px; font-weight:800; color:var(--dark);">${o.deliveryPartnerName}</div></div>
+            <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">Rider Assigned</div><div style="font-size:14px; font-weight:800; color:var(--dark);">${o.deliveryPartnerName}</div></div>
         </div>
         ${callIconHtml}
       </div>`;
@@ -1220,43 +1291,40 @@ window.showOrderDetail = id => {
 
   const itemsHtml = `<div class="od-section">
     <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:14px;">
-       <div style="font-size:14px; font-weight:800;">${o.restaurantName || 'Restaurant'}</div>
-       <div style="font-size:12px; color:var(--gray); margin-top:2px;">Bill Details</div>
+       <div style="font-size:15px; font-weight:800; color:var(--dark);">${o.restaurantName || 'Restaurant Order'}</div>
+       <div style="font-size:12px; color:var(--gray); margin-top:2px;">Detailed Receipt Breakdown</div>
     </div>
-    
     ${(o.items||[]).map(i => `
       <div class="receipt-item">
-        <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;">${i.name}</span>`}</div>
+        <div class="ri-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;text-align:center;">${i.name}</span>`}</div>
         <div class="ri-info"><div class="ri-name">${i.name}</div><div class="ri-qty">${i.qty} × ₹${i.price}</div></div>
         <div class="ri-price">₹${i.price * i.qty}</div>
       </div>
     `).join('')}
     <div style="border-top:1px dashed var(--border); margin:16px 0; padding-top:16px;">
-      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Item Total</span><span>₹${o.itemTotal||0}</span></div>
-      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Delivery Fee</span><span style="color:var(--green)">${o.deliveryFee === 0 ? 'Free' : '₹'+o.deliveryFee}</span></div>
-      ${o.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Discount</span><span>-₹${o.discount}</span></div>` : ''}
-      <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);"><span>Grand Total</span><span style="color:var(--dark)">₹${o.totalAmount}</span></div>
-      <div style="font-size:11px; text-align:center; color:var(--gray); margin-top:16px;">Payment: Cash on Delivery</div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Items Subtotal</span><span>₹${o.itemTotal||0}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Delivery Fee Charges</span><span>₹${o.deliveryFee || 0}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Taxes & Conveniences</span><span>₹${o.taxAmount || 0}</span></div>
+      ${o.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Campaign Rebate</span><span>-₹${o.discount}</span></div>` : ''}
+      <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800; margin-top:12px; padding-top:12px; border-top:1px solid var(--border);"><span>Grand Total Paid</span><span style="color:var(--dark)">₹${o.totalAmount}</span></div>
     </div>
   </div>`;
 
   document.getElementById('odContent').innerHTML = timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
 
-// SEARCH (Global Search)
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { 
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke="currentColor" fill="none" stroke-width="2"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>`; 
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke="currentColor" fill="none" stroke-width="2"/><path d="m21 21-4.35-4.35" stroke="currentColor" fill="none" stroke-width="2"/></svg></div><h3>Search</h3></div>`; 
     return; 
   }
   const res = windowGlobalMenuItems.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
   el.innerHTML = res.length
-    ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
-    : `<div style="text-align:center;padding:40px;color:var(--gray);">No results found</div>`;
+    ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}">` : `<span style="font-size:10px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
+    : `<div style="text-align:center;padding:40px;color:var(--gray);">No items matched</div>`;
 };
 
-// PROFILE
 function renderProfile() {
   const name = userData.name || currentUser.displayName || 'User';
   document.getElementById('profileName').textContent = name;
@@ -1270,32 +1338,23 @@ window.editField = field => {
   const labels = { name: 'Your Name', phone: 'Phone Number', address: 'Delivery Address' };
   document.getElementById('editTitle').textContent = `Edit ${labels[field]}`;
   document.getElementById('editInput').value = userData[field] || '';
-  document.getElementById('editInput').type = field === 'phone' ? 'tel' : 'text';
   document.getElementById('editModal').classList.add('open');
 };
 
 window.saveProfile = async () => {
   const val = document.getElementById('editInput').value.trim();
-  if (!val) { showToast('Please enter a value', 'error'); return; }
+  if (!val) return;
   try {
     await setDoc(doc(db, 'users', currentUser.uid), { [currentEditField]: val }, { merge: true });
     userData[currentEditField] = val;
-    if (currentEditField === 'name') {
-      document.getElementById('greetingName').textContent = `${getGreeting()}, ${val.split(' ')[0]}`;
-      document.getElementById('profileAvLetter').textContent = val.charAt(0).toUpperCase();
-      document.getElementById('pName').textContent = val;
-      document.getElementById('profileName').textContent = val;
-    }
-    if (currentEditField === 'phone') document.getElementById('pPhone').textContent = val;
-    if (currentEditField === 'address') document.getElementById('pAddress').textContent = val;
+    initApp();
     closeModal('editModal');
     showToast('Saved!', 'success');
-  } catch(e) { showToast('Failed to save', 'error'); }
+  } catch(e) { showToast('Error saving profile'); }
 };
 
 window.doLogout = async () => {
-  try { await signOut(auth); window.location.href = 'index.html'; }
-  catch(e) { showToast('Logout failed', 'error'); }
+  try { await signOut(auth); window.location.href = 'index.html'; } catch(e) {}
 };
 
 document.querySelectorAll('.overlay').forEach(o => {
@@ -1305,9 +1364,7 @@ document.querySelectorAll('.overlay').forEach(o => {
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('firebase-messaging-sw.js')
-        .then(reg => console.log('Service Worker Registered'))
-        .catch(err => console.log('Service Worker Error', err));
+      navigator.serviceWorker.register('firebase-messaging-sw.js').catch(() => {});
     });
   }
 </script>
