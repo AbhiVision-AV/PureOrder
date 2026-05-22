@@ -71,20 +71,21 @@ body{
 .df-text{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--dark);margin-bottom:4px;}
 .df-sub{font-size:12px;font-weight:600;color:var(--orange);letter-spacing:0.5px;}
 
-/* NAV */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-top:1px solid rgba(0,0,0,0.05);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;position:relative;}
-.nav-btn svg{width:22px;height:22px;stroke:#9CA3AF;fill:none;stroke-width:2;transition:stroke 0.2s;}
-.nav-btn .nl{font-size:10px;font-weight:600;color:#9CA3AF;transition:color 0.2s;}
-.nav-btn.active svg{stroke:var(--orange);}
-.nav-btn.active .nl{color:var(--orange);}
+/* 🛑 PERFECTED NAV BAR 🛑 */
+.bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:rgba(255,255,255,0.98); backdrop-filter:blur(10px); border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; z-index:100; padding:10px 0 calc(10px + env(safe-area-inset-bottom)); box-shadow:0 -2px 10px rgba(0,0,0,0.03); }
+.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; cursor:pointer; border:none; background:none; gap:5px; position:relative; }
+.nav-btn svg { width:24px; height:24px; stroke:#9CA3AF; fill:none; stroke-width:2; transition:stroke 0.2s; }
+.nav-btn .nl { font-size:11px; font-weight:600; color:#9CA3AF; transition:color 0.2s; }
+.nav-btn.active svg { stroke:var(--orange); }
+.nav-btn.active .nl { color:var(--orange); }
+.cart-badge { position:absolute; top:-4px; right:18px; background:var(--red); color:white; font-size:9px; font-weight:700; border-radius:10px; padding:2px 5px; min-width:16px; text-align:center; display:none; border:2px solid white; }
 
-/* 🛑 BUG FIXED: PREMIUM MINI CART STRIP 🛑 */
+/* 🛑 PERFECTED MINI CART STRIP (Z-INDEX 105 to float above nav) 🛑 */
 .mini-cart-strip { 
   position:fixed; 
-  bottom:85px; 
+  bottom: calc(75px + env(safe-area-inset-bottom)); /* Dynamic gap above nav bar */
   left:50%; 
-  transform:translateX(-50%) translateY(30px); /* Pushes down only when hidden */
+  transform:translateX(-50%) translateY(30px); 
   width:calc(100% - 32px); 
   max-width:398px; 
   background:var(--dark); 
@@ -93,12 +94,12 @@ body{
   display:flex; 
   justify-content:space-between; 
   align-items:center; 
-  z-index:99; 
+  z-index:105; /* Must be higher than 100 */
   box-shadow:0 8px 24px rgba(0,0,0,0.25); 
   transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
   cursor:pointer; 
-  opacity:0;              /* 100% Invisible when inactive */
-  visibility:hidden;      /* 100% Non-clickable when inactive */
+  opacity:0;              
+  visibility:hidden;      
   pointer-events:none; 
 }
 .mini-cart-strip.show { 
@@ -580,11 +581,27 @@ body{
 </div>
 
 <div class="bottom-nav">
-  <button class="nav-btn active" id="nav-home" onclick="goPage('home',this)"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
-  <button class="nav-btn" id="nav-search" onclick="goPage('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
-  <button class="nav-btn" id="nav-cart" onclick="goPage('cart',this)"><svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button>
-  <button class="nav-btn" id="nav-orders" onclick="goPage('orders',this)"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></button>
-  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
+  <button class="nav-btn active" id="nav-home" onclick="goPage('home',this)">
+    <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <div class="nl">Home</div>
+  </button>
+  <button class="nav-btn" id="nav-search" onclick="goPage('search',this)">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <div class="nl">Search</div>
+  </button>
+  <button class="nav-btn" id="nav-cart" onclick="goPage('cart',this)">
+    <div class="cart-badge" id="cartBadge"></div>
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <div class="nl">Cart</div>
+  </button>
+  <button class="nav-btn" id="nav-orders" onclick="goPage('orders',this)">
+    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+    <div class="nl">Orders</div>
+  </button>
+  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <div class="nl">Profile</div>
+  </button>
 </div>
 
 <div class="overlay" id="checkoutModal">
@@ -793,7 +810,6 @@ function startTaglines() {
   }, 4000);
 }
 
-// 🛑 SWIGGY STRIP LOGIC - BUG FIXED 🛑
 function updateMiniCartStrip() {
   const strip = document.getElementById('miniCartStrip');
   const items = Object.values(cart);
