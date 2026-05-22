@@ -78,6 +78,8 @@ body{
 .nav-btn .nl{font-size:10px;font-weight:600;color:#9CA3AF;transition:color 0.2s;}
 .nav-btn.active svg{stroke:var(--orange);}
 .nav-btn.active .nl{color:var(--orange);}
+/* FIXED CART BADGE */
+.cart-badge{position:absolute;top:4px;right:14px;background:var(--red);color:white;font-size:10px;font-weight:800;border-radius:50%;width:16px;height:16px;display:none;align-items:center;justify-content:center;border:2px solid white;line-height:1;}
 
 /* PREMIUM MINI CART STRIP */
 .mini-cart-strip { position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(150%); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:99; box-shadow:0 8px 24px rgba(0,0,0,0.25); transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor:pointer; }
@@ -100,7 +102,6 @@ body{
 
 .search-bar{display:flex;align-items:center;gap:10px;background:white;border-radius:14px;padding:13px 16px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.03);border:1.5px solid transparent;transition:all 0.2s;}
 .search-bar:active{border-color:var(--orange); box-shadow:0 0 0 3px rgba(254,114,76,0.15);}
-.search-bar svg{width:17px;height:17px;stroke:#9CA3AF;fill:none;stroke-width:2;flex-shrink:0;}
 .search-bar span{font-size:14px;color:#9CA3AF;}
 
 /* CATEGORIES ROW */
@@ -116,7 +117,7 @@ body{
 .banner-outer{overflow:hidden;}
 .banner-scroll{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:0 20px;}
 .banner-scroll::-webkit-scrollbar{display:none;}
-.banner-card{flex: 0 0 100%; aspect-ratio: 16 / 7; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
+.banner-card{flex: 0 0 100%; aspect-ratio: 16 / 8; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
 .banner-card img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
 .banner-gradient {position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);z-index:1;}
 .banner-title{position:relative;z-index:2;font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;text-shadow:0 2px 4px rgba(0,0,0,0.3);}
@@ -167,15 +168,27 @@ body{
 .back-circle svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2.5;}
 .search-input-box{flex:1;display:flex;align-items:center;gap:10px;background:white;border-radius:14px;padding:12px 16px;border:1.5px solid transparent;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
 .search-input-box:focus-within{border-color:var(--orange); box-shadow:0 0 0 3px rgba(254,114,76,0.15);}
-.search-input-box svg{width:17px;height:17px;stroke:#9CA3AF;fill:none;stroke-width:2;flex-shrink:0;}
 .search-input-box input{flex:1;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);}
 .search-input-box input::placeholder{color:#9CA3AF;}
-.search-item{display:flex;align-items:center;gap:12px;padding:12px;background:white;border-radius:16px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,0.03);cursor:pointer;}
-.si-img{width:54px;height:54px;border-radius:12px;background:var(--light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9CA3AF;text-align:center;padding:3px;}
-.si-img img{width:100%;height:100%;object-fit:cover;}
-.si-name{font-size:14px;font-weight:700;}
-.si-rest{font-size:12px;color:var(--gray);}
-.si-price{font-size:14px;font-weight:800;color:var(--dark);flex-shrink:0;}
+
+/* ZOMATO STYLE MENU & SEARCH LIST */
+.menu-list, #searchResults { padding:0 20px; }
+.menu-cat-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:800; color:var(--dark); text-transform:uppercase; letter-spacing:0.5px; margin:24px 0 12px; }
+.menu-item { display:flex; gap:16px; padding:20px 0 28px; border-bottom:1px dashed var(--border); }
+.menu-item:last-child { border-bottom:none; }
+.menu-item-info { flex:1; min-width:0; }
+.menu-item-name { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:4px; line-height:1.3; }
+.menu-item-price { font-size:15px; font-weight:800; color:var(--dark); margin-bottom:8px; display:flex; align-items:center; gap:4px; }
+.menu-item-desc { font-size:12px; color:var(--gray); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; }
+.menu-item-right { width:110px; height:110px; position:relative; flex-shrink:0; }
+.menu-item-img { width:100%; height:100px; border-radius:14px; background:var(--light); overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:10px; color:#9CA3AF; text-align:center; }
+.menu-item-img img { width:100%; height:100%; object-fit:cover; }
+.menu-item-actions { position:absolute; bottom:-10px; left:50%; transform:translateX(-50%); width:90px; height:36px; background:white; border:1px solid #E5E7EB; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:center; z-index:2; overflow:hidden; }
+.add-btn { width:100%; height:100%; background:white; color:var(--orange); font-family:'Sora',sans-serif; font-size:14px; font-weight:800; border:none; cursor:pointer; text-transform:uppercase; }
+.qty-ctrl { display:flex; align-items:center; justify-content:space-between; width:100%; height:100%; background:white; padding:0 4px; }
+.qty-btn { width:28px; height:100%; background:transparent; border:none; color:var(--orange); font-size:20px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.qty-num { font-size:14px; font-weight:800; color:var(--dark); }
+.menu-item-na{font-size:10px;color:var(--red);font-weight:800;text-transform:uppercase; letter-spacing:0.5px;}
 
 /* RESTAURANT PAGE */
 .rest-page{min-height:100vh;}
@@ -188,25 +201,10 @@ body{
 .rest-details-box{padding:16px 20px 10px;}
 .rest-details-box h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
 .rest-details-box p{font-size:13px;color:var(--gray);}
-.cat-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 20px;position:sticky;top:0;z-index:10;}
+.cat-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 20px;position:sticky;top:0;z-index:10; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px);}
 .cat-tabs::-webkit-scrollbar{display:none;}
 .cat-tab{background:white;border:1px solid rgba(0,0,0,0.05);border-radius:20px;padding:7px 16px;font-size:13px;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,0.02);}
 .cat-tab.active{background:var(--dark);color:white;border-color:var(--dark);}
-.menu-list{padding:12px 20px;}
-.menu-cat-title{font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 12px;}
-.menu-item{background:white;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
-.menu-item-img{width:90px;height:90px;border-radius:14px;background:var(--light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px;}
-.menu-item-img img{width:100%;height:100%;object-fit:cover;}
-.menu-item-info{flex:1;min-width:0;}
-.menu-item-name{font-size:15px;font-weight:700;margin-bottom:2px;}
-.menu-item-desc{font-size:12px;color:var(--gray);line-height:1.4;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;}
-.menu-item-price{font-size:15px;font-weight:800;color:var(--dark);}
-.menu-item-na{font-size:11px;color:var(--red);font-weight:600;background:#FEE2E2;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
-.menu-item-actions{flex-shrink:0;display:flex;align-items:flex-end;}
-.add-btn{background:var(--orange);color:white;border:none;border-radius:10px;padding:8px 16px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
-.qty-ctrl{display:flex;align-items:center;gap:6px;}
-.qty-btn{width:30px;height:30px;border-radius:8px;border:none;background:var(--light);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--dark);}
-.qty-num{font-size:15px;font-weight:700;min-width:20px;text-align:center;}
 
 /* PAGE HEADERS */
 .page-header{padding:52px 20px 16px; display:flex; align-items:center; gap:12px;}
@@ -214,8 +212,8 @@ body{
 
 /* CART */
 .cart-list{padding:0 20px 16px;}
-.cart-restaurant-group { background:white; border-radius:20px; padding:16px; margin-bottom:16px; box-shadow:0 4px 14px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.02); }
-.cart-rest-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; color:var(--dark); display:flex; align-items:center; gap:6px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--light); }
+.cart-restaurant-group { background:white; border-radius:20px; padding:16px; margin-bottom:16px; box-shadow:0 4px 14px rgba(0,0,0,0.04); border:1px solid var(--border); }
+.cart-rest-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; color:var(--dark); display:flex; align-items:center; gap:6px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px dashed var(--border); }
 .cart-rest-title svg { width:16px; height:16px; stroke:var(--orange); fill:none; stroke-width:2.5; }
 .cart-item{background:var(--light);border-radius:14px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:none;}
 .cart-item-img{width:52px;height:52px;border-radius:10px;background:white;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:10px;color:#9CA3AF;text-align:center;padding:3px;}
@@ -223,7 +221,7 @@ body{
 .cart-item-info{flex:1;}
 .cart-item-name{font-size:14px;font-weight:700;margin-bottom:3px;}
 .cart-item-price{font-size:13px;color:var(--gray);font-weight:600;}
-.cart-summary{background:white;margin:0 20px 16px;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04);}
+.cart-summary{background:white;margin:0 20px 16px;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid var(--border);}
 .summary-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:var(--gray);font-weight:500;}
 .summary-total{display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--dark);padding-top:12px;margin-top:6px;border-top:1px dashed var(--border);}
 .checkout-btn{display:block;width:calc(100% - 40px);margin:0 auto;background:var(--orange);color:white;border:none;border-radius:14px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-align:center;box-shadow:0 4px 12px rgba(254,114,76,0.3);}
@@ -235,8 +233,8 @@ body{
 .empty-box h3{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;}
 .empty-box p{font-size:14px;color:var(--gray);}
 
-/* ORDERS & TIMELINE */
-.order-card{background:white;border-radius:16px;margin:0 20px 12px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04);cursor:pointer;transition:transform 0.1s;}
+/* CLEAN ORDER HISTORY CARDS */
+.order-card{background:white;border-radius:16px;margin:0 20px 12px;padding:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.03); cursor:pointer; transition:transform 0.1s;}
 .order-card:active{transform:scale(0.98);}
 .order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
 .order-id{font-family:'Sora',sans-serif;font-size:15px;font-weight:800; color:var(--dark); margin-bottom:2px;}
@@ -250,12 +248,11 @@ body{
 .sp-delivered{background:#DCFCE7;color:#16A34A;}
 .sp-cancelled{background:#FEE2E2;color:#B91C1C;}
 .order-items-text{font-size:13px;color:var(--gray);margin-bottom:10px;line-height:1.6;}
-.order-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:800; background:var(--orange); color:white; padding:10px 14px; border-radius:10px; margin-top:12px;}
-.order-total-row span:last-child { color:white !important; }
+.order-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:800; background:var(--orange); color:white; padding:12px 14px; border-radius:10px; margin-top:12px;}
 
 /* PROFESSIONAL TRACK LIVE UI */
-.od-section { background:white; padding:20px; border-radius:20px; margin:0 20px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.01); }
-.professional-track-title { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; color:var(--dark); letter-spacing:0.3px; display:flex; align-items:center; gap:8px; margin-bottom:20px; text-transform:uppercase; border-bottom:1px solid var(--light); padding-bottom:12px; }
+.od-section { background:white; padding:20px; border-radius:20px; margin:0 20px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.03); border:1px solid var(--border); }
+.professional-track-title { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; color:var(--dark); letter-spacing:0.3px; display:flex; align-items:center; gap:8px; margin-bottom:20px; text-transform:uppercase; border-bottom:1px dashed var(--border); padding-bottom:12px; }
 .professional-track-title svg { stroke:var(--orange); fill:none; stroke-width:2.5; }
 .timeline { position:relative; padding-left:26px; margin:5px 0; }
 .timeline::before { content:''; position:absolute; left:7px; top:4px; bottom:4px; width:2px; background:var(--border); }
@@ -277,16 +274,14 @@ body{
 .ri-qty { font-size:12px; color:var(--gray); }
 .ri-price { font-size:13px; font-weight:700; color:var(--dark); } 
 
-.track-btn{width:100%;margin-top:12px;background:var(--orange);color:white;border:none;border-radius:10px;padding:11px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
-
 /* EXTRA DRAWER PAGES CONTENT LOOK */
-.drawer-page-box { padding:24px 20px; background:white; border-radius:20px; margin:0 20px 20px; box-shadow:0 4px 12px rgba(0,0,0,0.03); }
+.drawer-page-box { padding:24px 20px; background:white; border-radius:20px; margin:0 20px 20px; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.02); }
 .dp-paragraph { font-size:14px; color:var(--gray); line-height:1.6; margin-bottom:16px; font-weight:400; }
 .dp-subtitle { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; margin:18px 0 8px; color:var(--dark); }
 
 /* NOTIFICATIONS PAGE */
 .notif-list { padding:0 20px 20px; }
-.notif-card { background:white; border-radius:16px; padding:16px; margin-bottom:12px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:relative; overflow:hidden;}
+.notif-card { background:white; border-radius:16px; padding:16px; margin-bottom:12px; border:1px solid var(--border); position:relative; overflow:hidden;}
 .notif-card.unread { background:#FFFDF7; border-left:4px solid var(--orange); }
 .notif-title { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; margin-bottom:4px; color:var(--dark); }
 .notif-body { font-size:13px; color:var(--gray); line-height:1.5; }
@@ -298,8 +293,8 @@ body{
 .profile-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;}
 .profile-email{font-size:13px;color:var(--gray);margin-top:4px;}
 .profile-body{padding:0 20px 20px;}
-.pcard{background:white;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.03);overflow:hidden;margin-bottom:16px;}
-.prow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(0,0,0,0.03);cursor:pointer;}
+.pcard{background:white;border-radius:16px; border:1px solid var(--border); overflow:hidden;margin-bottom:16px;}
+.prow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;}
 .prow:last-child{border-bottom:none;}
 .prow-icon{width:32px;height:32px;border-radius:8px;background:var(--light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .prow-icon svg{width:16px;height:16px;stroke:var(--gray);fill:none;stroke-width:2;}
@@ -370,7 +365,6 @@ body{
   </div>
   <div class="drawer-links">
     <a href="https://abhivision.in" target="_blank" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>AV Frames</a>
-    
     <a onclick="closeDrawer(); goPage('privacyPolicy')" class="drawer-link"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
     <a onclick="closeDrawer(); goPage('termsConditions')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
     <a onclick="closeDrawer(); goPage('helpSupport')" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
@@ -403,8 +397,8 @@ body{
     <div class="tagline-wrap"><div class="tagline" id="tagline">Fresh food, delivered.</div></div>
     
     <div class="search-bar" onclick="goPage('search')">
-      <svg viewBox="0 0 24 24" width="17" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <span>Search dishes, restaurants...</span>
+      <svg viewBox="0 0 24 24" width="20" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span style="color:var(--gray);">Search dishes, restaurants...</span>
     </div>
   </div>
 
@@ -452,9 +446,9 @@ body{
   <div class="search-page">
     <div class="search-top">
       <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
-      <div class="search-input-box"><svg viewBox="0 0 24 24" width="17" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Search food..." oninput="doSearch(this.value)" /></div>
+      <div class="search-input-box"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Search food..." oninput="doSearch(this.value)" /></div>
     </div>
-    <div id="searchResults">
+    <div id="searchResults" style="padding:0;">
        <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>
     </div>
   </div>
@@ -732,7 +726,7 @@ function renderNotifPage() {
     const el = document.getElementById('notifListContainer');
     if (!el) return;
     if (!list.length) { 
-        el.innerHTML = '<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div><h3>No notifications</h3></div>'; 
+        el.innerHTML = '<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div><h3>No notifications</h3></div>'; 
         return; 
     }
     el.innerHTML = list.map(n => `
@@ -761,9 +755,9 @@ function getGreeting() {
   return 'Good Night';
 }
 
-const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.'];
 function startTaglines() {
   let tlIdx = 0;
+  const TAGLINES_ARRAY = ['Fresh food, delivered.', 'What are you craving?', 'Quality local food.', 'Hot meals, happy you.', 'Order now.'];
   setInterval(() => {
     const el = document.getElementById('tagline');
     if(!el) return;
@@ -782,7 +776,12 @@ function updateMiniCartStrip() {
   const items = Object.values(cart);
   const totalQty = items.reduce((s, i) => s + i.qty, 0);
   
-  if (totalQty > 0) {
+  // Show only on Home, Restaurant, and Search pages
+  const activePage = document.querySelector('.page.active');
+  const allowedPages = ['pageHome', 'pageRestaurant', 'pageSearch'];
+  const shouldShow = activePage && allowedPages.includes(activePage.id);
+
+  if (totalQty > 0 && shouldShow) {
     document.getElementById('mcCountText').textContent = `${totalQty} ITEM${totalQty > 1 ? 'S' : ''} ADDED`;
     strip.classList.add('show');
   } else {
@@ -800,13 +799,7 @@ window.goPage = (name, el) => {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
   
-  if (name === 'cart') {
-      document.getElementById('miniCartStrip').classList.remove('show');
-      renderCart();
-  } else {
-      updateMiniCartStrip();
-  }
-
+  if (name === 'cart') renderCart();
   if (name === 'orders') { 
     const orderBtn = document.getElementById('nav-orders');
     if (orderBtn) orderBtn.classList.add('active'); 
@@ -814,6 +807,9 @@ window.goPage = (name, el) => {
   }
   if (name === 'profile') renderProfile();
   if (name === 'search') doSearch(document.getElementById('searchInput').value);
+  
+  // Re-evaluate Floating Strip Visibility
+  updateMiniCartStrip();
 };
 
 // MULTI RESTAURANT CART OPENER
@@ -955,13 +951,13 @@ async function loadBanners() {
         dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     });
     
+    // Ensure automatic seamless looping mechanism
     if(bannerInterval) clearInterval(bannerInterval);
-    let currentBannerIdx = 0;
     bannerInterval = setInterval(() => {
         if(!scroll || !scroll.children.length) return;
-        currentBannerIdx++;
-        if(currentBannerIdx >= scroll.children.length) currentBannerIdx = 0;
-        scroll.scrollTo({ left: currentBannerIdx * scroll.clientWidth, behavior: 'smooth' });
+        let nextScroll = scroll.scrollLeft + scroll.clientWidth;
+        if (nextScroll >= scroll.scrollWidth - 10) nextScroll = 0;
+        scroll.scrollTo({ left: nextScroll, behavior: 'smooth' });
     }, 3500);
   }
 }
@@ -982,7 +978,7 @@ function listenAllRestaurants() {
     allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     document.getElementById('restaurantList').innerHTML = allRestaurants.map(r => `
       <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
-        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span>${r.name}</span>`}
+        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="color:#9CA3AF">${r.name}</span>`}
           <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
         </div>
         <div class="rest-info">
@@ -1048,15 +1044,17 @@ function renderRestaurantMenu() {
       const rId = item.restaurantId || currentRestId;
       const rName = (item.restaurantName || currentRestName || 'Restaurant').replace(/'/g, "\\'");
 
+      // Zomato Style layout applied
       html += `<div class="menu-item">
-        <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:11px;color:#9ca3af;padding:4px;text-align:center;">${item.name}</span>`}</div>
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
-          ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
           <div class="menu-item-price">₹${item.price}</div>
-          ${!item.available ? '<div class="menu-item-na">Not available</div>' : ''}
+          ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
         </div>
-        <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',-1,'${rId}','${rName}')">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">Add</button>`) : (!isRestOpen ? `<span style="font-size:11px;color:#9CA3AF;">Closed</span>` : '')}</div>
+        <div class="menu-item-right">
+            <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;text-align:center;">${item.name}</span>`}</div>
+            <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',-1,'${rId}','${rName}')">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">ADD</button>`) : (!isRestOpen ? `<span class="menu-item-na">CLOSED</span>` : '')}</div>
+        </div>
       </div>`;
     });
   });
@@ -1067,7 +1065,7 @@ function renderRestaurantMenu() {
 function updateBadge() {
   const totalQty = Object.values(cart).reduce((s, i) => s + i.qty, 0);
   const b = document.getElementById('cartBadge');
-  b.textContent = totalQty; b.style.display = totalQty > 0 ? 'block' : 'none';
+  b.textContent = totalQty; b.style.display = totalQty > 0 ? 'flex' : 'none';
 }
 
 window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
@@ -1078,7 +1076,10 @@ window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
   localStorage.setItem('po_cart', JSON.stringify(cart)); // Persistent Cart
   updateBadge();
   
-  renderRestaurantMenu();
+  // Conditionally refresh lists depending on what page is open
+  if(document.getElementById('pageRestaurant').classList.contains('active')) renderRestaurantMenu();
+  if(document.getElementById('pageSearch').classList.contains('active')) doSearch(document.getElementById('searchInput').value);
+  
   updateMiniCartStrip();
   if(document.getElementById('pageCart').classList.contains('active')) renderCart();
 };
@@ -1113,7 +1114,7 @@ function renderCart() {
               <div class="cart-item-name">${i.name}</div>
               <div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <span style="color:var(--dark)">₹${i.price * i.qty}</span></div>
             </div>
-            <div class="qty-ctrl">
+            <div class="qty-ctrl" style="width:90px;height:34px;background:white;border:1px solid #E5E7EB;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);flex-shrink:0;">
               <button class="qty-btn" onclick="updateCart('${i.id}','${i.name.replace(/'/g,"\\'")}',${i.price},'${i.imageUrl||''}',-1,'${i.restaurantId}','${(i.restaurantName||'').replace(/'/g,"\\'")}')">−</button>
               <div class="qty-num">${i.qty}</div>
               <button class="qty-btn" onclick="updateCart('${i.id}','${i.name.replace(/'/g,"\\'")}',${i.price},'${i.imageUrl||''}',1,'${i.restaurantId}','${(i.restaurantName||'').replace(/'/g,"\\'")}')">+</button>
@@ -1189,7 +1190,6 @@ window.placeOrder = async () => {
     const batchTime = serverTimestamp();
     const promises = [];
     
-    // Generate Order Display IDs & Place Multiple Orders
     const d = new Date();
     const dStr = d.getDate().toString().padStart(2,'0') + (d.getMonth()+1).toString().padStart(2,'0');
     const rand = Math.floor(1000 + Math.random() * 9000);
@@ -1202,7 +1202,7 @@ window.placeOrder = async () => {
         const rTotal = rItemTotal + rDelivery - rDiscount;
         
         const shortRest = (rData.name || 'RES').substring(0,3).toUpperCase();
-        const displayOrderId = `POK-${shortRest}-${dStr}${rand}`;
+        const displayOrderId = `POK-${shortRest}-${dStr}${rand}`; // FORMAT: POK-RES-DATE-RANDOM
         
         const orderData = {
           displayOrderId: displayOrderId,
@@ -1282,7 +1282,7 @@ function triggerLocalOrderNotification(o) {
 function renderOrders() {
   const el = document.getElementById('ordersList');
   if (!activeOrdersData.length) {
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3 style="font-size:16px;">No orders yet</h3><p>Your order history will appear here</p></div>`;
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></div><h3 style="font-size:16px;">No orders yet</h3><p>Your order history will appear here</p></div>`;
     return;
   }
   
@@ -1314,13 +1314,13 @@ function renderOrders() {
       <div class="order-top">
          <div>
            <div class="order-id" style="font-size:15px; font-weight:800; color:var(--dark); margin-bottom:2px;">${restNames}</div>
-           <div style="font-size:11px; color:var(--gray); margin-bottom:4px;">${o.displayOrderId}</div>
+           <div style="font-size:11px; color:var(--gray); margin-bottom:4px; letter-spacing:0.5px; font-family:'JetBrains Mono', monospace;">${o.displayOrderId}</div>
            <div class="order-time">${time}</div>
          </div>
          <div class="status-pill ${cls}">${s}</div>
       </div>
       <div class="order-items-text">${o.itemsText.join(', ')}</div>
-      <div class="order-total-row" style="background:var(--orange); color:white; padding:12px 16px; border-radius:12px; margin-top:12px;"><span>Grand Total</span><span style="color:white !important;">₹${o.totalAmount}</span></div>
+      <div class="order-total-row"><span>Grand Total</span><span>₹${o.totalAmount}</span></div>
     </div>`;
   }).join('');
 }
@@ -1422,13 +1422,37 @@ window.showOrderDetail = gId => {
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { 
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>`; 
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>`; 
     return; 
   }
   const res = windowGlobalMenuItems.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
-  el.innerHTML = res.length
-    ? res.map(i => `<div class="search-item" onclick="openRestaurant('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}')"><div class="si-img">${i.imageUrl ? `<img src="${i.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px;text-align:center;">${i.name}</span>`}</div><div style="flex:1"><div class="si-name">${i.name}</div><div class="si-rest">${i.category || ''}</div></div><div class="si-price">₹${i.price}</div></div>`).join('')
-    : `<div style="text-align:center;padding:40px;color:var(--gray);">No results found</div>`;
+  
+  if(res.length) {
+     let html = '';
+     res.forEach(item => {
+        const qty = cart[item.id]?.qty || 0;
+        const safeName = (item.name || '').replace(/'/g, "\\'");
+        const safeImg = (item.imageUrl || '');
+        const rId = item.restaurantId;
+        const rName = (item.restaurantName || 'Restaurant').replace(/'/g, "\\'");
+        
+        html += `<div class="menu-item">
+          <div class="menu-item-info">
+            <div style="font-size:10px; color:var(--gray); font-weight:800; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">🏢 ${rName}</div>
+            <div class="menu-item-name">${item.name}</div>
+            <div class="menu-item-price">₹${item.price}</div>
+            ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
+          </div>
+          <div class="menu-item-right">
+              <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;text-align:center;">${item.name}</span>`}</div>
+              <div class="menu-item-actions">${qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',-1,'${rId}','${rName}')">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">ADD</button>`}</div>
+          </div>
+        </div>`;
+     });
+     el.innerHTML = html;
+  } else {
+     el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--gray);">No items matched</div>`;
+  }
 };
 
 // PROFILE
