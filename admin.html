@@ -148,11 +148,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .banners-title { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; }
 
 .banner-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1.5px solid var(--border); }
-.banner-preview { width:100%; height:120px; border-radius:12px; background:linear-gradient(135deg,var(--yellow),var(--orange)); margin-bottom:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,0.7); font-weight:500; position:relative; }
+.banner-preview { width:100%; border-radius:12px; background:linear-gradient(135deg,var(--yellow),var(--orange)); margin-bottom:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,0.7); font-weight:500; position:relative; }
 .banner-preview img { width:100%; height:100%; object-fit:cover; }
 .banner-info-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
 .banner-title-text { font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px; }
-.link-icon { width:14px; height:14px; stroke:var(--blue); fill:none; stroke-width:2; }
 .banner-footer { display:flex; align-items:center; justify-content:space-between; margin-top:10px;}
 .banner-status { font-size:12px; color:var(--gray); }
 .banner-del { background:#FEF2F2; border:none; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--red); cursor:pointer; }
@@ -188,8 +187,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .field input:focus, .field select:focus, .field textarea:focus{background:white;border-color:var(--orange); box-shadow:0 0 0 3px rgba(254,114,76,0.15);}
 .field textarea { resize:vertical; min-height:80px; }
 .field input::placeholder, .field textarea::placeholder { color:#9CA3AF; }
-.img-prev{width:100%;height:120px;border-radius:12px;object-fit:cover;margin-top:8px;display:none;}
-.img-prev.contain { object-fit:contain; background:var(--light); max-height:200px; height:auto; padding:10px; border:1px dashed var(--border); }
 .info-note { background:#FFF9EC; border:1px solid #FDE68A; border-radius:12px; padding:12px 14px; font-size:13px; color:#92400E; margin-bottom:16px; line-height:1.5; }
 .sheet-btns{display:flex;gap:10px;margin-top:8px;}
 .btn-cancel{flex:1;background:var(--light);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;}
@@ -353,14 +350,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     </div>
 
     <div class="banners-header" style="margin-top:30px;">
-      <div class="banners-title">True Push Notifications</div>
+      <div class="banners-title">Push Notifications</div>
     </div>
     <div class="notice-card" style="padding:16px;">
-      <div class="info-note" style="margin-bottom:12px;">Ensure you paste your Firebase Legacy Server Key below for push sounds to work when app is closed.</div>
-      <div class="field"><label>Firebase Server Key <span style="color:var(--red)">*</span></label><input type="password" id="pnServerKey" placeholder="Paste Legacy Server Key here..." /></div>
       <div class="field"><label>Notification Title <span style="color:var(--red)">*</span></label><input type="text" id="pnTitle" placeholder="e.g. 50% Off Today Only!" /></div>
       <div class="field"><label>Message <span style="color:var(--red)">*</span></label><textarea id="pnMessage" placeholder="Type the notification body here..."></textarea></div>
-      <button class="btn-edit-notice" id="sendPushBtn" style="margin-top:10px;" onclick="sendRealPushNotification()">Send Real Push</button>
+      <button class="btn-edit-notice" id="sendPushBtn" style="margin-top:10px;" onclick="sendRealPushNotification()">Send via Cloud Function</button>
     </div>
 
     <div class="banners-header" style="margin-top:30px;">
@@ -408,9 +403,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="field"><label>Base Delivery Fee (₹)</label><input type="number" id="rsFee" placeholder="e.g. 40" /></div>
     <div class="field"><label>Offer/Coupon Name (Optional)</label><input type="text" id="rsOfferName" placeholder="e.g. FLAT50" /></div>
     <div class="field"><label>Offer Discount Amount (₹)</label><input type="number" id="rsOfferAmt" placeholder="e.g. 50" /></div>
-    <div class="sheet-btns">
-      <button class="btn-cancel" onclick="closeModal('restSettingsModal')">Cancel</button>
-      <button class="btn-save" id="saveRsBtn" onclick="saveRestSettings()">Save Settings</button>
+    <div class="sheet-btns" style="flex-wrap: wrap;">
+      <button class="btn-cancel" style="flex-basis: 100%; margin-bottom: 8px; background:#FEF2F2; color:var(--red);" onclick="deleteRestaurant()">⚠️ Delete Restaurant</button>
+      <div style="display:flex; gap:10px; width:100%;">
+          <button class="btn-cancel" onclick="closeModal('restSettingsModal')">Cancel</button>
+          <button class="btn-save" id="saveRsBtn" onclick="saveRestSettings()">Save Settings</button>
+      </div>
     </div>
   </div>
 </div>
@@ -421,7 +419,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="sheet-title">Edit App Notice</div>
     <div class="field"><label>Title (Optional)</label><input type="text" id="nTitle" placeholder="e.g. Happy Diwali!" /></div>
     <div class="field"><label>Message</label><textarea id="nMessage" placeholder="Type your announcement..."></textarea></div>
-    <div class="field"><label>Image URL (Optional)</label><input type="url" id="nImage" placeholder="https://..." oninput="prevNoticeImg(this.value)" /><img id="noticeImgPrev" class="img-prev" /></div>
+    <div class="field"><label>Image URL (Optional)</label><input type="url" id="nImage" placeholder="https://..." oninput="prevNoticeImg(this.value)" />
+      <div id="noticeImgPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light); height:120px;"><img id="noticeImgPrev" style="width:100%; height:100%; object-fit:cover;" /></div>
+    </div>
     <div class="field"><label>Show Count per User</label><input type="number" id="nShowCount" placeholder="e.g. 3" min="1" /></div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('editNoticeModal')">Cancel</button>
@@ -451,7 +451,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Category</div>
     <div class="field"><label>Category Name</label><input type="text" id="catName" placeholder="e.g. Biryani" /></div>
-    <div class="field"><label>Image URL</label><input type="url" id="catImage" placeholder="https://..." oninput="prevCatImg(this.value)" /><img id="catImgPrev" class="img-prev" /></div>
+    <div class="field"><label>Image URL</label><input type="url" id="catImage" placeholder="https://..." oninput="prevCatImg(this.value)" />
+      <div id="catImgPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light); height:120px;"><img id="catImgPrev" style="width:100%; height:100%; object-fit:cover;" /></div>
+    </div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('addCatModal')">Cancel</button>
       <button class="btn-save" id="saveCatBtn" onclick="saveCategory()">Add Category</button>
@@ -463,11 +465,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Offer Banner</div>
-    <div class="field"><label>Image URL <span style="color:var(--red)">*</span></label><input type="url" id="bImage" placeholder="https://..." oninput="prevBanner(this.value)" /><img id="bannerPrev" class="img-prev" /></div>
+    <div class="field"><label>Image URL <span style="color:var(--red)">*</span></label><input type="url" id="bImage" placeholder="https://..." oninput="prevBanner(this.value)" />
+      <div id="bannerPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light);"><img id="bannerPrev" style="width:100%; height:100%; object-fit:cover;" /></div>
+    </div>
     
     <div style="display:flex; gap:10px; margin-bottom:14px;">
-       <div class="field" style="flex:1; margin-bottom:0;"><label>Unit</label><select id="bUnit"><option value="cm">Centimeters (cm)</option><option value="in">Inches (in)</option><option value="px">Pixels (px)</option></select></div>
-       <div class="field" style="flex:1; margin-bottom:0;"><label>Height Value</label><input type="number" id="bHeightVal" placeholder="e.g. 5" value="5" /></div>
+       <div class="field" style="flex:1; margin-bottom:0;"><label>Unit</label><select id="bUnit" onchange="updateBannerPrevHeight()"><option value="px">Pixels (px)</option><option value="cm">Centimeters (cm)</option><option value="in">Inches (in)</option></select></div>
+       <div class="field" style="flex:1; margin-bottom:0;"><label>Height Value</label><input type="number" id="bHeightVal" placeholder="e.g. 150" value="150" oninput="updateBannerPrevHeight()" /></div>
     </div>
     
     <div class="field"><label>Linked Page URL (Optional)</label><input type="url" id="bLink" placeholder="https://..." /></div>
@@ -541,10 +545,6 @@ onAuthStateChanged(auth, async user => {
     const snap = await getDoc(doc(db, 'users', user.uid));
     if (!snap.exists() || snap.data().role !== 'admin') { window.location.href = 'index.html'; return; }
     userData = snap.data();
-    
-    const settings = await getDoc(doc(db, 'platformSettings', 'adminPrefs'));
-    if(settings.exists() && settings.data().fcmServerKey) document.getElementById('pnServerKey').value = settings.data().fcmServerKey;
-
   } catch(e) { window.location.href = 'index.html'; return; }
   initApp();
 });
@@ -680,8 +680,9 @@ window.openEditNotice = () => {
 };
 window.prevNoticeImg = url => {
   const img = document.getElementById('noticeImgPrev');
-  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
-  else img.style.display = 'none';
+  const wrap = document.getElementById('noticeImgPrevWrapper');
+  if (url) { img.src = url; wrap.style.display = 'block'; img.onerror = () => wrap.style.display = 'none'; }
+  else wrap.style.display = 'none';
 };
 window.saveNotice = async () => {
   const title = document.getElementById('nTitle').value.trim();
@@ -712,50 +713,28 @@ window.toggleNotice = async (val) => {
   } catch(e) { showToast('Failed', 'error'); document.getElementById('noticeToggle').checked = !val; }
 };
 
-// TRUE PUSH NOTIFICATIONS
+// PUSH NOTIFICATIONS (Via Cloud Function)
 window.sendRealPushNotification = async () => {
-  const serverKey = document.getElementById('pnServerKey').value.trim();
   const title = document.getElementById('pnTitle').value.trim();
   const message = document.getElementById('pnMessage').value.trim();
   
-  if(!serverKey) { showToast('Firebase Server Key is required', 'error'); return; }
   if (!title || !message) { showToast('Title and Message required', 'error'); return; }
 
   const btn = document.getElementById('sendPushBtn');
   btn.innerHTML = '<div class="spinner white"></div>'; btn.style.pointerEvents = 'none';
   
   try {
-    await setDoc(doc(db, 'platformSettings', 'adminPrefs'), { fcmServerKey: serverKey }, { merge: true });
-
-    // Fetch all user tokens
-    const usersSnap = await getDocs(collection(db, 'users'));
-    let tokens = usersSnap.docs.map(d => d.data().fcmToken).filter(Boolean);
+    await addDoc(collection(db, 'notifications'), {
+      title: title, body: message, type: 'push_all', createdAt: serverTimestamp()
+    });
     
-    if(!tokens.length) { showToast('No users found with tokens', 'error'); btn.innerHTML = 'Send Real Push'; btn.style.pointerEvents = 'auto'; return; }
-    
-    // Chunk tokens (FCM legacy limit is 1000 per request)
-    const chunks = [];
-    while (tokens.length > 0) chunks.push(tokens.splice(0, 1000));
-    
-    for(let chunk of chunks) {
-        const payload = {
-            registration_ids: chunk,
-            notification: { title: title, body: message, sound: "default", icon: "/icon-192.png" }
-        };
-        await fetch('https://fcm.googleapis.com/fcm/send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'key=' + serverKey },
-            body: JSON.stringify(payload)
-        });
-    }
-    
-    showToast('Push Dispatched Successfully!', 'success');
+    showToast('Notification Sent via Cloud Function!', 'success');
     document.getElementById('pnTitle').value = '';
     document.getElementById('pnMessage').value = '';
   } catch(e) { 
-    showToast('Failed. Check Server Key.', 'error'); 
+    showToast('Failed to send.', 'error'); 
   }
-  btn.innerHTML = 'Send Real Push'; btn.style.pointerEvents = 'auto';
+  btn.innerHTML = 'Send via Cloud Function'; btn.style.pointerEvents = 'auto';
 };
 
 // OWNERS & RESTAURANT SETTINGS
@@ -813,6 +792,19 @@ window.saveRestSettings = async () => {
         showToast('Settings saved successfully', 'success');
     } catch(e) { showToast('Error saving settings', 'error'); }
     btn.innerHTML = 'Save Settings'; btn.style.pointerEvents = 'auto';
+};
+
+window.deleteRestaurant = async () => {
+    const id = document.getElementById('rsId').value;
+    if(!id) return;
+    if(!confirm("Are you sure you want to completely remove this restaurant?")) return;
+    try {
+        await deleteDoc(doc(db, 'restaurants', id));
+        owners = owners.filter(r => r.id !== id);
+        renderOwners();
+        closeModal('restSettingsModal');
+        showToast('Restaurant removed successfully', 'success');
+    } catch(e) { showToast('Error removing restaurant', 'error'); }
 };
 
 window.openAddOwner = () => {
@@ -884,8 +876,9 @@ window.openAddCategory = () => {
 };
 window.prevCatImg = url => {
   const img = document.getElementById('catImgPrev');
-  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
-  else img.style.display = 'none';
+  const wrap = document.getElementById('catImgPrevWrapper');
+  if (url) { img.src = url; wrap.style.display = 'block'; img.onerror = () => wrap.style.display = 'none'; }
+  else wrap.style.display = 'none';
 };
 window.saveCategory = async () => {
   const name = document.getElementById('catName').value.trim();
@@ -948,8 +941,7 @@ window.toggleDishPopular = async (id, val) => {
     } catch(e) { showToast('Failed to update', 'error'); }
 };
 
-
-// BANNERS (WITH HEIGHT CONFIG)
+// BANNERS (WITH LIVE HEIGHT CONFIG PREVIEW)
 async function loadBanners() {
   try {
     const snap = await getDocs(collection(db, 'banners'));
@@ -965,7 +957,7 @@ function renderBanners() {
     return;
   }
   el.innerHTML = banners.map(b => {
-    const hStyle = b.heightVal ? `height:${b.heightVal}${b.heightUnit || 'cm'};` : '';
+    const hStyle = b.heightVal ? `height:${b.heightVal}${b.heightUnit || 'px'};` : '';
     return `<div class="banner-card">
       <div class="banner-preview" style="${hStyle}">${b.imageUrl ? `<img src="${b.imageUrl}" onerror="this.style.display='none'">` : 'Banner Preview'}</div>
       <div class="banner-info-row">
@@ -982,21 +974,38 @@ function renderBanners() {
 
 window.openAddBanner = () => {
   ['bImage','bTitle','bLink'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('bHeightVal').value = '5';
-  document.getElementById('bannerPrev').style.display = 'none';
+  document.getElementById('bHeightVal').value = '150';
+  document.getElementById('bUnit').value = 'px';
+  document.getElementById('bannerPrevWrapper').style.display = 'none';
   document.getElementById('addBannerModal').classList.add('open');
 };
+
+window.updateBannerPrevHeight = () => {
+  const h = document.getElementById('bHeightVal').value || '150';
+  const u = document.getElementById('bUnit').value || 'px';
+  const wrap = document.getElementById('bannerPrevWrapper');
+  if(wrap) wrap.style.height = `${h}${u}`;
+};
+
 window.prevBanner = url => {
   const img = document.getElementById('bannerPrev');
-  if (url) { img.src = url; img.style.display = 'block'; img.onerror = () => img.style.display = 'none'; }
-  else img.style.display = 'none';
+  const wrap = document.getElementById('bannerPrevWrapper');
+  if (url) { 
+      img.src = url; 
+      wrap.style.display = 'block'; 
+      updateBannerPrevHeight();
+      img.onerror = () => wrap.style.display = 'none'; 
+  } else { 
+      wrap.style.display = 'none'; 
+  }
 };
+
 window.saveBanner = async () => {
   const imageUrl = document.getElementById('bImage').value.trim();
   const title = document.getElementById('bTitle').value.trim();
   const linkUrl = document.getElementById('bLink').value.trim();
   const heightUnit = document.getElementById('bUnit').value;
-  const heightVal = document.getElementById('bHeightVal').value || '5';
+  const heightVal = document.getElementById('bHeightVal').value || '150';
   
   const btn = document.getElementById('saveBannerBtn');
   if (!imageUrl) { showToast('Image URL is compulsory', 'error'); return; }
