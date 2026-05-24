@@ -149,7 +149,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 
 .banner-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1.5px solid var(--border); }
 .banner-preview { width:100%; border-radius:12px; background:linear-gradient(135deg,var(--yellow),var(--orange)); margin-bottom:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,0.7); font-weight:500; position:relative; }
-.banner-preview img { width:100%; height:100%; object-fit:cover; }
+/* Modified banner img to contain aspect ratio */
+.banner-preview img { width:100%; height:100%; object-fit:contain; }
 .banner-info-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
 .banner-title-text { font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px; }
 .banner-footer { display:flex; align-items:center; justify-content:space-between; margin-top:10px;}
@@ -187,6 +188,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .field input:focus, .field select:focus, .field textarea:focus{background:white;border-color:var(--orange); box-shadow:0 0 0 3px rgba(254,114,76,0.15);}
 .field textarea { resize:vertical; min-height:80px; }
 .field input::placeholder, .field textarea::placeholder { color:#9CA3AF; }
+.img-prev{width:100%;height:120px;border-radius:12px;object-fit:cover;margin-top:8px;display:none;}
+.img-prev.contain { object-fit:contain; background:var(--light); max-height:200px; height:auto; padding:10px; border:1px dashed var(--border); }
 .info-note { background:#FFF9EC; border:1px solid #FDE68A; border-radius:12px; padding:12px 14px; font-size:13px; color:#92400E; margin-bottom:16px; line-height:1.5; }
 .sheet-btns{display:flex;gap:10px;margin-top:8px;}
 .btn-cancel{flex:1;background:var(--light);border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);cursor:pointer;}
@@ -355,6 +358,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="notice-card" style="padding:16px;">
       <div class="field"><label>Notification Title <span style="color:var(--red)">*</span></label><input type="text" id="pnTitle" placeholder="e.g. 50% Off Today Only!" /></div>
       <div class="field"><label>Message <span style="color:var(--red)">*</span></label><textarea id="pnMessage" placeholder="Type the notification body here..."></textarea></div>
+      <div class="field">
+          <label>Image URL (Optional)</label>
+          <input type="url" id="pnImage" placeholder="https://..." oninput="prevPushImg(this.value)" />
+          <div id="pushImgPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light); height:120px;">
+              <img id="pushImgPrev" style="width:100%; height:100%; object-fit:contain;" />
+          </div>
+      </div>
       <button class="btn-edit-notice" id="sendPushBtn" style="margin-top:10px;" onclick="sendRealPushNotification()">Send via Cloud Function</button>
     </div>
 
@@ -420,7 +430,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="field"><label>Title (Optional)</label><input type="text" id="nTitle" placeholder="e.g. Happy Diwali!" /></div>
     <div class="field"><label>Message</label><textarea id="nMessage" placeholder="Type your announcement..."></textarea></div>
     <div class="field"><label>Image URL (Optional)</label><input type="url" id="nImage" placeholder="https://..." oninput="prevNoticeImg(this.value)" />
-      <div id="noticeImgPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light); height:120px;"><img id="noticeImgPrev" style="width:100%; height:100%; object-fit:cover;" /></div>
+      <div id="noticeImgPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light); height:120px;"><img id="noticeImgPrev" style="width:100%; height:100%; object-fit:contain;" /></div>
     </div>
     <div class="field"><label>Show Count per User</label><input type="number" id="nShowCount" placeholder="e.g. 3" min="1" /></div>
     <div class="sheet-btns">
@@ -465,8 +475,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Add Offer Banner</div>
+    <div class="field"><label>Title (Optional)</label><input type="text" id="bTitle" placeholder="e.g. Weekend Special" /></div>
     <div class="field"><label>Image URL <span style="color:var(--red)">*</span></label><input type="url" id="bImage" placeholder="https://..." oninput="prevBanner(this.value)" />
-      <div id="bannerPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light);"><img id="bannerPrev" style="width:100%; height:100%; object-fit:cover;" /></div>
+      <div id="bannerPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light);"><img id="bannerPrev" style="width:100%; height:100%; object-fit:contain;" /></div>
     </div>
     
     <div style="display:flex; gap:10px; margin-bottom:14px;">
@@ -713,10 +724,18 @@ window.toggleNotice = async (val) => {
   } catch(e) { showToast('Failed', 'error'); document.getElementById('noticeToggle').checked = !val; }
 };
 
-// PUSH NOTIFICATIONS (Via Cloud Function)
+// PUSH NOTIFICATIONS
+window.prevPushImg = url => {
+  const img = document.getElementById('pushImgPrev');
+  const wrap = document.getElementById('pushImgPrevWrapper');
+  if (url) { img.src = url; wrap.style.display = 'block'; img.onerror = () => wrap.style.display = 'none'; }
+  else wrap.style.display = 'none';
+};
+
 window.sendRealPushNotification = async () => {
   const title = document.getElementById('pnTitle').value.trim();
   const message = document.getElementById('pnMessage').value.trim();
+  const image = document.getElementById('pnImage').value.trim();
   
   if (!title || !message) { showToast('Title and Message required', 'error'); return; }
 
@@ -725,12 +744,14 @@ window.sendRealPushNotification = async () => {
   
   try {
     await addDoc(collection(db, 'notifications'), {
-      title: title, body: message, type: 'push_all', createdAt: serverTimestamp()
+      title: title, body: message, image: image, type: 'push_all', createdAt: serverTimestamp()
     });
     
     showToast('Notification Sent via Cloud Function!', 'success');
     document.getElementById('pnTitle').value = '';
     document.getElementById('pnMessage').value = '';
+    document.getElementById('pnImage').value = '';
+    window.prevPushImg('');
   } catch(e) { 
     showToast('Failed to send.', 'error'); 
   }
@@ -973,7 +994,10 @@ function renderBanners() {
 }
 
 window.openAddBanner = () => {
-  ['bImage','bTitle','bLink'].forEach(id => document.getElementById(id).value = '');
+  ['bImage','bTitle','bLink'].forEach(id => { 
+      const el = document.getElementById(id);
+      if(el) el.value = ''; 
+  });
   document.getElementById('bHeightVal').value = '150';
   document.getElementById('bUnit').value = 'px';
   document.getElementById('bannerPrevWrapper').style.display = 'none';
@@ -1002,7 +1026,7 @@ window.prevBanner = url => {
 
 window.saveBanner = async () => {
   const imageUrl = document.getElementById('bImage').value.trim();
-  const title = document.getElementById('bTitle').value.trim();
+  const title = document.getElementById('bTitle') ? document.getElementById('bTitle').value.trim() : '';
   const linkUrl = document.getElementById('bLink').value.trim();
   const heightUnit = document.getElementById('bUnit').value;
   const heightVal = document.getElementById('bHeightVal').value || '150';
