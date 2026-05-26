@@ -1,4 +1,3 @@
-Here is the customer.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,7 @@ Here is the customer.html
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#FE724C">
 <title>PureOrder</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
@@ -25,17 +24,18 @@ body{
   padding-bottom:140px; 
 }
 
-/* PREMIUM SPLASH SCREEN (WITH ORIGINAL LOGO) */
-#loadingScreen { position:fixed; inset:0; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s; }
+/* PREMIUM SPLASH SCREEN */
+#loadingScreen { position:fixed; inset:0; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity 0.5s ease-out, visibility 0.5s; }
 #loadingScreen.hide { opacity:0; visibility:hidden; pointer-events:none; }
-.splash-logo { width:90px; height:90px; border-radius:24px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 12px 32px rgba(254,114,76,0.25); animation:pulseLogo 1.2s infinite alternate; background:white; overflow:hidden; padding:5px; border:2px solid var(--light);}
+.splash-logo { width:90px; height:90px; border-radius:24px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 12px 32px rgba(254,114,76,0.25); animation:pulseLogo 1.5s infinite alternate; background:white; overflow:hidden; padding:5px; border:2px solid var(--light);}
 .splash-logo img { width:100%; height:100%; object-fit:contain; }
-.splash-text { font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:var(--dark); letter-spacing:-0.5px; }
+.splash-text { font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:var(--dark); letter-spacing:-0.5px; animation: fadeInUp 0.8s ease-out;}
 .splash-text span { color:var(--orange); }
 @keyframes pulseLogo { 
   0% { transform: scale(0.95); box-shadow:0 8px 24px rgba(254,114,76,0.15); } 
   100% { transform: scale(1.05); box-shadow:0 16px 40px rgba(254,114,76,0.35); } 
 }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
 /* PWA INSTALL BANNER */
 .install-pwa-banner { position: fixed; bottom: calc(85px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(150px); width: calc(100% - 32px); max-width: 398px; background: white; border: 1.5px solid var(--orange); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 24px rgba(254,114,76,0.25); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -45,7 +45,6 @@ body{
 .ipb-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 800; color: var(--dark); }
 .ipb-sub { font-size: 11px; font-weight: 600; color: var(--gray); margin-top: 2px; }
 .ipb-btn { background: var(--orange); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 10px rgba(254,114,76,0.3); text-transform: uppercase; }
-.ipb-btn:active { transform: scale(0.95); }
 
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:var(--dark);border-radius:50%;animation:spin 0.7s linear infinite;}
 .spinner.white{border-top-color:white;}
@@ -58,8 +57,8 @@ body{
 @keyframes drawCheck { to { stroke-dashoffset: 0; } }
 
 .page{display:none;}
-.page.active{display:block;animation:fadeIn 0.2s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.page.active{display:block;animation:fadeIn 0.3s ease-out;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* TOP BAR */
 .top-bar { display:flex; justify-content:space-between; align-items:center; padding:20px 20px 10px; z-index:100;}
@@ -76,12 +75,13 @@ body{
 .loc-dropdown-container::after { content:"▼"; font-size:8px; color:var(--orange); position:absolute; right:0; pointer-events:none; }
 
 /* DRAWER */
-.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .drawer-overlay.open{opacity:1;pointer-events:auto;}
-.drawer{position:fixed;top:0;left:0;bottom:0;width:280px;background:white;z-index:1001;transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,0.1);}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:280px;background:white;z-index:1001;transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(0,0,0,0.15);}
 .drawer.open{transform:translateX(0);}
 .drawer-header{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.drawer-close{background:var(--light);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.drawer-close{background:var(--light);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer; transition:0.2s;}
+.drawer-close:active {transform:scale(0.9);}
 .drawer-close svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2;}
 .drawer-links{flex:1;padding:20px 0;overflow-y:auto;}
 .drawer-link{display:flex;align-items:center;gap:14px;padding:16px 24px;color:var(--dark);text-decoration:none;font-size:15px;font-weight:600;transition:background 0.2s;cursor:pointer;}
@@ -100,13 +100,12 @@ body{
 .nav-btn.active .nl { color:var(--orange); }
 .cart-badge { position:absolute; top:-4px; right:18px; background:var(--red); color:white; font-size:9px; font-weight:700; border-radius:10px; padding:2px 5px; min-width:16px; text-align:center; display:none; border:2px solid white; }
 
-/* MINI CART STRIP */
-.mini-cart-strip { position:fixed; bottom: calc(75px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(30px); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:105; box-shadow:0 8px 24px rgba(0,0,0,0.25); transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor:pointer; opacity:0; visibility:hidden; pointer-events:none; }
-.mini-cart-strip.show { transform:translateX(-50%) translateY(0); opacity:1; visibility:visible; pointer-events:auto; }
+/* PERMANENT MINI CART STRIP */
+.mini-cart-strip { position:fixed; bottom: calc(75px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:105; box-shadow:0 8px 24px rgba(0,0,0,0.25); cursor:pointer; transition:all 0.3s ease; }
 .mc-details { color:white; }
-.mc-count { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;}
-.mc-btn { display:flex; align-items:center; gap:6px; color:white; font-family:'Sora',sans-serif; font-size:14px; font-weight:800; background:none; border:none; cursor:pointer; text-transform:uppercase;}
-.mc-btn svg { width:18px; height:18px; stroke:var(--orange); fill:none; stroke-width:3; }
+.mc-count { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;}
+.mc-btn { display:flex; align-items:center; gap:6px; color:white; font-family:'Sora',sans-serif; font-size:13px; font-weight:800; background:none; border:none; cursor:pointer; text-transform:uppercase;}
+.mc-btn svg { width:16px; height:16px; stroke:var(--orange); fill:none; stroke-width:3; }
 
 /* HOME CONTENT */
 .home-header{padding:10px 20px 16px;}
@@ -127,12 +126,12 @@ body{
 .cat-circle-img img { width:100%; height:100%; object-fit:cover; }
 .cat-circle-name { font-size:12px; font-weight:600; color:var(--dark); white-space:nowrap; }
 
-/* BANNER SLIDER (Fixed Admin Height Logic via CSS Height) */
+/* BANNER SLIDER (Dynamic CSS Height) */
 .banner-section{padding:16px 0 10px;}
 .banner-outer{overflow:hidden;}
 .banner-scroll{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:0 20px;}
 .banner-scroll::-webkit-scrollbar{display:none;}
-.banner-card{flex: 0 0 100%; height: 160px; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
+.banner-card{flex: 0 0 100%; height: auto; aspect-ratio: 16/7; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
 .banner-card img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
 .banner-gradient {position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);z-index:1;}
 .banner-title{position:relative;z-index:2;font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;text-shadow:0 2px 4px rgba(0,0,0,0.3);}
@@ -144,19 +143,18 @@ body{
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;}
 
-/* POPULAR ITEMS (Added badge overlay) */
+/* POPULAR ITEMS (No Badge on Home) */
 .popular-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px;}
 .popular-scroll::-webkit-scrollbar{display:none;}
 .popular-card{position:relative; min-width:140px;background:white;border-radius:16px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform 0.15s;}
 .popular-card:active{transform:scale(0.97);}
-.popular-badge-img { position:absolute; top:6px; right:6px; background:var(--orange); color:white; font-size:9px; font-weight:800; padding:3px 6px; border-radius:6px; z-index:2; text-transform:uppercase; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
 .popular-img{width:100%;height:90px;background:var(--light);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px;}
 .popular-img img{width:100%;height:100%;object-fit:cover;}
 .popular-info{padding:10px 10px 12px;}
 .popular-name{font-size:13px;font-weight:700;margin-bottom:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .popular-price{font-size:14px;font-weight:800;color:var(--dark);}
 
-/* RESTAURANTS (Added Offers & Rating) */
+/* RESTAURANTS (Offer Beside Name, Rating Below) */
 .rest-list { display:flex; flex-direction:column; gap:16px; }
 .rest-card{background:white;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.15s;}
 .rest-card:active{transform:scale(0.99);}
@@ -166,17 +164,20 @@ body{
 .badge-open{background:var(--green);}
 .badge-closed{background:var(--red);}
 .rest-info{padding:14px 16px; position:relative; z-index:2;}
-.rest-name{font-family:'Sora',sans-serif;font-size:17px;font-weight:800; display:flex; align-items:center;}
-.rest-rating-badge { display:inline-flex; align-items:center; gap:2px; background:var(--green); color:white; font-size:11px; font-weight:800; padding:2px 6px; border-radius:6px; margin-left:6px; }
-.rest-offer-text { font-size:12px; color:var(--orange); font-weight:800; display:flex; align-items:center; gap:4px; margin-top:4px; }
+.rest-name-row { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; }
+.rest-name{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;}
+.rest-offer-tag { background:var(--orange); color:white; font-size:9px; font-weight:800; padding:3px 6px; border-radius:6px; text-transform:uppercase; margin-left:8px; white-space:nowrap;}
+.rest-rating { font-size:12px; font-weight:700; color:var(--dark); display:flex; align-items:center; gap:4px; }
+.rest-rating i { color:var(--yellow); font-size:10px; }
 .rest-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap; margin-top:6px;}
 .rest-meta-item{font-size:12px;color:var(--gray);}
 .meta-dot{width:3px;height:3px;background:#D1D5DB;border-radius:50%;}
 
-/* EMPTY LOCATION STATE */
-.empty-loc { text-align:center; padding: 50px 20px; }
-.empty-loc h3 { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:var(--dark); margin-bottom:8px; }
-.empty-loc p { font-size:14px; color:var(--gray); line-height:1.5; }
+/* PROFESSIONAL EMPTY LOCATION STATE */
+#emptyLocationState { display:none; text-align:center; padding: 60px 20px; animation:fadeIn 0.4s ease; }
+.els-icon { width:80px; height:80px; background:#FFF3E0; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; color:var(--orange); font-size:32px; }
+.els-title { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:var(--dark); margin-bottom:10px; }
+.els-sub { font-size:14px; color:var(--gray); line-height:1.6; max-width:280px; margin:0 auto; }
 
 /* SEARCH */
 .search-page{min-height:100vh;padding:52px 20px 20px;}
@@ -191,8 +192,12 @@ body{
 /* MENU ITEMS & HIGHLIGHT */
 .menu-list, #searchResults { padding:0 20px; }
 .menu-cat-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:800; color:var(--dark); text-transform:uppercase; letter-spacing:0.5px; margin:24px 0 12px; }
-.menu-item { display:flex; gap:16px; padding:20px 16px; background:white; border-radius:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.02); transition:all 0.3s ease; }
-.menu-item.highlight-orange { box-shadow: 0 0 0 2px var(--orange), 0 4px 12px rgba(254,114,76,0.2); transform:scale(1.02); }
+.menu-item { position:relative; display:flex; gap:16px; padding:20px 16px; background:white; border-radius:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.02); transition:all 0.4s ease; }
+/* Orange Highlight for Popular Click */
+.menu-item.highlight-orange { border: 2px solid var(--orange); box-shadow: 0 0 15px rgba(254,114,76,0.25); transform:scale(1.02); }
+.popular-badge-in-menu { position:absolute; top:-10px; left:16px; background:var(--orange); color:white; font-size:9px; font-weight:800; padding:4px 8px; border-radius:6px; text-transform:uppercase; box-shadow:0 2px 6px rgba(254,114,76,0.4); display:none; z-index:5;}
+.menu-item.highlight-orange .popular-badge-in-menu { display:block; animation:fadeIn 0.3s ease; }
+
 .menu-item-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
 .menu-item-name { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:4px; line-height:1.3; }
 
@@ -221,13 +226,12 @@ body{
 .rest-back-btn svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2.5;}
 .closed-notice{background:#FEF2F2;border-bottom:1px solid #FECACA;padding:12px 20px;font-size:13px;color:var(--red);font-weight:600;text-align:center;display:none;}
 .rest-details-box{padding:16px 20px 10px;}
-.rest-details-box h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px; display:flex; align-items:center;}
-.rest-code-tag { background:var(--light); border:1px dashed var(--gray); color:var(--dark); font-size:10px; font-weight:700; padding:4px 8px; border-radius:6px; margin-top:8px; display:inline-block; font-family:monospace; }
+.rest-details-box h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px; display:flex; align-items:center; gap:8px;}
 .rest-details-box p{font-size:13px;color:var(--gray); margin-top:6px;}
 
 .menu-offer-banner { background:#FFF3E0; border:1px dashed #FFB74D; border-radius:12px; padding:12px; margin:16px 20px; display:none;}
 .menu-offer-banner.active { display:block; }
-.menu-offer-title { font-size:13px; font-weight:800; color:var(--orange); display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.menu-offer-title { font-size:13px; font-weight:800; color:var(--orange); display:flex; align-items:center; gap:6px; margin-bottom:4px; text-transform:uppercase;}
 .menu-offer-desc { font-size:12px; color:#A16207; }
 
 .cat-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 20px;position:sticky;top:0;z-index:10; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px);}
@@ -389,10 +393,9 @@ body{
 
 <div class="mini-cart-strip" id="miniCartStrip" onclick="goPage('cart')">
   <div class="mc-details">
-    <div class="mc-count" id="mcCountText">0 ITEMS ADDED</div>
+    <div class="mc-count" id="mcCountText">0 ITEMS ADDED • VIEW CART</div>
   </div>
   <button class="mc-btn">
-    View Cart 
     <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
 </div>
@@ -427,7 +430,7 @@ body{
     <button class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div class="drawer-links">
-    <a href="mailto:contact.pureorder@gmail.com" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact Support</a>
+    <a href="mailto:contact.pureorder@gmail.com" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</a>
     <a onclick="closeDrawer(); goPage('privacyPolicy')" class="drawer-link"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
     <a onclick="closeDrawer(); goPage('termsConditions')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
     <a onclick="closeDrawer(); goPage('helpSupport')" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
@@ -476,35 +479,44 @@ body{
     </div>
   </div>
 
-  <div class="banner-section">
-    <div class="banner-outer">
-      <div class="banner-scroll" id="bannerScroll"></div>
-    </div>
-    <div class="banner-dots" id="bannerDots"></div>
+  <div id="emptyLocationState">
+    <div class="els-icon"><i class="fa-solid fa-rocket"></i></div>
+    <div class="els-title">We’ll Be Launching Soon in Your Area.</div>
+    <div class="els-sub">Our services are expanding rapidly. Stay tuned for upcoming restaurants and offers.</div>
   </div>
 
-  <div class="section" style="margin-bottom:0;">
-    <div class="section-header"><div class="section-title">Categories</div></div>
-  </div>
-  <div class="category-row" id="homeCategories">
-    <div style="text-align:center;color:#9CA3AF;font-size:12px;padding:10px 0;width:100%;">Loading categories...</div>
+  <div id="mainContentBlock">
+      <div class="banner-section">
+        <div class="banner-outer">
+          <div class="banner-scroll" id="bannerScroll"></div>
+        </div>
+        <div class="banner-dots" id="bannerDots"></div>
+      </div>
+
+      <div class="section" style="margin-bottom:0;">
+        <div class="section-header"><div class="section-title">Categories</div></div>
+      </div>
+      <div class="category-row" id="homeCategories">
+        <div style="text-align:center;color:#9CA3AF;font-size:12px;padding:10px 0;width:100%;">Loading categories...</div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-title">Popular Now</div></div>
+        <div class="popular-scroll" id="popularScroll"></div>
+      </div>
+      
+      <div class="section">
+        <div class="section-header"><div class="section-title">Restaurants</div></div>
+        <div class="rest-list" id="restaurantList">
+          <div style="text-align:center;color:#9CA3AF;font-size:13px;padding:20px;">Loading...</div>
+        </div>
+      </div>
   </div>
 
-  <div class="section">
-    <div class="section-header"><div class="section-title">Popular Now</div></div>
-    <div class="popular-scroll" id="popularScroll"></div>
-  </div>
-  <div class="section">
-    <div class="section-header"><div class="section-title">Restaurants</div></div>
-    <div class="rest-list" id="restaurantList">
-      <div style="text-align:center;color:#9CA3AF;font-size:13px;padding:20px;">Loading...</div>
-    </div>
-  </div>
-
-  <div class="home-footer">
-    <div class="hf-title" style="text-align:left;">Built For<br>Kesinga</div>
-    <div class="hf-sub">Crafted with <span style="color:#FF3B30;font-size:14px;">♥</span> under AbhiVision</div>
-    <div class="hf-sub" style="margin-top:6px; font-weight:600; color:var(--dark);">Founded by Abhishek Sahoo</div>
+  <div class="home-footer" style="padding:40px 20px 100px; text-align:center; border-top:1px dashed var(--border); margin-top:20px;">
+    <div style="font-weight:800; font-size:18px; color:var(--dark); font-family:'Sora',sans-serif;">Built For Kesinga</div>
+    <div style="font-size:13px; color:var(--gray); margin-top:6px;">Crafted with <span style="color:#FF3B30;font-size:14px;">♥</span> under AbhiVision</div>
+    <div style="margin-top:6px; font-weight:600; color:var(--dark); font-size:13px;">Founded by Abhishek Sahoo</div>
   </div>
 </div>
 
@@ -534,7 +546,7 @@ body{
     <div class="closed-notice" id="closedNotice">This restaurant is currently closed. You can browse the menu but cannot place orders.</div>
     <div class="rest-details-box">
         <h2 id="activeRestName">Restaurant</h2>
-        <div class="rest-code-tag" id="activeRestCode">KPO-XXXX-0000</div>
+        <div class="rest-rating" id="activeRestRating" style="margin-top:2px;">★ New</div>
         <p id="activeRestTagline">Fresh food · Cash on Delivery</p>
     </div>
     
@@ -574,13 +586,9 @@ body{
   </div>
   <div class="legal-box">
     <div class="legal-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Your Data is Safe</div>
-    <div class="legal-text">Welcome to PureOrder. We respect your privacy and are deeply committed to protecting your personal information. This policy outlines how your data is handled.</div>
-    
+    <div class="legal-text">Welcome to PureOrder. We respect your privacy and are deeply committed to protecting your personal information.</div>
     <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Information We Collect</div>
     <div class="legal-text">To deliver your food accurately, we securely collect your Name, Phone Number, Delivery Address, and precise GPS location coordinates.</div>
-    
-    <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> How We Use It</div>
-    <div class="legal-text">Your data is utilized strictly for order fulfillment, logistics coordination with our delivery partners, and essential account notifications. We do not sell your personal data to third parties.</div>
   </div>
 </div>
 
@@ -592,12 +600,8 @@ body{
   <div class="legal-box">
     <div class="legal-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> User Agreement</div>
     <div class="legal-text">By using the PureOrder application, you agree to comply with and be bound by the following terms of service.</div>
-    
     <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Order Cancellation</div>
-    <div class="legal-text">Once an order is successfully placed and transmitted to the restaurant's kitchen, it cannot be canceled or modified. Ensure your cart is accurate before confirming.</div>
-    
-    <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Delivery Timelines</div>
-    <div class="legal-text">Estimated delivery times are approximate. While we strive for speed, delays caused by weather, traffic, or kitchen load are beyond our direct control.</div>
+    <div class="legal-text">Orders can only be canceled within the 90 seconds timer window. Once accepted by the kitchen, modifications are not allowed.</div>
   </div>
 </div>
 
@@ -610,10 +614,9 @@ body{
     <div style="font-size:50px; margin-bottom:16px;">🎧</div>
     <div style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:var(--dark); margin-bottom:10px;">We're Here to Help!</div>
     <div class="legal-text" style="margin-bottom:24px;">Facing an issue with your order or need assistance navigating the app? Reach out to our dedicated support team directly.</div>
-    
     <a href="mailto:contact.pureorder@gmail.com" class="contact-btn primary">
       <svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      contact.pureorder@gmail.com
+      Contact Support
     </a>
   </div>
 </div>
@@ -627,11 +630,6 @@ body{
     <img src="icon-192.png" style="width:80px; height:80px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:16px;">
     <div style="font-weight:800; font-family:'Sora',sans-serif; font-size:24px; color:var(--dark); margin-bottom:6px;">Pure<span style="color:var(--orange)">Order</span></div>
     <div class="legal-text" style="margin-bottom:24px;">Built exclusively for Kesinga, PureOrder bridges the gap between local gourmet kitchens and food lovers through seamless technology.</div>
-    
-    <div style="text-align:left; border-top:1px solid var(--border); padding-top:20px;">
-      <div class="legal-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Our Mission</div>
-      <div class="legal-text">To empower small-town restaurants with enterprise-grade tech while delivering hot, fresh food to our users quickly and reliably.</div>
-    </div>
   </div>
 </div>
 
@@ -701,7 +699,7 @@ body{
     </div>
     
     <div class="cod-info">Cash on Delivery — Pay when food arrives</div>
-    <div class="cancel-warning">Note: Once an order is successfully placed, it cannot be canceled.</div>
+    <div class="cancel-warning">Note: Once an order is successfully placed, it cannot be canceled after 90 seconds.</div>
     
     <div class="sheet-btns" style="display:flex; gap:10px;">
       <button class="btn-cancel" onclick="closeModal('checkoutModal')">Cancel</button>
@@ -763,18 +761,33 @@ let prevOrderStates = {};
 let dynDeliveryFee = 0; 
 let dynDiscount = 0;
 
-// NEW VARIABLES ADDED FOR FEATURES
 let activeLocation = 'Kesinga';
 let appliedCoupons = {};
 let cancelIntervals = {};
+window.highlightedItemId = null; // Used for Popular Item Glow
 
-// FEATURE 10: Location Change Helper
+// Location Change Helper
 window.changeLocation = (loc) => {
     activeLocation = loc;
-    listenAllRestaurants(); // Re-render with new filter
+    if(activeLocation !== 'Kesinga') {
+        document.getElementById('mainContentBlock').style.display = 'none';
+        document.getElementById('emptyLocationState').style.display = 'block';
+    } else {
+        document.getElementById('mainContentBlock').style.display = 'block';
+        document.getElementById('emptyLocationState').style.display = 'none';
+        listenAllRestaurants(); // Re-render with new filter
+    }
 };
 
-// FEATURE 1: Toggle Menu Description
+// Generate unique KPO Restaurant Code logic
+const generateRestCode = (name, codeOverride) => {
+    const cleanName = codeOverride || (name || 'RES').replace(/[^a-zA-Z]/g, '').substring(0,3).toUpperCase();
+    const dStr = new Date().getDate().toString().padStart(2,'0');
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `KPO-${cleanName}-${dStr}${rand}`;
+};
+
+// Toggle Menu Description
 window.toggleDesc = (btn) => {
     const descEl = btn.previousElementSibling;
     if (descEl.classList.contains('open')) {
@@ -784,15 +797,6 @@ window.toggleDesc = (btn) => {
         descEl.classList.add('open');
         btn.textContent = 'Less';
     }
-};
-
-// FEATURE 2: Generate unique KPO Restaurant Code
-const generateRestCode = (name, codeOverride) => {
-    if(codeOverride) return codeOverride;
-    const cleanName = (name || 'RES').replace(/[^a-zA-Z]/g, '').substring(0,3).toUpperCase();
-    const dStr = new Date().getDate().toString().padStart(2,'0') + (new Date().getMonth()+1).toString().padStart(2,'0');
-    const rand = Math.floor(1000 + Math.random() * 9000);
-    return `KPO-${cleanName}-${dStr}${rand}`;
 };
 
 // SOUND & TOAST
@@ -913,22 +917,13 @@ function startTaglines() {
   }, 4000);
 }
 
-// FEATURE 8: Mini cart shows 0 items if empty, and always visible on restaurant/search
+// Mini cart always shows text, even if empty
 function updateMiniCartStrip() {
   const strip = document.getElementById('miniCartStrip');
   const items = Object.values(cart);
   const totalQty = items.reduce((s, i) => s + i.qty, 0);
   
-  const activePage = document.querySelector('.page.active');
-  const allowedPages = ['pageRestaurant', 'pageSearch'];
-  const shouldShow = activePage && allowedPages.includes(activePage.id);
-
-  if (shouldShow) {
-    document.getElementById('mcCountText').textContent = totalQty === 0 ? `0 ITEMS ADDED` : `${totalQty} ITEM${totalQty > 1 ? 'S' : ''} ADDED`;
-    strip.classList.add('show');
-  } else {
-    strip.classList.remove('show');
-  }
+  document.getElementById('mcCountText').textContent = `${totalQty} ITEMS ADDED • VIEW CART`;
 }
 
 // NAVIGATION
@@ -942,12 +937,8 @@ window.goPage = (name, el) => {
   if (el) el.classList.add('active');
   
   if (name === 'cart') {
-      document.getElementById('miniCartStrip').classList.remove('show');
       renderCart();
-  } else {
-      updateMiniCartStrip();
   }
-
   if (name === 'orders') { 
     const orderBtn = document.getElementById('nav-orders');
     if (orderBtn) orderBtn.classList.add('active'); 
@@ -965,7 +956,7 @@ window.openRestaurant = (restId, restName) => {
   listenSpecificRestaurant(restId);
 };
 
-// FEATURE 11: Open restaurant, scroll to item, highlight orange
+// Open restaurant, scroll to item, highlight orange
 window.openRestaurantAndHighlight = (restId, restName, itemId) => {
   window.highlightedItemId = itemId;
   openRestaurant(restId, restName);
@@ -1029,7 +1020,7 @@ async function initApp() {
     loadCategories();
     
     loadGlobalMenu();
-    listenAllRestaurants(); // Re-factored to handle location dropdown
+    listenAllRestaurants(); 
     loadAdminNotice();
 
   } catch(e) {} finally {
@@ -1040,14 +1031,13 @@ async function initApp() {
   }
 }
 
-// FEATURE 11: Display "POPULAR" badge and implement Highlight functionality on click
+// Popular Items Logic (Removed Badge from Homepage, Highlight applied via click)
 function loadGlobalMenu() {
   onSnapshot(collection(db, 'menu'), snap => {
     windowGlobalMenuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const pop = windowGlobalMenuItems.filter(i => i.popular && i.available).slice(0, 10);
     document.getElementById('popularScroll').innerHTML = pop.length 
       ? pop.map(i => `<div class="popular-card" onclick="openRestaurantAndHighlight('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}', '${i.id}')">
-          <div class="popular-badge-img">POPULAR</div>
           <div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div>
           <div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">₹${i.price}</div></div>
         </div>`).join('') 
@@ -1089,7 +1079,6 @@ let bannerInterval;
 async function loadBanners() {
   const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
   const banners = snap.docs.map(d => d.data());
-  // Banner height standardized in CSS per Feature 7
   document.getElementById('bannerScroll').innerHTML = banners.map(b => `
     <div class="banner-card" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')"` : ''}>
       <img src="${b.imageUrl}" loading="lazy">
@@ -1127,28 +1116,19 @@ async function loadCategories() {
   }).join('');
 }
 
-// FEATURE 10 & 3: Filter Rest by Location Dropdown & Show Rating/Offer
+// RESTAURANTS LIST: Show offer next to name & Rating below
 function listenAllRestaurants() {
   onSnapshot(query(collection(db, 'restaurants'), where('status', '==', 'active')), snap => {
     allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     
-    // Filtering logic based on Dropdown
     const locFiltered = allRestaurants.filter(r => (r.location || 'Kesinga').toLowerCase() === activeLocation.toLowerCase());
     
     const el = document.getElementById('restaurantList');
-    if (locFiltered.length === 0) {
-        el.innerHTML = `
-        <div class="empty-loc">
-           <svg style="width:120px; opacity:0.8; margin-bottom:16px;" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-           <h3>We're expanding!</h3>
-           <p>Currently, there are no restaurants serving in <b>${activeLocation}</b>. We are working hard to bring the best food to your area very soon!</p>
-        </div>`;
-        return;
-    }
+    if (locFiltered.length === 0) return; // Handled by outer container switch
 
     el.innerHTML = locFiltered.map(r => {
-        const ratingHtml = r.rating ? `<span class="rest-rating-badge">★ ${r.rating}</span>` : `<span class="rest-rating-badge">★ New</span>`;
-        const offerHtml = r.offerName ? `<div class="rest-offer-text"><svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> ${r.offerName}</div>` : '';
+        const ratingHtml = r.rating ? `<div class="rest-rating"><i>★</i> ${r.rating}</div>` : `<div class="rest-rating"><i>★</i> New</div>`;
+        const offerHtml = r.offerName ? `<span class="rest-offer-tag">${r.offerName}</span>` : '';
         
         return `
         <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
@@ -1156,11 +1136,11 @@ function listenAllRestaurants() {
             <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
           </div>
           <div class="rest-info">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-               <div class="rest-name" style="margin-bottom:0;">${r.name} ${ratingHtml}</div>
+            <div class="rest-name-row">
+               <div class="rest-name">${r.name} ${offerHtml}</div>
             </div>
+            ${ratingHtml}
             <div class="rest-meta"><div class="rest-meta-item">${r.tagline || 'Fresh Food'}</div><div class="meta-dot"></div><div class="rest-meta-item">COD Available</div></div>
-            ${offerHtml}
           </div>
         </div>`;
     }).join('');
@@ -1168,26 +1148,21 @@ function listenAllRestaurants() {
 }
 
 let menuUnsub = null;
-// FEATURE 4 & 2: Menu Top Shows Offer/Description + Code generated
+// MENU HEADER: Rating beside name, Offer above categories, NO Code visible here
 function listenSpecificRestaurant(restId) {
   onSnapshot(doc(db, 'restaurants', restId), snap => {
     if (!snap.exists()) return;
     const data = snap.data();
     isRestOpen = data.isOpen !== false;
     const imgUrl = data.imageUrl || data.restaurantImageUrl || '';
-    
-    // FEATURE 2: Rest Code Generation
-    const restCode = generateRestCode(data.name, data.restaurantCode);
 
     document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}" onerror="this.style.display='none'">` : `<div class="rest-hero-placeholder">${data.name}</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
     
-    const ratingHtml = data.rating ? `<span class="rest-rating-badge" style="font-size:14px; padding:4px 8px;">★ ${data.rating}</span>` : '';
-    document.getElementById('activeRestName').innerHTML = `${data.name} ${ratingHtml}`;
-    document.getElementById('activeRestCode').textContent = restCode;
+    document.getElementById('activeRestName').innerHTML = `${data.name}`;
+    document.getElementById('activeRestRating').innerHTML = data.rating ? `★ ${data.rating}` : `★ New`;
     document.getElementById('activeRestTagline').textContent = `${data.tagline || 'Fresh Food'} · Cash on Delivery`;
     document.getElementById('closedNotice').style.display = isRestOpen ? 'none' : 'block';
     
-    // FEATURE 4: Menu Offer Banner rendering
     const moBanner = document.getElementById('menuOfferBanner');
     if (data.offerName && data.offerDesc) {
         document.getElementById('moName').textContent = data.offerName;
@@ -1218,7 +1193,7 @@ window.filterCat = (cat, el) => {
   renderRestaurantMenu();
 };
 
-// FEATURE 1: Menu Item "More" Description + Orange Highlight
+// MENU ITEMS: Popular Item Orange Glow & Tag implementation
 function renderRestaurantMenu() {
   const filter = window._menuFilter || 'all';
   const filtered = filter === 'all' ? menuItems : menuItems.filter(i => i.category?.toLowerCase() === filter);
@@ -1240,6 +1215,7 @@ function renderRestaurantMenu() {
       const isHighlight = (window.highlightedItemId === item.id) ? 'highlight-orange' : '';
 
       html += `<div class="menu-item ${isHighlight}" id="menu-item-${item.id}">
+        <div class="popular-badge-in-menu">POPULAR</div>
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
           ${item.description ? `<div class="desc-text">${item.description}</div><button class="read-more-btn" onclick="toggleDesc(this)">More</button>` : ''}
@@ -1254,7 +1230,6 @@ function renderRestaurantMenu() {
   });
   document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gray);">No items found in this restaurant</div>';
 
-  // Executing Highlight Orange Edge logic and Auto Scroll
   if (window.highlightedItemId) {
       setTimeout(() => {
           const el = document.getElementById(`menu-item-${window.highlightedItemId}`);
@@ -1282,15 +1257,15 @@ window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
 window.applyCouponBtn = (rId) => {
     const input = document.getElementById(`coupon-input-${rId}`).value.trim();
     if(input) { 
-        appliedCoupons[rId] = { code: input, amt: 20 }; // Basic mockup logic for separate discount
+        appliedCoupons[rId] = { code: input, amt: 20 };
         showToast(`Coupon applied for this restaurant`, 'success');
     } else { 
         delete appliedCoupons[rId]; 
     }
-    renderCart(); // Re-render logic to apply savings
+    renderCart(); 
 };
 
-// FEATURE 5 & 13: Apply coupon, Dropdown discount summary with REST CODE
+// CART PAGE: Group items, apply discounts
 function renderCart() {
   const items = Object.values(cart);
   const el = document.getElementById('cartContent');
@@ -1309,7 +1284,6 @@ function renderCart() {
   Object.keys(groupedCart).forEach(rId => {
       const g = groupedCart[rId];
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
-      const restCode = generateRestCode(g.name, liveRest.restaurantCode);
       const restOfferName = liveRest && liveRest.offerName ? ` <span style="background:var(--orange);color:white;font-size:10px;padding:3px 8px;border-radius:6px;margin-left:8px;">${liveRest.offerName}</span>` : '';
 
       const existingCoupon = appliedCoupons[rId] ? appliedCoupons[rId].code : '';
@@ -1353,7 +1327,6 @@ function renderCart() {
 
   Object.keys(groupedCart).forEach(rId => {
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
-      const restCode = generateRestCode(liveRest.name, liveRest.restaurantCode);
       
       const rOfferDiscount = liveRest.offerDiscount || 0;
       const rCouponDiscount = appliedCoupons[rId] ? appliedCoupons[rId].amt : 0;
@@ -1363,7 +1336,7 @@ function renderCart() {
       numRestaurants++;
 
       if(rOfferDiscount > 0 || rCouponDiscount > 0) {
-          dropdownDetails += `<div style="margin-bottom:6px;"><b>${liveRest.name} (${restCode})</b><br>`;
+          dropdownDetails += `<div style="margin-bottom:6px;"><b>${liveRest.name}</b><br>`;
           if(rOfferDiscount > 0) dropdownDetails += `Offer: ${liveRest.offerName} (-₹${rOfferDiscount})<br>`;
           if(rCouponDiscount > 0) dropdownDetails += `Coupon: ${appliedCoupons[rId].code} (-₹${rCouponDiscount})<br>`;
           dropdownDetails += `</div>`;
@@ -1437,16 +1410,11 @@ window.placeOrder = async () => {
     const batchId = 'GRP_' + Date.now();
     const batchTime = serverTimestamp();
     const promises = [];
-    
-    const d = new Date();
-    const dStr = d.getDate().toString().padStart(2,'0') + (d.getMonth()+1).toString().padStart(2,'0');
-    const rand = Math.floor(1000 + Math.random() * 9000);
 
     for (const [rId, rData] of Object.entries(groupedCart)) {
         const rItems = rData.items;
         const rItemTotal = rItems.reduce((s, i) => s + i.price * i.qty, 0);
         
-        // DYNAMIC FEES AT CHECKOUT
         const liveRest = allRestaurants.find(r => r.id === rId);
         const rDelivery = liveRest ? (liveRest.deliveryFee || 0) : 0; 
         
@@ -1456,8 +1424,8 @@ window.placeOrder = async () => {
 
         const rTotal = rItemTotal + rDelivery - rDiscount;
         
-        const shortRest = (rData.name || 'RES').substring(0,3).toUpperCase();
-        const displayOrderId = `POK-${shortRest}-${dStr}${rand}`; 
+        // Generate specific checkout restaurant code
+        const displayOrderId = generateRestCode(rData.name, (liveRest ? liveRest.restaurantCode : null)); 
         
         const orderData = {
           displayOrderId: displayOrderId,
@@ -1578,7 +1546,7 @@ function renderOrders() {
   }).join('');
 }
 
-// FEATURE 6: Order Cancellation logic and Timer execution
+// 90s Cancel Logic
 window.handleCancelOrder = async (orderId) => {
     if(!confirm("Are you sure you want to cancel this order?")) return;
     try {
@@ -1586,7 +1554,6 @@ window.handleCancelOrder = async (orderId) => {
         btn.disabled = true;
         btn.textContent = "Cancelling...";
         
-        // Update all documents tied to this groupId
         const docsToCancel = activeOrdersData.filter(x => (x.groupId || x.id) === orderId);
         const batchPromises = docsToCancel.map(dDoc => {
             return setDoc(doc(db, 'orders', dDoc.id), { status: 'cancelled', cancellationReason: 'Cancelled by customer' }, { merge: true });
@@ -1644,7 +1611,7 @@ window.showOrderDetail = gId => {
       }
   }
 
-  // FEATURE 12: Delivery person info + Call button persists even if delivered
+  // Delivery Partner Section (Always visible if exists, even after delivered)
   let dpHtml = '';
   if (primaryDoc.deliveryPartnerName) {
       const callIconHtml = primaryDoc.deliveryPartnerPhone ? `<a href="tel:${primaryDoc.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
@@ -1688,7 +1655,7 @@ window.showOrderDetail = gId => {
     </div>
   </div>`;
 
-  // FEATURE 6: Live 1m 30s Countdown Cancel Timer Box
+  // 90s Cancel Timer
   let timerHtml = '';
   if (primaryDoc.status === 'placed') {
       timerHtml = `
@@ -1727,11 +1694,10 @@ window.showOrderDetail = gId => {
       }, 1000);
   }
 
-  // Combine components. Timer disappears if out of Placed state.
   document.getElementById('odContent').innerHTML = timerHtml + timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
 
-// SEARCH FIX: Resolve Actual Restaurant Name
+// SEARCH
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { 
@@ -1816,7 +1782,6 @@ document.querySelectorAll('.overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
 
-// PWA AUTO-INSTALL LOGIC
 let deferredPrompt;
 const installBanner = document.getElementById('installPwaBanner');
 const installBtnAction = document.getElementById('installPwaBtnAction');
