@@ -67,7 +67,7 @@ body{
 .icon-btn svg{width:22px; height:22px; stroke:var(--dark); fill:none; stroke-width:2;}
 .notif-badge{position:absolute; top:-4px; right:-4px; background:var(--red); color:white; font-size:10px; font-weight:800; border-radius:50%; width:18px; height:18px; display:none; align-items:center; justify-content:center; border:2px solid white;}
 
-/* NEW LOCATION DROPDOWN UI */
+/* LOCATION DROPDOWN UI */
 .loc-dropdown-wrapper { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--gray); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
 .loc-dropdown-wrapper svg.pin { width:12px; height:12px; stroke:var(--orange); fill:none; stroke-width:2.5; }
 .loc-select { background:transparent; border:none; color:var(--orange); font-weight:800; font-family:'DM Sans',sans-serif; font-size:12px; outline:none; text-transform:uppercase; cursor:pointer; appearance:none; padding-right:12px; }
@@ -100,8 +100,9 @@ body{
 .nav-btn.active .nl { color:var(--orange); }
 .cart-badge { position:absolute; top:-4px; right:18px; background:var(--red); color:white; font-size:9px; font-weight:700; border-radius:10px; padding:2px 5px; min-width:16px; text-align:center; display:none; border:2px solid white; }
 
-/* PERMANENT MINI CART STRIP */
-.mini-cart-strip { position:fixed; bottom: calc(75px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:105; box-shadow:0 8px 24px rgba(0,0,0,0.25); cursor:pointer; transition:all 0.3s ease; }
+/* MINI CART STRIP */
+.mini-cart-strip { position:fixed; bottom: calc(75px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(100px); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:105; box-shadow:0 8px 24px rgba(0,0,0,0.25); cursor:pointer; transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity:0; visibility:hidden; pointer-events:none;}
+.mini-cart-strip.show { transform:translateX(-50%) translateY(0); opacity:1; visibility:visible; pointer-events:auto;}
 .mc-details { color:white; }
 .mc-count { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;}
 .mc-btn { display:flex; align-items:center; gap:6px; color:white; font-family:'Sora',sans-serif; font-size:13px; font-weight:800; background:none; border:none; cursor:pointer; text-transform:uppercase;}
@@ -126,12 +127,12 @@ body{
 .cat-circle-img img { width:100%; height:100%; object-fit:cover; }
 .cat-circle-name { font-size:12px; font-weight:600; color:var(--dark); white-space:nowrap; }
 
-/* BANNER SLIDER (Dynamic CSS Height) */
+/* BANNER SLIDER */
 .banner-section{padding:16px 0 10px;}
 .banner-outer{overflow:hidden;}
 .banner-scroll{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:0 20px;}
 .banner-scroll::-webkit-scrollbar{display:none;}
-.banner-card{flex: 0 0 100%; height: auto; aspect-ratio: 16/7; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
+.banner-card{flex: 0 0 100%; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer; background:var(--light);}
 .banner-card img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
 .banner-gradient {position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);z-index:1;}
 .banner-title{position:relative;z-index:2;font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;text-shadow:0 2px 4px rgba(0,0,0,0.3);}
@@ -143,18 +144,19 @@ body{
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;}
 
-/* POPULAR ITEMS (No Badge on Home) */
+/* POPULAR ITEMS */
 .popular-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px;}
 .popular-scroll::-webkit-scrollbar{display:none;}
 .popular-card{position:relative; min-width:140px;background:white;border-radius:16px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform 0.15s;}
 .popular-card:active{transform:scale(0.97);}
-.popular-img{width:100%;height:90px;background:var(--light);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px;}
+.popular-img{width:100%;height:90px;background:var(--light);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px; position:relative;}
 .popular-img img{width:100%;height:100%;object-fit:cover;}
+.popular-tag {position:absolute; top:6px; right:6px; background:var(--orange); color:white; font-size:9px; font-weight:800; padding:3px 8px; border-radius:10px; text-transform:uppercase; z-index:2;}
 .popular-info{padding:10px 10px 12px;}
 .popular-name{font-size:13px;font-weight:700;margin-bottom:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .popular-price{font-size:14px;font-weight:800;color:var(--dark);}
 
-/* RESTAURANTS (Offer Beside Name, Rating Below) */
+/* RESTAURANTS LIST */
 .rest-list { display:flex; flex-direction:column; gap:16px; }
 .rest-card{background:white;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.15s;}
 .rest-card:active{transform:scale(0.99);}
@@ -165,17 +167,18 @@ body{
 .badge-closed{background:var(--red);}
 .rest-info{padding:14px 16px; position:relative; z-index:2;}
 .rest-name-row { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; }
-.rest-name{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;}
-.rest-offer-tag { background:var(--orange); color:white; font-size:9px; font-weight:800; padding:3px 6px; border-radius:6px; text-transform:uppercase; margin-left:8px; white-space:nowrap;}
-.rest-rating { font-size:12px; font-weight:700; color:var(--dark); display:flex; align-items:center; gap:4px; }
-.rest-rating i { color:var(--yellow); font-size:10px; }
+.rest-name{font-family:'Sora',sans-serif;font-size:16px;font-weight:800; display:flex; align-items:center;}
+.rest-offer-tag { background:var(--orange); color:white; font-size:9px; font-weight:800; padding:4px 8px; border-radius:6px; text-transform:uppercase; margin-left:8px; white-space:nowrap; letter-spacing:0.3px;}
+.rest-rating { font-size:12px; font-weight:700; color:var(--dark); display:flex; align-items:center; gap:4px; margin-top:2px;}
+.rest-rating i { color:var(--yellow); font-size:10px; font-style:normal;}
 .rest-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap; margin-top:6px;}
 .rest-meta-item{font-size:12px;color:var(--gray);}
 .meta-dot{width:3px;height:3px;background:#D1D5DB;border-radius:50%;}
 
 /* PROFESSIONAL EMPTY LOCATION STATE */
 #emptyLocationState { display:none; text-align:center; padding: 60px 20px; animation:fadeIn 0.4s ease; }
-.els-icon { width:80px; height:80px; background:#FFF3E0; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; color:var(--orange); font-size:32px; }
+.els-icon { width:80px; height:80px; background:#FFF3E0; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; color:var(--orange); }
+.els-icon svg { width: 36px; height: 36px; stroke: currentColor; fill: none; stroke-width: 2; }
 .els-title { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:var(--dark); margin-bottom:10px; }
 .els-sub { font-size:14px; color:var(--gray); line-height:1.6; max-width:280px; margin:0 auto; }
 
@@ -195,8 +198,6 @@ body{
 .menu-item { position:relative; display:flex; gap:16px; padding:20px 16px; background:white; border-radius:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.02); transition:all 0.4s ease; }
 /* Orange Highlight for Popular Click */
 .menu-item.highlight-orange { border: 2px solid var(--orange); box-shadow: 0 0 15px rgba(254,114,76,0.25); transform:scale(1.02); }
-.popular-badge-in-menu { position:absolute; top:-10px; left:16px; background:var(--orange); color:white; font-size:9px; font-weight:800; padding:4px 8px; border-radius:6px; text-transform:uppercase; box-shadow:0 2px 6px rgba(254,114,76,0.4); display:none; z-index:5;}
-.menu-item.highlight-orange .popular-badge-in-menu { display:block; animation:fadeIn 0.3s ease; }
 
 .menu-item-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
 .menu-item-name { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:4px; line-height:1.3; }
@@ -232,7 +233,7 @@ body{
 .menu-offer-banner { background:#FFF3E0; border:1px dashed #FFB74D; border-radius:12px; padding:12px; margin:16px 20px; display:none;}
 .menu-offer-banner.active { display:block; }
 .menu-offer-title { font-size:13px; font-weight:800; color:var(--orange); display:flex; align-items:center; gap:6px; margin-bottom:4px; text-transform:uppercase;}
-.menu-offer-desc { font-size:12px; color:#A16207; }
+.menu-offer-desc { font-size:12px; color:#A16207; font-weight:600; }
 
 .cat-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 20px;position:sticky;top:0;z-index:10; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px);}
 .cat-tabs::-webkit-scrollbar{display:none;}
@@ -430,15 +431,15 @@ body{
     <button class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div class="drawer-links">
-    <a href="mailto:contact.pureorder@gmail.com" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</a>
+    <a href="mailto:contact.pureorder@gmail.com" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact Support</a>
     <a onclick="closeDrawer(); goPage('privacyPolicy')" class="drawer-link"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
     <a onclick="closeDrawer(); goPage('termsConditions')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
     <a onclick="closeDrawer(); goPage('helpSupport')" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
     <a onclick="closeDrawer(); goPage('aboutUs')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>About Us</a>
   </div>
   <div class="drawer-footer">
-    <div class="df-text">Made By Abhishek Sahoo</div>
-    <div class="df-sub">Founder of PureOrder</div>
+    <div class="df-text">PureOrder</div>
+    <div class="df-sub">Your Local Food Partner</div>
   </div>
 </div>
 
@@ -480,9 +481,9 @@ body{
   </div>
 
   <div id="emptyLocationState">
-    <div class="els-icon"><i class="fa-solid fa-rocket"></i></div>
+    <div class="els-icon"><svg viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></svg></div>
     <div class="els-title">We’ll Be Launching Soon in Your Area.</div>
-    <div class="els-sub">Our services are expanding rapidly. Stay tuned for upcoming restaurants and offers.</div>
+    <div class="els-sub">Our services are expanding rapidly. Stay tuned for upcoming restaurants and offers in your location.</div>
   </div>
 
   <div id="mainContentBlock">
@@ -514,7 +515,7 @@ body{
   </div>
 
   <div class="home-footer" style="padding:40px 20px 100px; text-align:center; border-top:1px dashed var(--border); margin-top:20px;">
-    <div style="font-weight:800; font-size:18px; color:var(--dark); font-family:'Sora',sans-serif;">Built For Kesinga</div>
+    <div style="font-weight:800; font-size:18px; color:var(--dark); font-family:'Sora',sans-serif;">Built For <span id="footerLocName">Kesinga</span></div>
     <div style="font-size:13px; color:var(--gray); margin-top:6px;">Crafted with <span style="color:#FF3B30;font-size:14px;">♥</span> under AbhiVision</div>
     <div style="margin-top:6px; font-weight:600; color:var(--dark); font-size:13px;">Founded by Abhishek Sahoo</div>
   </div>
@@ -601,7 +602,7 @@ body{
     <div class="legal-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> User Agreement</div>
     <div class="legal-text">By using the PureOrder application, you agree to comply with and be bound by the following terms of service.</div>
     <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Order Cancellation</div>
-    <div class="legal-text">Orders can only be canceled within the 90 seconds timer window. Once accepted by the kitchen, modifications are not allowed.</div>
+    <div class="legal-text">Orders can only be canceled within the 90 seconds (1 minute 30 seconds) timer window. Once accepted by the kitchen, modifications are not allowed.</div>
   </div>
 </div>
 
@@ -629,7 +630,7 @@ body{
   <div class="legal-box" style="text-align:center;">
     <img src="icon-192.png" style="width:80px; height:80px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:16px;">
     <div style="font-weight:800; font-family:'Sora',sans-serif; font-size:24px; color:var(--dark); margin-bottom:6px;">Pure<span style="color:var(--orange)">Order</span></div>
-    <div class="legal-text" style="margin-bottom:24px;">Built exclusively for Kesinga, PureOrder bridges the gap between local gourmet kitchens and food lovers through seamless technology.</div>
+    <div class="legal-text" style="margin-bottom:24px;">Bridging the gap between local gourmet kitchens and food lovers through seamless technology across the region.</div>
   </div>
 </div>
 
@@ -699,7 +700,7 @@ body{
     </div>
     
     <div class="cod-info">Cash on Delivery — Pay when food arrives</div>
-    <div class="cancel-warning">Note: Once an order is successfully placed, it cannot be canceled after 90 seconds.</div>
+    <div class="cancel-warning">Note: Once an order is successfully placed, it cannot be canceled after 1 minute and 30 seconds.</div>
     
     <div class="sheet-btns" style="display:flex; gap:10px;">
       <button class="btn-cancel" onclick="closeModal('checkoutModal')">Cancel</button>
@@ -769,6 +770,8 @@ window.highlightedItemId = null; // Used for Popular Item Glow
 // Location Change Helper
 window.changeLocation = (loc) => {
     activeLocation = loc;
+    document.getElementById('locationSelect').value = loc;
+    document.getElementById('footerLocName').textContent = loc;
     if(activeLocation !== 'Kesinga') {
         document.getElementById('mainContentBlock').style.display = 'none';
         document.getElementById('emptyLocationState').style.display = 'block';
@@ -917,13 +920,21 @@ function startTaglines() {
   }, 4000);
 }
 
-// Mini cart always shows text, even if empty
 function updateMiniCartStrip() {
   const strip = document.getElementById('miniCartStrip');
   const items = Object.values(cart);
   const totalQty = items.reduce((s, i) => s + i.qty, 0);
-  
-  document.getElementById('mcCountText').textContent = `${totalQty} ITEMS ADDED • VIEW CART`;
+
+  const activePage = document.querySelector('.page.active');
+  const allowedPages = ['pageRestaurant', 'pageSearch'];
+  const shouldShow = activePage && allowedPages.includes(activePage.id);
+
+  if (shouldShow) {
+    document.getElementById('mcCountText').textContent = `${totalQty} ITEMS ADDED • VIEW CART`;
+    strip.classList.add('show');
+  } else {
+    strip.classList.remove('show');
+  }
 }
 
 // NAVIGATION
@@ -939,6 +950,9 @@ window.goPage = (name, el) => {
   if (name === 'cart') {
       renderCart();
   }
+  
+  updateMiniCartStrip();
+
   if (name === 'orders') { 
     const orderBtn = document.getElementById('nav-orders');
     if (orderBtn) orderBtn.classList.add('active'); 
@@ -1031,14 +1045,14 @@ async function initApp() {
   }
 }
 
-// Popular Items Logic (Removed Badge from Homepage, Highlight applied via click)
+// Popular Items Logic
 function loadGlobalMenu() {
   onSnapshot(collection(db, 'menu'), snap => {
     windowGlobalMenuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const pop = windowGlobalMenuItems.filter(i => i.popular && i.available).slice(0, 10);
     document.getElementById('popularScroll').innerHTML = pop.length 
       ? pop.map(i => `<div class="popular-card" onclick="openRestaurantAndHighlight('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}', '${i.id}')">
-          <div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div>
+          <div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}<div class="popular-tag">Popular</div></div>
           <div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">₹${i.price}</div></div>
         </div>`).join('') 
       : '<div style="color:#9CA3AF;font-size:13px;padding:10px 0;">No popular items yet</div>';
@@ -1080,7 +1094,7 @@ async function loadBanners() {
   const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
   const banners = snap.docs.map(d => d.data());
   document.getElementById('bannerScroll').innerHTML = banners.map(b => `
-    <div class="banner-card" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')"` : ''}>
+    <div class="banner-card" style="height:${b.height || 'auto'}; aspect-ratio:${b.height ? 'auto' : '16/7'};" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')"` : ''}>
       <img src="${b.imageUrl}" loading="lazy">
       <div class="banner-gradient"></div>
       <div class="banner-title">${b.title || ''}</div>
@@ -1116,7 +1130,7 @@ async function loadCategories() {
   }).join('');
 }
 
-// RESTAURANTS LIST: Show offer next to name & Rating below
+// RESTAURANTS LIST
 function listenAllRestaurants() {
   onSnapshot(query(collection(db, 'restaurants'), where('status', '==', 'active')), snap => {
     allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -1148,7 +1162,6 @@ function listenAllRestaurants() {
 }
 
 let menuUnsub = null;
-// MENU HEADER: Rating beside name, Offer above categories, NO Code visible here
 function listenSpecificRestaurant(restId) {
   onSnapshot(doc(db, 'restaurants', restId), snap => {
     if (!snap.exists()) return;
@@ -1193,7 +1206,6 @@ window.filterCat = (cat, el) => {
   renderRestaurantMenu();
 };
 
-// MENU ITEMS: Popular Item Orange Glow & Tag implementation
 function renderRestaurantMenu() {
   const filter = window._menuFilter || 'all';
   const filtered = filter === 'all' ? menuItems : menuItems.filter(i => i.category?.toLowerCase() === filter);
@@ -1218,7 +1230,7 @@ function renderRestaurantMenu() {
         <div class="popular-badge-in-menu">POPULAR</div>
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
-          ${item.description ? `<div class="desc-text">${item.description}</div><button class="read-more-btn" onclick="toggleDesc(this)">More</button>` : ''}
+          ${item.description ? `<div class="desc-text">${item.description}</div>${item.description.length > 55 ? `<button class="read-more-btn" onclick="toggleDesc(this)">More</button>` : ''}` : ''}
           <div class="menu-item-price">₹${item.price}</div>
         </div>
         <div class="menu-item-right">
@@ -1257,6 +1269,7 @@ window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
 window.applyCouponBtn = (rId) => {
     const input = document.getElementById(`coupon-input-${rId}`).value.trim();
     if(input) { 
+        // Mock coupon logic for UI testing, to be synced with DB in backend
         appliedCoupons[rId] = { code: input, amt: 20 };
         showToast(`Coupon applied for this restaurant`, 'success');
     } else { 
@@ -1265,7 +1278,7 @@ window.applyCouponBtn = (rId) => {
     renderCart(); 
 };
 
-// CART PAGE: Group items, apply discounts
+// CART PAGE
 function renderCart() {
   const items = Object.values(cart);
   const el = document.getElementById('cartContent');
@@ -1337,7 +1350,8 @@ function renderCart() {
 
       if(rOfferDiscount > 0 || rCouponDiscount > 0) {
           dropdownDetails += `<div style="margin-bottom:6px;"><b>${liveRest.name}</b><br>`;
-          if(rOfferDiscount > 0) dropdownDetails += `Offer: ${liveRest.offerName} (-₹${rOfferDiscount})<br>`;
+          const rcCode = liveRest.restaurantCode || rId.substring(0,4).toUpperCase();
+          if(rOfferDiscount > 0) dropdownDetails += `Offer: ${liveRest.offerName} [Code: ${rcCode}] (-₹${rOfferDiscount})<br>`;
           if(rCouponDiscount > 0) dropdownDetails += `Coupon: ${appliedCoupons[rId].code} (-₹${rCouponDiscount})<br>`;
           dropdownDetails += `</div>`;
       }
@@ -1357,7 +1371,7 @@ function renderCart() {
     </details>
     ` : ''}
     
-    <div class="summary-total"><span>Grand Total</span><span>₹${finalTotal}</span></div>
+    <div class="summary-total"><span>Grand Total</span><span>₹${Math.max(0, finalTotal)}</span></div>
   </div>
   <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>`;
   
@@ -1422,7 +1436,7 @@ window.placeOrder = async () => {
         const rCouponDiscount = appliedCoupons[rId] ? appliedCoupons[rId].amt : 0;
         const rDiscount = rOfferDiscount + rCouponDiscount;
 
-        const rTotal = rItemTotal + rDelivery - rDiscount;
+        const rTotal = Math.max(0, rItemTotal + rDelivery - rDiscount);
         
         // Generate specific checkout restaurant code
         const displayOrderId = generateRestCode(rData.name, (liveRest ? liveRest.restaurantCode : null)); 
@@ -1434,7 +1448,8 @@ window.placeOrder = async () => {
           items: rItems.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
           itemTotal: rItemTotal, deliveryFee: rDelivery, discount: rDiscount, totalAmount: rTotal,
           paymentType: 'COD', status: 'placed', latitude: capturedLat, longitude: capturedLng,
-          createdAt: batchTime, updatedAt: batchTime, groupId: batchId
+          createdAt: batchTime, updatedAt: batchTime, groupId: batchId,
+          orderTimestampMs: Date.now() // For 90s timer
         };
         promises.push(addDoc(collection(db, 'orders'), orderData));
     }
@@ -1501,6 +1516,20 @@ function triggerLocalOrderNotification(o) {
     playNotifSound();
 }
 
+window.cancelOrderGlobal = async (gId) => {
+    if(!confirm("Are you sure you want to cancel this order?")) return;
+    try {
+        const groupDocs = activeOrdersData.filter(x => (x.groupId || x.id) === gId);
+        const batchPromises = groupDocs.map(dDoc => {
+            return setDoc(doc(db, 'orders', dDoc.id), { status: 'cancelled', cancellationReason: 'Cancelled by customer' }, { merge: true });
+        });
+        await Promise.all(batchPromises);
+        showToast("Order cancelled successfully", "success");
+    } catch(e) {
+        showToast("Failed to cancel order", "error");
+    }
+}
+
 function renderOrders() {
   const el = document.getElementById('ordersList');
   if (!activeOrdersData.length) {
@@ -1513,7 +1542,7 @@ function renderOrders() {
       const gId = o.groupId || o.id;
       if(!groupedOrders[gId]) {
           groupedOrders[gId] = {
-              id: gId, status: o.status, createdAt: o.createdAt, totalAmount: 0,
+              id: gId, status: o.status, createdAt: o.createdAt, totalAmount: 0, orderTimestampMs: o.orderTimestampMs,
               restaurants: new Set(), itemsText: [], displayOrderId: o.displayOrderId || `POK-${o.id.slice(-5).toUpperCase()}`
           };
       }
@@ -1530,7 +1559,7 @@ function renderOrders() {
     const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }) + ', ' + o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : 'Just now';
     const restNames = Array.from(o.restaurants).join(' & ');
-    
+
     return `<div class="order-card" onclick="showOrderDetail('${o.id}')">
       <div class="order-top">
          <div>
@@ -1546,24 +1575,6 @@ function renderOrders() {
   }).join('');
 }
 
-// 90s Cancel Logic
-window.handleCancelOrder = async (orderId) => {
-    if(!confirm("Are you sure you want to cancel this order?")) return;
-    try {
-        const btn = document.getElementById(`btnCancel-${orderId}`);
-        btn.disabled = true;
-        btn.textContent = "Cancelling...";
-        
-        const docsToCancel = activeOrdersData.filter(x => (x.groupId || x.id) === orderId);
-        const batchPromises = docsToCancel.map(dDoc => {
-            return setDoc(doc(db, 'orders', dDoc.id), { status: 'cancelled', cancellationReason: 'Cancelled by customer' }, { merge: true });
-        });
-        await Promise.all(batchPromises);
-        showToast("Order cancelled successfully", "success");
-    } catch(e) {
-        showToast("Failed to cancel order", "error");
-    }
-}
 
 window.showOrderDetail = gId => {
   const groupDocs = activeOrdersData.filter(x => (x.groupId || x.id) === gId);
@@ -1611,7 +1622,7 @@ window.showOrderDetail = gId => {
       }
   }
 
-  // Delivery Partner Section (Always visible if exists, even after delivered)
+  // Delivery Partner Section
   let dpHtml = '';
   if (primaryDoc.deliveryPartnerName) {
       const callIconHtml = primaryDoc.deliveryPartnerPhone ? `<a href="tel:${primaryDoc.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
@@ -1644,7 +1655,7 @@ window.showOrderDetail = gId => {
       <div style="margin:16px 0 24px; padding-top:16px;">
         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Subtotal</span><span>₹${docOrder.itemTotal||0}</span></div>
         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Delivery Fee</span><span style="color:var(--green)">${docOrder.deliveryFee === 0 ? 'Free' : '₹'+docOrder.deliveryFee}</span></div>
-        ${docOrder.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Discount Applied</span><span>-₹${docOrder.discount}</span></div>` : ''}
+        ${docOrder.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Total Discount Applied</span><span>-₹${docOrder.discount}</span></div>` : ''}
       </div>`;
   });
 
@@ -1655,16 +1666,16 @@ window.showOrderDetail = gId => {
     </div>
   </div>`;
 
-  // 90s Cancel Timer
+  // 90s Cancel Timer UI
   let timerHtml = '';
-  if (primaryDoc.status === 'placed') {
+  if (primaryDoc.status === 'placed' && primaryDoc.orderTimestampMs) {
       timerHtml = `
       <div class="od-section cancel-timer-box">
           <div class="cancel-timer-text"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time left to cancel: <span id="timerText-${gId}">01:30</span></div>
-          <button class="cancel-btn-action" id="btnCancel-${gId}" onclick="handleCancelOrder('${gId}')">Cancel Order</button>
+          <button class="cancel-btn-action" id="btnCancel-${gId}" onclick="cancelOrderGlobal('${gId}')">Cancel Order</button>
       </div>`;
       
-      const createdAtMs = primaryDoc.createdAt ? primaryDoc.createdAt.toMillis() : Date.now();
+      const createdAtMs = primaryDoc.orderTimestampMs;
       if(cancelIntervals[gId]) clearInterval(cancelIntervals[gId]);
       
       cancelIntervals[gId] = setInterval(() => {
