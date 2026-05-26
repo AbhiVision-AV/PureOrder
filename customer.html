@@ -67,12 +67,22 @@ body{
 .icon-btn svg{width:22px; height:22px; stroke:var(--dark); fill:none; stroke-width:2;}
 .notif-badge{position:absolute; top:-4px; right:-4px; background:var(--red); color:white; font-size:10px; font-weight:800; border-radius:50%; width:18px; height:18px; display:none; align-items:center; justify-content:center; border:2px solid white;}
 
-/* LOCATION DROPDOWN UI */
-.loc-dropdown-wrapper { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--gray); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
-.loc-dropdown-wrapper svg.pin { width:12px; height:12px; stroke:var(--orange); fill:none; stroke-width:2.5; }
-.loc-select { background:transparent; border:none; color:var(--orange); font-weight:800; font-family:'DM Sans',sans-serif; font-size:12px; outline:none; text-transform:uppercase; cursor:pointer; appearance:none; padding-right:12px; }
-.loc-dropdown-container { position:relative; display:inline-flex; align-items:center; }
-/* Purana arrow hata diya gaya hai */
+/* PREMIUM LOCATION UI */
+.loc-wrapper { display:inline-flex; align-items:center; gap:6px; cursor:pointer; padding:6px 12px 6px 0; margin-bottom:2px; transition:opacity 0.2s; }
+.loc-wrapper:active { opacity:0.6; }
+.loc-wrapper svg.pin { width:14px; height:14px; stroke:var(--orange); fill:none; stroke-width:2.5; }
+.loc-wrapper svg.arrow { width:14px; height:14px; stroke:var(--orange); fill:none; stroke-width:2.5; transition:transform 0.3s; }
+.loc-text { color:var(--orange); font-weight:800; font-family:'Sora',sans-serif; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; }
+
+/* LOCATION MODAL LIST */
+.loc-list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+.loc-item { padding:16px; border-radius:14px; border:1px solid var(--border); background:white; display:flex; justify-content:space-between; align-items:center; font-family:'Sora',sans-serif; font-size:15px; font-weight:700; color:var(--dark); cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.02); }
+.loc-item.active { border-color:var(--orange); background:#FFF7ED; color:var(--orange); box-shadow:0 4px 12px rgba(254,114,76,0.1); }
+.loc-item svg { width:20px; height:20px; stroke:var(--orange); fill:none; stroke-width:3; display:none; }
+.loc-item.active svg { display:block; }
+
+#mainContentBlock, #emptyLocationState { transition: opacity 0.3s ease; }
+
   
 /* DRAWER */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;}
@@ -461,26 +471,17 @@ body{
   </div>
   
   <div class="home-header">
-    <div class="header-top">
+        <div class="header-top">
       <div>
-             <div class="loc-dropdown-wrapper">
+        <div class="loc-wrapper" onclick="openLocationModal()">
           <svg class="pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <div class="loc-dropdown-container" style="position:relative; display:inline-flex; align-items:center; cursor:pointer;">
-            <span id="locDisplayText" style="color:var(--gray); font-weight:700; font-size:12px; text-transform:uppercase;">Kesinga</span>
-            <span style="font-size:8px; color:var(--gray); margin-left:4px; margin-right:2px;">▼</span>
-            <select class="loc-select" id="locationSelect" onchange="changeLocation(this.value)" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;">
-              <option value="Kesinga" selected>Kesinga</option>
-              <option value="Utkela">Utkela</option>
-              <option value="Titlagarh">Titlagarh</option>
-              <option value="Bhawanipatna">Bhawanipatna</option>
-            </select>
-          </div>
-          <span style="color:var(--gray);">, Odisha</span>
+          <span class="loc-text" id="locDisplayText">KESINGA, ODISHA</span>
+          <svg class="arrow" id="locArrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-
-        <div class="greeting-name" id="greetingName">Hello!</div>
+        <div class="greeting-name" id="greetingName" style="margin-top:-2px;">Hello!</div>
       </div>
     </div>
+
     <div class="tagline-wrap"><div class="tagline" id="tagline">Fresh food, delivered.</div></div>
     
     <div class="search-bar" onclick="goPage('search')">
@@ -684,7 +685,23 @@ body{
   </button>
 </div>
 
+<div class="overlay" id="locationModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" style="margin-bottom:8px;">Select Location</div>
+    <p style="font-size:13px; color:var(--gray); margin-bottom:16px;">Choose your delivery location</p>
+    
+    <div class="loc-list">
+      <div class="loc-item active" id="loc-Kesinga" onclick="selectLocation('Kesinga')">Kesinga <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="loc-item" id="loc-Utkela" onclick="selectLocation('Utkela')">Utkela <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="loc-item" id="loc-Titlagarh" onclick="selectLocation('Titlagarh')">Titlagarh <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="loc-item" id="loc-Bhawanipatna" onclick="selectLocation('Bhawanipatna')">Bhawanipatna <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="checkoutModal">
+
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Checkout</div>
@@ -777,21 +794,59 @@ window.globalCoupon = null;
 let cancelIntervals = {};
 window.highlightedItemId = null; 
 
-// Location Change Helper
+// Premium Location Popup Handlers
+window.openLocationModal = () => {
+    document.getElementById('locArrow').style.transform = 'rotate(180deg)';
+    document.getElementById('locationModal').classList.add('open');
+};
+
+document.getElementById('locationModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('locationModal')) {
+        document.getElementById('locArrow').style.transform = 'rotate(0deg)';
+    }
+});
+
+window.selectLocation = (loc) => {
+    // UI Update for selected item in modal
+    document.querySelectorAll('.loc-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(`loc-${loc}`).classList.add('active');
+    
+    // Close modal and rotate arrow back
+    closeModal('locationModal');
+    document.getElementById('locArrow').style.transform = 'rotate(0deg)';
+
+    // Wait for bottom sheet to close smoothly before changing state
+    setTimeout(() => {
+        changeLocation(loc);
+    }, 250); 
+};
+
+// Location Change Helper with Crossfade Animation
 window.changeLocation = (loc) => {
     activeLocation = loc;
-    document.getElementById('locationSelect').value = loc;
-    document.getElementById('locDisplayText').textContent = loc;
+    document.getElementById('locDisplayText').textContent = `${loc}, ODISHA`;
     document.getElementById('footerLocName').textContent = loc;
 
-    if(activeLocation !== 'Kesinga') {
-        document.getElementById('mainContentBlock').style.display = 'none';
-        document.getElementById('emptyLocationState').style.display = 'block';
-    } else {
-        document.getElementById('mainContentBlock').style.display = 'block';
-        document.getElementById('emptyLocationState').style.display = 'none';
-        listenAllRestaurants(); 
-    }
+    const mainContent = document.getElementById('mainContentBlock');
+    const emptyState = document.getElementById('emptyLocationState');
+
+    // Start Fade Out
+    mainContent.style.opacity = '0';
+    emptyState.style.opacity = '0';
+
+    // Wait for fade out, then swap display and fade in
+    setTimeout(() => {
+        if(activeLocation.toLowerCase() !== 'kesinga') {
+            mainContent.style.display = 'none';
+            emptyState.style.display = 'block';
+            setTimeout(() => emptyState.style.opacity = '1', 50);
+        } else {
+            mainContent.style.display = 'block';
+            emptyState.style.display = 'none';
+            listenAllRestaurants(); 
+            setTimeout(() => mainContent.style.opacity = '1', 50);
+        }
+    }, 300);
 };
 
 // Toggle Menu Description
