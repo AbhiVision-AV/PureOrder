@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#FE724C">
+<meta name="theme-color" content="#ffffff">
 <title>PureOrder</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -24,11 +22,10 @@ body{
   padding-bottom:140px; 
 }
 
-/* PREMIUM SPLASH SCREEN (WITH ORIGINAL LOGO) */
+/* PREMIUM SPLASH SCREEN */
 #loadingScreen { position:fixed; inset:0; background:white; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; transition:opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s; }
 #loadingScreen.hide { opacity:0; visibility:hidden; pointer-events:none; }
-.splash-logo { width:90px; height:90px; border-radius:24px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; box-shadow:0 12px 32px rgba(254,114,76,0.25); animation:pulseLogo 1.2s infinite alternate; background:white; overflow:hidden; padding:5px; border:2px solid var(--light);}
-.splash-logo img { width:100%; height:100%; object-fit:contain; }
+.splash-logo { width:80px; height:80px; background:linear-gradient(135deg, var(--yellow), var(--orange)); border-radius:22px; display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:20px; box-shadow:0 12px 32px rgba(254,114,76,0.25); animation:pulseLogo 1.2s infinite alternate; color:white; }
 .splash-text { font-family:'Sora',sans-serif; font-size:28px; font-weight:800; color:var(--dark); letter-spacing:-0.5px; }
 .splash-text span { color:var(--orange); }
 @keyframes pulseLogo { 
@@ -36,20 +33,11 @@ body{
   100% { transform: scale(1.05); box-shadow:0 16px 40px rgba(254,114,76,0.35); } 
 }
 
-/* PWA INSTALL BANNER */
-.install-pwa-banner { position: fixed; bottom: calc(85px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(150px); width: calc(100% - 32px); max-width: 398px; background: white; border: 1.5px solid var(--orange); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 24px rgba(254,114,76,0.25); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.install-pwa-banner.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
-.ipb-left { display: flex; align-items: center; gap: 12px; }
-.ipb-icon { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; background: var(--light); border:1px solid var(--border); }
-.ipb-title { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 800; color: var(--dark); }
-.ipb-sub { font-size: 11px; font-weight: 600; color: var(--gray); margin-top: 2px; }
-.ipb-btn { background: var(--orange); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 4px 10px rgba(254,114,76,0.3); text-transform: uppercase; }
-.ipb-btn:active { transform: scale(0.95); }
-
 .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:var(--dark);border-radius:50%;animation:spin 0.7s linear infinite;}
 .spinner.white{border-top-color:white;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ORDER SUCCESS ANIMATION */
 .success-overlay { position:fixed; inset:0; background:white; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; }
 .success-circle { width:80px; height:80px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; margin-bottom:20px; animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .success-circle svg { width:40px; height:40px; stroke:white; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; fill:none; stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawCheck 0.5s ease-out 0.3s forwards; }
@@ -83,18 +71,20 @@ body{
 .df-text{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:var(--dark);margin-bottom:4px;}
 .df-sub{font-size:12px;font-weight:600;color:var(--orange);letter-spacing:0.5px;}
 
-/* NAV BAR */
-.bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:430px; background:rgba(255,255,255,0.98); backdrop-filter:blur(10px); border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:center; z-index:100; padding:10px 0 calc(10px + env(safe-area-inset-bottom)); box-shadow:0 -2px 10px rgba(0,0,0,0.03); }
-.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; cursor:pointer; border:none; background:none; gap:5px; position:relative; }
-.nav-btn svg { width:24px; height:24px; stroke:#9CA3AF; fill:none; stroke-width:2; transition:stroke 0.2s; }
-.nav-btn .nl { font-size:11px; font-weight:600; color:#9CA3AF; transition:color 0.2s; }
-.nav-btn.active svg { stroke:var(--orange); }
-.nav-btn.active .nl { color:var(--orange); }
-.cart-badge { position:absolute; top:-4px; right:18px; background:var(--red); color:white; font-size:9px; font-weight:700; border-radius:10px; padding:2px 5px; min-width:16px; text-align:center; display:none; border:2px solid white; }
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-top:1px solid rgba(0,0,0,0.05);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;border:none;background:none;gap:3px;position:relative;}
+.nav-btn svg{width:22px;height:22px;stroke:#9CA3AF;fill:none;stroke-width:2;transition:stroke 0.2s;}
+.nav-btn .nl{font-size:10px;font-weight:600;color:#9CA3AF;transition:color 0.2s;}
+.nav-btn.active svg{stroke:var(--orange);}
+.nav-btn.active .nl{color:var(--orange);}
 
-/* MINI CART STRIP */
-.mini-cart-strip { position:fixed; bottom: calc(75px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(30px); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; z-index:105; box-shadow:0 8px 24px rgba(0,0,0,0.25); transition:all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor:pointer; opacity:0; visibility:hidden; pointer-events:none; }
-.mini-cart-strip.show { transform:translateX(-50%) translateY(0); opacity:1; visibility:visible; pointer-events:auto; }
+/* FIXED CART BADGE - DOT ONLY */
+.cart-badge { position:absolute; top:6px; right:18px; background:var(--red); border-radius:50%; width:10px; height:10px; display:none; border:2px solid white; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+
+/* PREMIUM MINI CART STRIP */
+.mini-cart-strip { position:fixed; bottom:85px; left:50%; transform:translateX(-50%) translateY(150%); width:calc(100% - 32px); max-width:398px; background:var(--dark); border-radius:16px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; z-index:99; box-shadow:0 8px 24px rgba(0,0,0,0.25); transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor:pointer; }
+.mini-cart-strip.show { transform:translateX(-50%) translateY(0); }
 .mc-details { color:white; }
 .mc-count { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;}
 .mc-btn { display:flex; align-items:center; gap:6px; color:white; font-family:'Sora',sans-serif; font-size:14px; font-weight:800; background:none; border:none; cursor:pointer; text-transform:uppercase;}
@@ -114,6 +104,7 @@ body{
 .search-bar{display:flex;align-items:center;gap:10px;background:white;border-radius:14px;padding:13px 16px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.03);border:1.5px solid transparent;transition:all 0.2s;}
 .search-bar:active{border-color:var(--orange); box-shadow:0 0 0 3px rgba(254,114,76,0.15);}
 
+/* CATEGORIES ROW */
 .category-row { display:flex; overflow-x:auto; gap:16px; padding:0 20px 20px; scrollbar-width:none; }
 .category-row::-webkit-scrollbar { display:none; }
 .cat-circle-card { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; flex-shrink:0; }
@@ -121,11 +112,12 @@ body{
 .cat-circle-img img { width:100%; height:100%; object-fit:cover; }
 .cat-circle-name { font-size:12px; font-weight:600; color:var(--dark); white-space:nowrap; }
 
+/* BANNERS */
 .banner-section{padding:16px 0 10px;}
 .banner-outer{overflow:hidden;}
 .banner-scroll{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:0 20px;}
 .banner-scroll::-webkit-scrollbar{display:none;}
-.banner-card{flex: 0 0 100%; aspect-ratio: 16 / 9; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
+.banner-card{flex: 0 0 100%; height:180px; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
 .banner-card img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
 .banner-gradient {position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);z-index:1;}
 .banner-title{position:relative;z-index:2;font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;text-shadow:0 2px 4px rgba(0,0,0,0.3);}
@@ -133,10 +125,12 @@ body{
 .banner-dot{width:6px;height:6px;border-radius:3px;background:#D1D5DB;transition:all 0.3s;}
 .banner-dot.active{width:18px;background:var(--orange);}
 
+/* SECTIONS */
 .section{padding:0 20px;margin-bottom:20px;}
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;}
 
+/* POPULAR */
 .popular-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px;}
 .popular-scroll::-webkit-scrollbar{display:none;}
 .popular-card{min-width:140px;background:white;border-radius:16px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform 0.15s;}
@@ -147,6 +141,7 @@ body{
 .popular-name{font-size:13px;font-weight:700;margin-bottom:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .popular-price{font-size:14px;font-weight:800;color:var(--dark);}
 
+/* RESTAURANT CARD */
 .rest-list { display:flex; flex-direction:column; gap:16px; }
 .rest-card{background:white;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.15s;}
 .rest-card:active{transform:scale(0.99);}
@@ -161,6 +156,7 @@ body{
 .rest-meta-item{font-size:12px;color:var(--gray);}
 .meta-dot{width:3px;height:3px;background:#D1D5DB;border-radius:50%;}
 
+/* HOME FOOTER (PREMIUM) */
 .home-footer { padding:40px 20px 60px; text-align:left; border-top:1px solid var(--border); margin-top:20px; }
 .hf-title { font-family:'Sora',sans-serif; font-size:36px; font-weight:800; color:#D1D5DB; line-height:1.1; margin-bottom:16px; text-transform:uppercase; letter-spacing:-1px;}
 .hf-sub { font-size:13px; color:var(--gray); margin-bottom:6px; font-weight:500; display:flex; align-items:center; gap:4px; }
@@ -175,16 +171,18 @@ body{
 .search-input-box input{flex:1;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);}
 .search-input-box input::placeholder{color:#9CA3AF;}
 
+/* ZOMATO STYLE MENU & SEARCH LIST */
 .menu-list, #searchResults { padding:0 20px; }
 .menu-cat-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:800; color:var(--dark); text-transform:uppercase; letter-spacing:0.5px; margin:24px 0 12px; }
 .menu-item { display:flex; gap:16px; padding:20px 16px; background:white; border-radius:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.02); }
 .menu-item-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
 .menu-item-name { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:4px; line-height:1.3; }
-.menu-item-desc { font-size:12px; color:var(--gray); line-height:1.4; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; }
+.menu-item-desc { font-size:12px; color:var(--gray); line-height:1.4; margin-bottom:8px; cursor:pointer;}
 .menu-item-price { font-size:15px; font-weight:800; color:var(--dark); margin-bottom:0; }
 .menu-item-right { width:110px; height:110px; position:relative; flex-shrink:0; }
 .menu-item-img { width:100%; height:100px; border-radius:12px; background:var(--light); overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:10px; color:#9CA3AF; text-align:center; }
 .menu-item-img img { width:100%; height:100%; object-fit:cover; }
+/* ADD BUTTON OVERLAPPING IMAGE (ZOMATO STYLE) */
 .menu-item-actions { position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:90px; height:36px; background:var(--orange); border-radius:8px; box-shadow:0 4px 10px rgba(254,114,76,0.25); display:flex; align-items:center; justify-content:center; z-index:2; overflow:hidden; }
 .add-btn { width:100%; height:100%; background:transparent; color:white; font-family:'Sora',sans-serif; font-size:14px; font-weight:800; border:none; cursor:pointer; text-transform:uppercase; }
 .qty-ctrl { display:flex; align-items:center; justify-content:space-between; width:100%; height:100%; background:var(--orange); padding:0 4px; }
@@ -236,7 +234,7 @@ body{
 .empty-box p{font-size:14px;color:var(--gray);}
 
 /* CLEAN ORDER HISTORY CARDS */
-.order-card{background:white;border-radius:16px;margin:0 20px 12px;padding:16px; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.04); cursor:pointer; transition:transform 0.1s;}
+.order-card{background:white;border-radius:16px;margin:0 20px 12px;padding:16px; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.02); cursor:pointer; transition:transform 0.1s;}
 .order-card:active{transform:scale(0.98);}
 .order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
 .order-id{font-family:'Sora',sans-serif;font-size:15px;font-weight:800; color:var(--dark); margin-bottom:2px;}
@@ -251,7 +249,6 @@ body{
 .sp-cancelled{background:#FEE2E2;color:#B91C1C;}
 .order-items-text{font-size:13px;color:var(--gray);margin-bottom:10px;line-height:1.6;}
 .order-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:800; background:var(--orange); color:white; padding:12px 14px; border-radius:10px; margin-top:12px;}
-.order-total-row span:last-child { color:white !important; }
 
 /* PROFESSIONAL TRACK LIVE UI */
 .od-section { background:white; padding:20px; border-radius:20px; margin:0 20px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.03); border:1px solid var(--border); }
@@ -277,16 +274,10 @@ body{
 .ri-qty { font-size:12px; color:var(--gray); }
 .ri-price { font-size:13px; font-weight:700; color:var(--dark); } 
 
-/* PROFESSIONAL LEGAL & INFO PAGES */
-.legal-box { background:white; padding:24px 20px; border-radius:20px; margin:0 20px 20px; box-shadow:0 4px 16px rgba(0,0,0,0.03); border:1px solid var(--border); }
-.legal-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; color:var(--dark); margin-bottom:8px; display:flex; align-items:center; gap:8px;}
-.legal-title svg { stroke:var(--orange); width:20px; height:20px; fill:none; stroke-width:2.5;}
-.legal-text { font-size:13px; color:var(--gray); line-height:1.6; margin-bottom:20px; }
-.legal-text:last-child { margin-bottom:0; }
-.contact-btn { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--light); color:var(--dark); text-decoration:none; padding:14px; border-radius:12px; font-weight:700; font-size:14px; margin-top:12px; border:1px solid var(--border); transition:0.2s;}
-.contact-btn:active { background:var(--border); }
-.contact-btn.primary { background:var(--orange); color:white; border:none; box-shadow:0 4px 12px rgba(254,114,76,0.3); }
-.contact-btn.primary:active { transform:scale(0.96); }
+/* EXTRA DRAWER PAGES CONTENT LOOK */
+.drawer-page-box { padding:24px 20px; background:white; border-radius:20px; margin:0 20px 20px; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.02); }
+.dp-paragraph { font-size:14px; color:var(--gray); line-height:1.6; margin-bottom:16px; font-weight:400; }
+.dp-subtitle { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; margin:18px 0 8px; color:var(--dark); }
 
 /* NOTIFICATIONS PAGE */
 .notif-list { padding:0 20px 20px; }
@@ -296,7 +287,7 @@ body{
 .notif-body { font-size:13px; color:var(--gray); line-height:1.5; }
 .notif-time { font-size:11px; color:#A1A1AA; margin-top:8px; }
 
-/* PROFILE */
+/* PROFILE - Gradient Avatar */
 .profile-top{padding:52px 20px 24px;text-align:center;}
 .profile-letter-av{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg, var(--orange) 30%, var(--yellow) 100%);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:36px;font-weight:800;color:white;margin:0 auto 16px;box-shadow:0 4px 12px rgba(254,114,76,0.3);}
 .profile-name{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;}
@@ -354,17 +345,6 @@ body{
   </button>
 </div>
 
-<div id="installPwaBanner" class="install-pwa-banner">
-  <div class="ipb-left">
-    <img src="icon-192.png" class="ipb-icon" alt="App Icon">
-    <div>
-      <div class="ipb-title">PureOrder App</div>
-      <div class="ipb-sub">Fast & Easy Ordering</div>
-    </div>
-  </div>
-  <button id="installPwaBtnAction" class="ipb-btn">Install</button>
-</div>
-
 <div class="success-overlay" id="orderSuccessScreen">
   <div class="success-circle">
      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -373,7 +353,7 @@ body{
 </div>
   
 <div id="loadingScreen">
-  <div class="splash-logo"><img src="icon-192.png" alt="PureOrder"></div>
+  <div class="splash-logo">🍽️</div>
   <div class="splash-text">Pure<span style="color:var(--orange);">Order</span></div>
 </div>
 
@@ -385,7 +365,6 @@ body{
   </div>
   <div class="drawer-links">
     <a href="https://abhivision.in" target="_blank" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>AV Frames</a>
-    
     <a onclick="closeDrawer(); goPage('privacyPolicy')" class="drawer-link"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
     <a onclick="closeDrawer(); goPage('termsConditions')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
     <a onclick="closeDrawer(); goPage('helpSupport')" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
@@ -467,7 +446,10 @@ body{
   <div class="search-page">
     <div class="search-top">
       <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
-      <div class="search-input-box"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Search food..." oninput="doSearch(this.value)" /></div>
+      <div class="search-input-box">
+         <svg viewBox="0 0 24 24" width="20" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+         <input type="text" id="searchInput" placeholder="Search food..." oninput="doSearch(this.value)" />
+      </div>
     </div>
     <div id="searchResults" style="padding:0;">
        <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>
@@ -512,15 +494,12 @@ body{
     <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
     <h2 style="margin:0;">Privacy Policy</h2>
   </div>
-  <div class="legal-box">
-    <div class="legal-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Your Data is Safe</div>
-    <div class="legal-text">Welcome to PureOrder. We respect your privacy and are deeply committed to protecting your personal information. This policy outlines how your data is handled.</div>
-    
-    <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Information We Collect</div>
-    <div class="legal-text">To deliver your food accurately, we securely collect your Name, Phone Number, Delivery Address, and precise GPS location coordinates.</div>
-    
-    <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> How We Use It</div>
-    <div class="legal-text">Your data is utilized strictly for order fulfillment, logistics coordination with our delivery partners, and essential account notifications. We do not sell your personal data to third parties.</div>
+  <div class="drawer-page-box">
+    <div class="dp-paragraph">Welcome to PureOrder. We respect your privacy and are committed to protecting your personal data.</div>
+    <div class="dp-subtitle">1. Data Collected</div>
+    <div class="dp-paragraph">We collect your profile name, delivery address, phone numbers and device geolocation tokens explicitly to map accurate deliveries.</div>
+    <div class="dp-subtitle">2. Usage Purpose</div>
+    <div class="dp-paragraph">Your data helps customize logistics parameters and enables native system level processing notifications for live updates.</div>
   </div>
 </div>
 
@@ -529,15 +508,12 @@ body{
     <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
     <h2 style="margin:0;">Terms & Conditions</h2>
   </div>
-  <div class="legal-box">
-    <div class="legal-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> User Agreement</div>
-    <div class="legal-text">By using the PureOrder application, you agree to comply with and be bound by the following terms of service.</div>
-    
-    <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Order Cancellation</div>
-    <div class="legal-text">Once an order is successfully placed and transmitted to the restaurant's kitchen, it cannot be canceled or modified. Ensure your cart is accurate before confirming.</div>
-    
-    <div class="legal-title" style="margin-top:20px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Delivery Timelines</div>
-    <div class="legal-text">Estimated delivery times are approximate. While we strive for speed, delays caused by weather, traffic, or kitchen load are beyond our direct control.</div>
+  <div class="drawer-page-box">
+    <div class="dp-paragraph">Please read these Terms and Conditions carefully before using our digital storefront application logic.</div>
+    <div class="dp-subtitle">1. Order Cancellations</div>
+    <div class="dp-paragraph">Once an order is captured by Cloud Architect Nodes and pushed to restaurant dashboards, cancellations are not permitted under any condition.</div>
+    <div class="dp-subtitle">2. Deliveries & Service</div>
+    <div class="dp-paragraph">Delays due to uncontrollable architectural contingencies or kitchen failures do not warrant structural reversals.</div>
   </div>
 </div>
 
@@ -546,15 +522,11 @@ body{
     <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
     <h2 style="margin:0;">Help & Support</h2>
   </div>
-  <div class="legal-box" style="text-align:center; padding:40px 20px;">
-    <div style="font-size:50px; margin-bottom:16px;">🎧</div>
-    <div style="font-family:'Sora',sans-serif; font-size:18px; font-weight:800; color:var(--dark); margin-bottom:10px;">We're Here to Help!</div>
-    <div class="legal-text" style="margin-bottom:24px;">Facing an issue with your order or need assistance navigating the app? Reach out to our dedicated support team directly.</div>
-    
-    <a href="mailto:contact.pureorder@gmail.com" class="contact-btn primary">
-      <svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      contact.pureorder@gmail.com
-    </a>
+  <div class="drawer-page-box" style="text-align: center; padding:40px 20px;">
+    <div style="font-size:48px; margin-bottom:16px;">💬</div>
+    <div class="dp-subtitle" style="font-size:18px;">Need Immediate Assistance?</div>
+    <div class="dp-paragraph" style="margin-bottom:24px;">Our dynamic support channels are available to resolve transactional and dispatch grievances.</div>
+    <a href="mailto:support@pureorder.in" style="display:flex; align-items:center; justify-content:center; background:var(--orange); color:white; text-decoration:none; padding:14px; border-radius:12px; font-weight:700; font-family:'Sora',sans-serif; box-shadow:0 4px 12px rgba(254,114,76,0.25);">Contact Support</a>
   </div>
 </div>
 
@@ -563,15 +535,11 @@ body{
     <button class="back-circle" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
     <h2 style="margin:0;">About Us</h2>
   </div>
-  <div class="legal-box" style="text-align:center;">
-    <img src="icon-192.png" style="width:80px; height:80px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:16px;">
-    <div style="font-weight:800; font-family:'Sora',sans-serif; font-size:24px; color:var(--dark); margin-bottom:6px;">Pure<span style="color:var(--orange)">Order</span></div>
-    <div class="legal-text" style="margin-bottom:24px;">Built exclusively for Kesinga, PureOrder bridges the gap between local gourmet kitchens and food lovers through seamless technology.</div>
-    
-    <div style="text-align:left; border-top:1px solid var(--border); padding-top:20px;">
-      <div class="legal-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Our Mission</div>
-      <div class="legal-text">To empower small-town restaurants with enterprise-grade tech while delivering hot, fresh food to our users quickly and reliably.</div>
-    </div>
+  <div class="drawer-page-box">
+    <div style="font-weight:800; font-family:'Sora',sans-serif; font-size:22px; color:var(--orange); text-align:center; margin-bottom:14px;">PureOrder</div>
+    <div class="dp-paragraph">PureOrder is Kesinga's premium culinary connectivity node, single-handedly engineered to remove friction between gourmet kitchens and hungry patrons.</div>
+    <div class="dp-subtitle">Our Vision</div>
+    <div class="dp-paragraph">Deploying robust cloud instances to democratize tracking mechanics and give localized restaurants enterprise-grade dispatch management.</div>
   </div>
 </div>
 
@@ -592,27 +560,14 @@ body{
 </div>
 
 <div class="bottom-nav">
-  <button class="nav-btn active" id="nav-home" onclick="goPage('home',this)">
-    <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <div class="nl">Home</div>
-  </button>
-  <button class="nav-btn" id="nav-search" onclick="goPage('search',this)">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <div class="nl">Search</div>
-  </button>
+  <button class="nav-btn active" id="nav-home" onclick="goPage('home',this)"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+  <button class="nav-btn" id="nav-search" onclick="goPage('search',this)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
   <button class="nav-btn" id="nav-cart" onclick="goPage('cart',this)">
     <div class="cart-badge" id="cartBadge"></div>
     <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-    <div class="nl">Cart</div>
   </button>
-  <button class="nav-btn" id="nav-orders" onclick="goPage('orders',this)">
-    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-    <div class="nl">Orders</div>
-  </button>
-  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)">
-    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    <div class="nl">Profile</div>
-  </button>
+  <button class="nav-btn" id="nav-orders" onclick="goPage('orders',this)"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg></button>
+  <button class="nav-btn" id="nav-profile" onclick="goPage('profile',this)"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
 </div>
 
 <div class="overlay" id="checkoutModal">
@@ -703,7 +658,6 @@ let prevOrderStates = {};
 let dynDeliveryFee = 0; 
 let dynDiscount = 0;
 
-// SOUND & TOAST
 function playNotifSound() {
   const audio = document.getElementById('appSound');
   if(audio) audio.play().catch(e => console.log("Audio autoplay blocked by browser"));
@@ -716,6 +670,17 @@ function showToast(msg, type='') {
 window.closeModal = id => document.getElementById(id).classList.remove('open');
 window.openDrawer = () => { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('mainDrawer').classList.add('open'); };
 window.closeDrawer = () => { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('mainDrawer').classList.remove('open'); };
+
+// DISH DESCRIPTION TRUNCATION LOGIC (ZOMATO STYLE)
+window.toggleDesc = (el, fullText, shortText) => {
+   if(el.dataset.expanded === 'true') {
+       el.innerHTML = shortText + ' <span style="color:var(--dark);font-weight:700;">more</span>';
+       el.dataset.expanded = 'false';
+   } else {
+       el.innerHTML = fullText + ' <span style="color:var(--dark);font-weight:700;">less</span>';
+       el.dataset.expanded = 'true';
+   }
+};
 
 // PUSH NOTIFICATIONS
 async function setupPushNotifications() {
@@ -767,7 +732,6 @@ function updateNotifBadge() {
     const unread = logs.filter(l => !l.read).length;
     const badge = document.getElementById('notifBadge');
     if(badge) {
-      badge.textContent = unread > 9 ? '9+' : unread;
       badge.style.display = unread > 0 ? 'flex' : 'none';
     }
 }
@@ -821,6 +785,7 @@ function startTaglines() {
   }, 4000);
 }
 
+// FLOATING CART STRIP VISIBILITY FIX
 function updateMiniCartStrip() {
   const strip = document.getElementById('miniCartStrip');
   const items = Object.values(cart);
@@ -830,8 +795,8 @@ function updateMiniCartStrip() {
   const allowedPages = ['pageRestaurant', 'pageSearch'];
   const shouldShow = activePage && allowedPages.includes(activePage.id);
 
-  if (totalQty > 0 && shouldShow) {
-    document.getElementById('mcCountText').textContent = `${totalQty} ITEM${totalQty > 1 ? 'S' : ''} ADDED`;
+  if (shouldShow) {
+    document.getElementById('mcCountText').textContent = totalQty > 0 ? `${totalQty} ITEM${totalQty > 1 ? 'S' : ''} ADDED` : '0 ITEMS ADDED';
     strip.classList.add('show');
   } else {
     strip.classList.remove('show');
@@ -918,7 +883,9 @@ async function initApp() {
     document.getElementById('pPhone').textContent = userData.phone || 'Not set';
     document.getElementById('pAddress').textContent = userData.address || 'Not set';
     
+    // Load Persisted Cart
     cart = JSON.parse(localStorage.getItem('po_cart')) || {};
+    updateBadge();
     updateMiniCartStrip();
     
     startTaglines();
@@ -1001,6 +968,7 @@ async function loadBanners() {
         dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     });
     
+    // Ensure automatic seamless looping mechanism
     if(bannerInterval) clearInterval(bannerInterval);
     bannerInterval = setInterval(() => {
         if(!scroll || !scroll.children.length) return;
@@ -1093,10 +1061,23 @@ function renderRestaurantMenu() {
       const rId = item.restaurantId || currentRestId;
       const rName = (item.restaurantName || currentRestName || 'Restaurant').replace(/'/g, "\\'");
 
+      // DYNAMIC ZOMATO STYLE "MORE" DESCRIPTION LOGIC
+      let descHtml = '';
+      if (item.description) {
+          const safeDesc = item.description.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+          if (item.description.length > 55) {
+              const shortDesc = item.description.substring(0, 55).replace(/'/g, "&#39;").replace(/"/g, "&quot;") + '...';
+              descHtml = `<div class="menu-item-desc" data-expanded="false" onclick="toggleDesc(this, '${safeDesc}', '${shortDesc}')">${shortDesc} <span style="color:var(--dark);font-weight:700;">more</span></div>`;
+          } else {
+              descHtml = `<div class="menu-item-desc">${item.description}</div>`;
+          }
+      }
+
+      // PERFECT ZOMATO STYLE LAYOUT (NAME -> DESC -> PRICE)
       html += `<div class="menu-item">
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
-          ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
+          ${descHtml}
           <div class="menu-item-price">₹${item.price}</div>
         </div>
         <div class="menu-item-right">
@@ -1109,14 +1090,23 @@ function renderRestaurantMenu() {
   document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gray);">No items found in this restaurant</div>';
 }
 
-// CART LOGIC (WITH DATABASE FEES AND DISCOUNTS SYNC)
+// CART LOGIC
+function updateBadge() {
+  const totalQty = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+  const b = document.getElementById('cartBadge');
+  b.textContent = ''; // Removed numbers
+  b.style.display = totalQty > 0 ? 'block' : 'none';
+}
+
 window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
   if (!cart[id]) cart[id] = { id, name, price, imageUrl, qty: 0, restaurantId: restId || currentRestId, restaurantName: restName || currentRestName };
   cart[id].qty = Math.max(0, cart[id].qty + delta);
   if (cart[id].qty === 0) delete cart[id];
   
-  localStorage.setItem('po_cart', JSON.stringify(cart)); 
+  localStorage.setItem('po_cart', JSON.stringify(cart)); // Persistent Cart
+  updateBadge();
   
+  // Conditionally refresh lists depending on what page is open
   if(document.getElementById('pageRestaurant').classList.contains('active')) renderRestaurantMenu();
   if(document.getElementById('pageSearch').classList.contains('active')) doSearch(document.getElementById('searchInput').value);
   
@@ -1132,6 +1122,7 @@ function renderCart() {
     return; 
   }
   
+  // Group cart items by Restaurant
   const groupedCart = {};
   items.forEach(i => {
      if(!groupedCart[i.restaurantId]) groupedCart[i.restaurantId] = { name: i.restaurantName, items: [] };
@@ -1139,16 +1130,12 @@ function renderCart() {
   });
   
   let cartHtml = '<div class="cart-list">';
-  Object.keys(groupedCart).forEach(rId => {
-      const g = groupedCart[rId];
-      const liveRest = allRestaurants.find(r => r.id === rId);
-      const restOfferName = liveRest && liveRest.offerName ? ` <span style="background:var(--orange);color:white;font-size:10px;padding:3px 8px;border-radius:6px;margin-left:8px;">${liveRest.offerName}</span>` : '';
-
+  Object.values(groupedCart).forEach(g => {
       cartHtml += `
       <div class="cart-restaurant-group">
         <div class="cart-rest-title">
-          <div style="display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${g.name || 'Restaurant'}</div>
-          ${restOfferName}
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${g.name || 'Restaurant'}
         </div>
         ${g.items.map(i => `
           <div class="cart-item">
@@ -1157,10 +1144,10 @@ function renderCart() {
               <div class="cart-item-name">${i.name}</div>
               <div class="cart-item-price" style="color:var(--dark)">₹${i.price} × ${i.qty} = <span style="color:var(--dark)">₹${i.price * i.qty}</span></div>
             </div>
-            <div class="qty-ctrl" style="width:90px;height:34px;background:white;border:1px solid #E5E7EB;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);flex-shrink:0;">
-              <button class="qty-btn" style="color:var(--orange);" onclick="updateCart('${i.id}','${i.name.replace(/'/g,"\\'")}',${i.price},'${i.imageUrl||''}',-1,'${i.restaurantId}','${(i.restaurantName||'').replace(/'/g,"\\'")}')">−</button>
-              <div class="qty-num" style="color:var(--dark);">${i.qty}</div>
-              <button class="qty-btn" style="color:var(--orange);" onclick="updateCart('${i.id}','${i.name.replace(/'/g,"\\'")}',${i.price},'${i.imageUrl||''}',1,'${i.restaurantId}','${(i.restaurantName||'').replace(/'/g,"\\'")}')">+</button>
+            <div class="qty-ctrl" style="width:90px;height:34px;background:var(--orange);border:none;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);flex-shrink:0;">
+              <button class="qty-btn" style="color:white;" onclick="updateCart('${i.id}','${i.name.replace(/'/g,"\\'")}',${i.price},'${i.imageUrl||''}',-1,'${i.restaurantId}','${(i.restaurantName||'').replace(/'/g,"\\'")}')">−</button>
+              <div class="qty-num" style="color:white;">${i.qty}</div>
+              <button class="qty-btn" style="color:white;" onclick="updateCart('${i.id}','${i.name.replace(/'/g,"\\'")}',${i.price},'${i.imageUrl||''}',1,'${i.restaurantId}','${(i.restaurantName||'').replace(/'/g,"\\'")}')">+</button>
             </div>
           </div>
         `).join('')}
@@ -1169,20 +1156,8 @@ function renderCart() {
   cartHtml += '</div>';
 
   const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  
-  // DYNAMIC FEES CALCULATION FROM DATABASE
-  dynDeliveryFee = 0;
-  dynDiscount = 0;
-  let numRestaurants = 0;
-  Object.keys(groupedCart).forEach(rId => {
-      const liveRest = allRestaurants.find(r => r.id === rId);
-      if(liveRest) {
-          dynDeliveryFee += (liveRest.deliveryFee || 0);
-          dynDiscount += (liveRest.offerDiscount || 0);
-          numRestaurants++;
-      }
-  });
-
+  const numRestaurants = Object.keys(groupedCart).length;
+  dynDeliveryFee = numRestaurants * 40; 
   const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
   
   cartHtml += `
@@ -1197,6 +1172,7 @@ function renderCart() {
   el.innerHTML = cartHtml;
 }
 
+// STRICT CHECKOUT 
 window.openCheckout = () => {
   document.getElementById('coPhone').value = userData.phone || '';
   document.getElementById('coAddress').value = userData.address || '';
@@ -1244,6 +1220,7 @@ window.placeOrder = async () => {
     const batchTime = serverTimestamp();
     const promises = [];
     
+    // Generate Order Display IDs & Place Multiple Orders
     const d = new Date();
     const dStr = d.getDate().toString().padStart(2,'0') + (d.getMonth()+1).toString().padStart(2,'0');
     const rand = Math.floor(1000 + Math.random() * 9000);
@@ -1251,15 +1228,12 @@ window.placeOrder = async () => {
     for (const [rId, rData] of Object.entries(groupedCart)) {
         const rItems = rData.items;
         const rItemTotal = rItems.reduce((s, i) => s + i.price * i.qty, 0);
-        
-        // DYNAMIC FEES AT CHECKOUT
-        const liveRest = allRestaurants.find(r => r.id === rId);
-        const rDelivery = liveRest ? (liveRest.deliveryFee || 0) : 0; 
-        const rDiscount = liveRest ? (liveRest.offerDiscount || 0) : 0; 
+        const rDelivery = 40; 
+        const rDiscount = 0; 
         const rTotal = rItemTotal + rDelivery - rDiscount;
         
         const shortRest = (rData.name || 'RES').substring(0,3).toUpperCase();
-        const displayOrderId = `POK-${shortRest}-${dStr}${rand}`; 
+        const displayOrderId = `POK-${shortRest}-${dStr}${rand}`; // FORMAT: POK-RES-DATE-RANDOM
         
         const orderData = {
           displayOrderId: displayOrderId,
@@ -1276,7 +1250,8 @@ window.placeOrder = async () => {
     await Promise.all(promises);
     
     cart = {}; 
-    localStorage.removeItem('po_cart'); 
+    localStorage.removeItem('po_cart'); // Clear persisted cart
+    updateBadge();
     updateMiniCartStrip();
     closeModal('checkoutModal');
     
@@ -1295,6 +1270,7 @@ window.placeOrder = async () => {
   }
 };
 
+// AUTOMATED LOCAL NOTIFICATIONS & ORDERS LIST
 function listenOrders() {
   const q = query(collection(db, 'orders'), where('customerId', '==', currentUser.uid));
   
@@ -1341,6 +1317,7 @@ function renderOrders() {
     return;
   }
   
+  // Group Multi-Restaurant Orders by GroupID
   const groupedOrders = {};
   activeOrdersData.forEach(o => {
       const gId = o.groupId || o.id;
@@ -1379,6 +1356,7 @@ function renderOrders() {
   }).join('');
 }
 
+// ORDER DETAILS - MULTI-RESTAURANT COMPATIBLE
 window.showOrderDetail = gId => {
   const groupDocs = activeOrdersData.filter(x => (x.groupId || x.id) === gId);
   if(!groupDocs.length) return;
@@ -1439,9 +1417,11 @@ window.showOrderDetail = gId => {
 
   let finalGrandTotal = 0;
   
-  let itemsHtml = `<div class="od-section">`;
+  // INDIVIDUAL RESTAURANT SECTIONS
+  let itemsHtml = ``;
   groupDocs.forEach(docOrder => {
       finalGrandTotal += (docOrder.totalAmount || 0);
+      itemsHtml += `<div class="od-section" style="background:white; border-radius:16px; border:1px solid var(--border); padding:16px; margin: 0 20px 16px;">`;
       itemsHtml += `
       <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:14px;">
          <div style="font-size:15px; font-weight:800; color:var(--dark); display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--orange)" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${docOrder.restaurantName || 'Restaurant'}</div>
@@ -1454,27 +1434,30 @@ window.showOrderDetail = gId => {
           <div class="ri-price">₹${i.price * i.qty}</div>
         </div>
       `).join('')}
-      <div style="margin:16px 0 24px; padding-top:16px;">
+      <div style="margin:16px 0 0; padding-top:16px; border-top:1px dashed var(--border);">
         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Subtotal</span><span>₹${docOrder.itemTotal||0}</span></div>
         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Delivery Fee</span><span style="color:var(--green)">${docOrder.deliveryFee === 0 ? 'Free' : '₹'+docOrder.deliveryFee}</span></div>
-      </div>`;
+      </div>
+      </div>`; // close od-section
   });
 
+  // GRAND TOTAL SECTION
   itemsHtml += `
-    <div style="border-top:1px solid var(--border); padding-top:16px;">
-      <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:800; padding:14px; background:var(--orange); color:white; border-radius:12px; box-shadow:0 4px 12px rgba(254,114,76,0.2);"><span>Grand Total Paid</span><span style="color:white;">₹${finalGrandTotal}</span></div>
-      <div style="font-size:11px; text-align:center; color:var(--gray); margin-top:16px;">Payment Mode: Cash on Delivery</div>
+    <div style="margin: 0 20px 24px; padding:16px; background:var(--orange); color:white; border-radius:16px; box-shadow:0 4px 12px rgba(254,114,76,0.2); display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:16px; font-weight:800;">Grand Total Paid</span>
+      <span style="font-size:18px; font-weight:800; color:white;">₹${finalGrandTotal}</span>
     </div>
-  </div>`;
+    <div style="font-size:11px; text-align:center; color:var(--gray); margin-bottom:20px;">Payment Mode: Cash on Delivery</div>
+  `;
 
   document.getElementById('odContent').innerHTML = timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
 
-// SEARCH FIX: Resolve Actual Restaurant Name
+// ZOMATO STYLE GLOBAL SEARCH
 window.doSearch = val => {
   const el = document.getElementById('searchResults');
   if (!val.trim()) { 
-    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>`; 
+    el.innerHTML = `<div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3 style="font-size:16px;">Search</h3><p>Start typing to search food...</p></div>`; 
     return; 
   }
   const res = windowGlobalMenuItems.filter(i => (i.name?.toLowerCase().includes(val.toLowerCase()) || i.category?.toLowerCase().includes(val.toLowerCase())) && i.available);
@@ -1482,7 +1465,6 @@ window.doSearch = val => {
   if(res.length) {
      let html = '';
      res.forEach(item => {
-        // DYNAMIC RESTAURANT NAME RESOLUTION
         const liveRest = allRestaurants.find(r => r.id === item.restaurantId);
         const resolvedRestName = liveRest ? liveRest.name : (item.restaurantName || 'Restaurant');
 
@@ -1492,11 +1474,22 @@ window.doSearch = val => {
         const rId = item.restaurantId;
         const rName = resolvedRestName.replace(/'/g, "\\'");
         
+        let descHtml = '';
+        if (item.description) {
+            const safeDesc = item.description.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+            if (item.description.length > 55) {
+                const shortDesc = item.description.substring(0, 55).replace(/'/g, "&#39;").replace(/"/g, "&quot;") + '...';
+                descHtml = `<div class="menu-item-desc" data-expanded="false" onclick="event.stopPropagation(); toggleDesc(this, '${safeDesc}', '${shortDesc}')">${shortDesc} <span style="color:var(--dark);font-weight:700;">more</span></div>`;
+            } else {
+                descHtml = `<div class="menu-item-desc">${item.description}</div>`;
+            }
+        }
+
         html += `<div class="menu-item" onclick="openRestaurant('${rId}', '${rName}')">
           <div class="menu-item-info">
             <div style="font-size:11px; color:var(--gray); font-weight:800; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--orange)" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${resolvedRestName}</div>
             <div class="menu-item-name">${item.name}</div>
-            ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
+            ${descHtml}
             <div class="menu-item-price">₹${item.price}</div>
           </div>
           <div class="menu-item-right">
@@ -1511,6 +1504,7 @@ window.doSearch = val => {
   }
 };
 
+// PROFILE
 function renderProfile() {
   const name = userData.name || currentUser.displayName || 'User';
   document.getElementById('profileName').textContent = name;
@@ -1554,30 +1548,6 @@ window.doLogout = async () => {
 
 document.querySelectorAll('.overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-});
-
-// PWA AUTO-INSTALL LOGIC
-let deferredPrompt;
-const installBanner = document.getElementById('installPwaBanner');
-const installBtnAction = document.getElementById('installPwaBtnAction');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); 
-    deferredPrompt = e; 
-    setTimeout(() => { installBanner.classList.add('show'); }, 2500); 
-});
-
-installBtnAction.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    installBanner.classList.remove('show'); 
-});
-
-window.addEventListener('appinstalled', () => {
-    installBanner.classList.remove('show');
-    deferredPrompt = null;
 });
 </script>
 <script>
