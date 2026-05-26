@@ -72,8 +72,8 @@ body{
 .loc-dropdown-wrapper svg.pin { width:12px; height:12px; stroke:var(--orange); fill:none; stroke-width:2.5; }
 .loc-select { background:transparent; border:none; color:var(--orange); font-weight:800; font-family:'DM Sans',sans-serif; font-size:12px; outline:none; text-transform:uppercase; cursor:pointer; appearance:none; padding-right:12px; }
 .loc-dropdown-container { position:relative; display:inline-flex; align-items:center; }
-.loc-dropdown-container::after { content:"▼"; font-size:8px; color:var(--orange); position:absolute; right:0; pointer-events:none; }
-
+/* Purana arrow hata diya gaya hai */
+  
 /* DRAWER */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .drawer-overlay.open{opacity:1;pointer-events:auto;}
@@ -397,14 +397,15 @@ body{
 
 <audio id="appSound" src="./notification.mp3" preload="auto"></audio>
 
-<div class="mini-cart-strip show" id="miniCartStrip" onclick="goPage('cart')">
+<div class="mini-cart-strip" id="miniCartStrip" onclick="goPage('cart')">
   <div class="mc-details">
-    <div class="mc-count" id="mcCountText">0 ITEMS ADDED • VIEW CART</div>
+    <div class="mc-count" id="mcCountText">0 ITEMS ADDED</div>
   </div>
   <button class="mc-btn">
-    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    VIEW CART <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
   </button>
 </div>
+
 
 <div id="installPwaBanner" class="install-pwa-banner">
   <div class="ipb-left">
@@ -462,10 +463,12 @@ body{
   <div class="home-header">
     <div class="header-top">
       <div>
-        <div class="loc-dropdown-wrapper">
+             <div class="loc-dropdown-wrapper">
           <svg class="pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <div class="loc-dropdown-container">
-            <select class="loc-select" id="locationSelect" onchange="changeLocation(this.value)">
+          <div class="loc-dropdown-container" style="position:relative; display:inline-flex; align-items:center; cursor:pointer;">
+            <span id="locDisplayText" style="color:var(--gray); font-weight:700; font-size:12px; text-transform:uppercase;">Kesinga</span>
+            <span style="font-size:8px; color:var(--gray); margin-left:4px; margin-right:2px;">▼</span>
+            <select class="loc-select" id="locationSelect" onchange="changeLocation(this.value)" style="position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;">
               <option value="Kesinga" selected>Kesinga</option>
               <option value="Utkela">Utkela</option>
               <option value="Titlagarh">Titlagarh</option>
@@ -474,6 +477,7 @@ body{
           </div>
           <span style="color:var(--gray);">, Odisha</span>
         </div>
+
         <div class="greeting-name" id="greetingName">Hello!</div>
       </div>
     </div>
@@ -769,7 +773,7 @@ let dynDeliveryFee = 0;
 let dynDiscount = 0;
 
 let activeLocation = 'Kesinga';
-let appliedCoupons = {};
+window.globalCoupon = null; 
 let cancelIntervals = {};
 window.highlightedItemId = null; 
 
@@ -777,7 +781,9 @@ window.highlightedItemId = null;
 window.changeLocation = (loc) => {
     activeLocation = loc;
     document.getElementById('locationSelect').value = loc;
+    document.getElementById('locDisplayText').textContent = loc;
     document.getElementById('footerLocName').textContent = loc;
+
     if(activeLocation !== 'Kesinga') {
         document.getElementById('mainContentBlock').style.display = 'none';
         document.getElementById('emptyLocationState').style.display = 'block';
@@ -926,22 +932,24 @@ function startTaglines() {
   }, 4000);
 }
 
-// Ensure it displays "0 Items Added • View Cart" permanently for specific pages.
+// Show mini cart on specific pages, but NOT on Home Page.
 function updateMiniCartStrip() {
   const strip = document.getElementById('miniCartStrip');
   const items = Object.values(cart);
   const totalQty = items.reduce((s, i) => s + i.qty, 0);
 
   const activePage = document.querySelector('.page.active');
-  const allowedPages = ['pageHome', 'pageRestaurant', 'pageSearch'];
+  // 'pageHome' removed so it only shows inside Restaurant and Search pages
+  const allowedPages = ['pageRestaurant', 'pageSearch']; 
   
   if (activePage && allowedPages.includes(activePage.id)) {
-    document.getElementById('mcCountText').textContent = `${totalQty} ITEMS ADDED • VIEW CART`;
+    document.getElementById('mcCountText').textContent = `${totalQty} ITEM${totalQty !== 1 ? 'S' : ''} ADDED`;
     strip.classList.add('show');
   } else {
     strip.classList.remove('show');
   }
 }
+
 
 // NAVIGATION
 window.goPage = (name, el) => {
@@ -1276,26 +1284,24 @@ window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
   if(document.getElementById('pageCart').classList.contains('active')) renderCart();
 };
 
-window.applyCouponBtn = (rId) => {
-    const inputField = document.getElementById(`coupon-input-${rId}`);
+window.applyGlobalCoupon = () => {
+    const inputField = document.getElementById('global-coupon-input');
     const input = inputField.value.trim().toUpperCase();
     
-    if (appliedCoupons[rId] && (!input || input === appliedCoupons[rId].code)) {
-        // Remove Action
-        delete appliedCoupons[rId];
+    if (window.globalCoupon && (!input || input === window.globalCoupon.code)) {
+        window.globalCoupon = null;
         showToast('Coupon removed successfully.');
         renderCart();
         return;
     }
     
     if (input) { 
-        // Simulated admin logic connection (In production, this queries the DB 'Coupons' collection)
         if(input.length >= 4) {
-             appliedCoupons[rId] = { code: input, amt: 50 }; // Flat discount assigned for demo validity
+             window.globalCoupon = { code: input, amt: 50 }; // Mock logic validation
              showToast(`Coupon ${input} applied successfully!`, 'success');
         } else {
              showToast('Invalid or Expired Coupon Code', 'error');
-             delete appliedCoupons[rId];
+             window.globalCoupon = null;
         }
     }
     renderCart(); 
@@ -1320,11 +1326,6 @@ function renderCart() {
   Object.keys(groupedCart).forEach(rId => {
       const g = groupedCart[rId];
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
-      
-      const existingCoupon = appliedCoupons[rId] ? appliedCoupons[rId].code : '';
-      const couponBtnText = existingCoupon ? 'REMOVE' : 'APPLY';
-      const couponBtnClass = existingCoupon ? 'coupon-btn active' : 'coupon-btn';
-
       cartHtml += `
       <div class="cart-restaurant-group">
         <div class="cart-rest-title">
@@ -1344,14 +1345,21 @@ function renderCart() {
             </div>
           </div>
         `).join('')}
-
-        <div class="cart-coupon-box">
-            <input type="text" class="coupon-input" id="coupon-input-${rId}" placeholder="Enter Coupon Code" value="${existingCoupon}">
-            <button class="${couponBtnClass}" onclick="applyCouponBtn('${rId}')">${couponBtnText}</button>
-        </div>
+  
       </div>`;
-  });
+  
+    });
   cartHtml += '</div>';
+
+  const existingGlobalCoupon = window.globalCoupon ? window.globalCoupon.code : '';
+  const globalCouponBtnText = existingGlobalCoupon ? 'REMOVE' : 'APPLY';
+  const globalCouponBtnClass = existingGlobalCoupon ? 'coupon-btn active' : 'coupon-btn';
+
+  cartHtml += `
+  <div class="cart-coupon-box" style="background:white; border-radius:16px; padding:16px; margin:0 20px 16px; box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid var(--border); border-top:none; display:flex; gap:8px;">
+      <input type="text" class="coupon-input" id="global-coupon-input" placeholder="Enter Coupon Code" value="${existingGlobalCoupon}">
+      <button class="${globalCouponBtnClass}" onclick="applyGlobalCoupon()">${globalCouponBtnText}</button>
+  </div>`;
 
   const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   
@@ -1363,22 +1371,28 @@ function renderCart() {
 
   Object.keys(groupedCart).forEach(rId => {
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
-      
       const rOfferDiscount = liveRest.offerDiscount || 0;
-      const rCouponDiscount = appliedCoupons[rId] ? appliedCoupons[rId].amt : 0;
       
       dynDeliveryFee += (liveRest.deliveryFee || 0);
-      dynDiscount += (rOfferDiscount + rCouponDiscount);
+      dynDiscount += rOfferDiscount;
       numRestaurants++;
 
-      if(rOfferDiscount > 0 || rCouponDiscount > 0) {
+      if(rOfferDiscount > 0) {
           dropdownDetails += `<div style="margin-bottom:8px; border-bottom:1px dashed #D1D5DB; padding-bottom:8px;">
             <b style="font-size:13px; color:var(--dark);">${liveRest.name} (Code: ${liveRest.restaurantCode || 'KPO-RES'})</b><br>`;
-          if(rOfferDiscount > 0) dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Offer: ${liveRest.offerName}</span><span style="color:var(--green)">-₹${rOfferDiscount}</span></span>`;
-          if(rCouponDiscount > 0) dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Coupon: ${appliedCoupons[rId].code}</span><span style="color:var(--green)">-₹${rCouponDiscount}</span></span>`;
+          dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Offer: ${liveRest.offerName}</span><span style="color:var(--green)">-₹${rOfferDiscount}</span></span>`;
           dropdownDetails += `</div>`;
       }
   });
+
+  let globalCouponDiscount = 0;
+  if(window.globalCoupon) {
+      globalCouponDiscount = window.globalCoupon.amt;
+      dynDiscount += globalCouponDiscount;
+      dropdownDetails += `<div style="margin-bottom:8px; padding-bottom:8px;">
+        <span style="display:flex; justify-content:space-between;"><b style="font-size:13px; color:var(--dark);">Global Coupon: ${window.globalCoupon.code}</b><span style="color:var(--green)">-₹${globalCouponDiscount}</span></span>
+      </div>`;
+  }
 
   const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
   
@@ -1448,16 +1462,24 @@ window.placeOrder = async () => {
     const batchTime = serverTimestamp();
     const promises = [];
 
+        let remainingGlobalCoupon = window.globalCoupon ? window.globalCoupon.amt : 0;
+
     for (const [rId, rData] of Object.entries(groupedCart)) {
         const rItems = rData.items;
         const rItemTotal = rItems.reduce((s, i) => s + i.price * i.qty, 0);
         
         const liveRest = allRestaurants.find(r => r.id === rId);
         const rDelivery = liveRest ? (liveRest.deliveryFee || 0) : 0; 
-        
         const rOfferDiscount = liveRest ? (liveRest.offerDiscount || 0) : 0; 
-        const rCouponDiscount = appliedCoupons[rId] ? appliedCoupons[rId].amt : 0;
+        
+        let rCouponDiscount = 0;
+        if (remainingGlobalCoupon > 0) {
+            rCouponDiscount = remainingGlobalCoupon;
+            remainingGlobalCoupon = 0; // consumed fully on the first order group
+        }
+
         const rDiscount = rOfferDiscount + rCouponDiscount;
+
 
         const rTotal = Math.max(0, rItemTotal + rDelivery - rDiscount);
         
@@ -1478,8 +1500,8 @@ window.placeOrder = async () => {
     
     await Promise.all(promises);
     
-    cart = {}; 
-    appliedCoupons = {};
+        cart = {}; 
+    window.globalCoupon = null;
     localStorage.removeItem('po_cart'); 
     updateMiniCartStrip();
     closeModal('checkoutModal');
