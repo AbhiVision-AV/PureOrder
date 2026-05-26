@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.abhivision.pureorder",
+    "sha256_cert_fingerprints": ["E0:22:31:30:F5:B0:CA:F0:CA:CE:3D:7F:46:11:67:81:A8:81:E7:38:A2:6E:4C:50:23:44:2F:A6:7C:75:F9:B1"]
+  }
+}]
