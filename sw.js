@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pureorder-cache-v1';
+const CACHE_NAME = 'pureorder-cache-v2';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
