@@ -98,6 +98,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .owner-rest { font-size:13px; color:var(--gray); margin-bottom:2px; }
 .owner-email { font-size:12px; color:var(--gray); font-family:'JetBrains Mono',monospace; }
 
+/* Drill-Down Back Button */
+.back-btn-drill { display:inline-flex; align-items:center; gap:6px; background:white; border:1.5px solid var(--border); padding:8px 14px; border-radius:12px; font-size:13px; font-weight:700; color:var(--dark); cursor:pointer; margin-bottom:12px; }
+
 /* CATEGORIES & MENU PAGE */
 .sub-tabs { display:flex; background:white; padding:10px 20px; border-bottom:1px solid var(--border); gap:10px; position:sticky; top:0; z-index:10; }
 .sub-tab { flex:1; padding:10px; text-align:center; font-size:14px; font-weight:700; color:var(--gray); background:var(--light); border-radius:10px; border:none; cursor:pointer; transition:all 0.2s; }
@@ -149,13 +152,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 
 .banner-card { background:white; border-radius:18px; padding:16px; margin-bottom:12px; border:1.5px solid var(--border); }
 .banner-preview { width:100%; border-radius:12px; background:linear-gradient(135deg,var(--yellow),var(--orange)); margin-bottom:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,0.7); font-weight:500; position:relative; }
-/* Modified banner img to contain aspect ratio */
 .banner-preview img { width:100%; height:100%; object-fit:contain; }
 .banner-info-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
 .banner-title-text { font-size:15px; font-weight:700; display:flex; align-items:center; gap:6px; }
 .banner-footer { display:flex; align-items:center; justify-content:space-between; margin-top:10px;}
 .banner-status { font-size:12px; color:var(--gray); }
-.banner-del { background:#FEF2F2; border:none; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--red); cursor:pointer; }
+.banner-action-btns { display:flex; gap:8px; }
+.banner-btn-small { background:var(--light); border:none; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--dark); cursor:pointer; }
+.banner-btn-small.red { background:#FEF2F2; color:var(--red); }
+
+/* OFFERS CARD */
+.offer-card { background:white; border-radius:16px; padding:16px; margin-bottom:12px; border:1px solid var(--border); display:flex; flex-direction:column; gap:10px; }
+.offer-top { display:flex; justify-content:space-between; align-items:center; }
+.offer-name { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; color:var(--orange); }
+.offer-code { display:inline-block; background:var(--light); border:1px dashed var(--gray); font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; padding:4px 8px; border-radius:6px; }
+.offer-meta { font-size:12px; color:var(--gray); display:flex; justify-content:space-between; align-items:center;}
+.offer-status { display:flex; align-items:center; gap:8px; }
 
 /* PROFILE */
 .profile-hero { background:white; padding:52px 20px 24px; border-bottom:1px solid var(--border); text-align:center; }
@@ -205,6 +217,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.success{background:var(--green);}
 .toast.error{background:var(--red);}
+
+/* Tabs in settings */
+.settings-section-title { font-family:'Sora', sans-serif; font-size:14px; font-weight:800; color:var(--dark); margin:24px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -264,29 +279,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <h2 style="margin:0; font-family:'Sora',sans-serif; font-size:20px; font-weight:800;">Order Logs</h2>
   </div>
   
-  <div class="filter-row">
-    <div class="filter-box">
-      <label>From Date</label>
-      <input type="date" id="filterFrom" onchange="applyOrderFilter()">
-    </div>
-    <div class="filter-box">
-      <label>To Date</label>
-      <input type="date" id="filterTo" onchange="applyOrderFilter()">
-    </div>
-  </div>
-  
-  <div class="summary-box">
-    <div>
-      <div class="sb-val" id="fltTotalAmt">₹0</div>
-      <div class="sb-lbl">Total Revenue</div>
-    </div>
-    <div style="text-align:right;">
-      <div class="sb-val" id="fltTotalOrders">0</div>
-      <div class="sb-lbl">Orders Count</div>
-    </div>
-  </div>
+  <div id="doRestList" class="owners-list">
+      </div>
 
-  <div id="detailedOrderList"></div>
+  <div id="doLogs" style="display:none;">
+      <div style="padding:16px 16px 0;">
+          <button class="back-btn-drill" onclick="backToDoRests()"><svg viewBox="0 0 24 24" width="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Restaurants</button>
+          <h3 id="doRestNameTitle" style="font-family:'Sora',sans-serif; font-size:18px; margin-top:10px;"></h3>
+      </div>
+      
+      <div class="filter-row">
+        <div class="filter-box">
+          <label>From Date</label>
+          <input type="date" id="filterFrom" onchange="applyOrderFilter()">
+        </div>
+        <div class="filter-box">
+          <label>To Date</label>
+          <input type="date" id="filterTo" onchange="applyOrderFilter()">
+        </div>
+      </div>
+      
+      <div class="summary-box">
+        <div>
+          <div class="sb-val" id="fltTotalAmt">₹0</div>
+          <div class="sb-lbl">Total Revenue</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="sb-val" id="fltTotalOrders">0</div>
+          <div class="sb-lbl">Orders Count</div>
+        </div>
+      </div>
+
+      <div id="detailedOrderList"></div>
+  </div>
 </div>
 
 <div id="pageOwners" class="page">
@@ -296,7 +321,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
       <button class="btn-add" onclick="openAddOwner()">+ Create</button>
     </div>
   </div>
-  <div class="info-note" style="margin:16px 16px 0;">Tap on a restaurant below to set Delivery Fee & Offers.</div>
+  <div class="info-note" style="margin:16px 16px 0;">Tap on a restaurant below to edit details, fees & specific offers.</div>
   <div class="owners-list" id="ownersList">
     <div class="empty-box"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><h3>No restaurants</h3><p>Create your first restaurant owner</p></div>
   </div>
@@ -322,8 +347,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 
   <div id="tabDishesView" style="display:none;">
-    <div class="dishes-list" id="allDishesList">
-      <div style="text-align:center; padding:20px; color:var(--gray);">Loading dishes...</div>
+    <div id="adRestList" class="owners-list">
+        </div>
+    <div id="adDishesListWrap" style="display:none;">
+        <div style="padding:16px 16px 0;">
+            <button class="back-btn-drill" onclick="backToAdRests()"><svg viewBox="0 0 24 24" width="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Restaurants</button>
+            <h3 id="adRestNameTitle" style="font-family:'Sora',sans-serif; font-size:16px; margin-top:10px;"></h3>
+        </div>
+        <div class="dishes-list" id="allDishesList">
+          <div style="text-align:center; padding:20px; color:var(--gray);">Loading dishes...</div>
+        </div>
     </div>
   </div>
 </div>
@@ -369,8 +402,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     </div>
 
     <div class="banners-header" style="margin-top:30px;">
-      <div class="banners-title">Offer Slider</div>
-      <button class="btn-add" onclick="openAddBanner()">+ Add Banner</button>
+      <div class="banners-title">Offers & Coupons</div>
+      <button class="btn-add" onclick="openAddOfferModal()">+ Add Offer</button>
+    </div>
+    <div id="marketingOffersList">
+      <div class="empty-box" style="padding:20px;"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>No offers created</h3></div>
+    </div>
+
+    <div class="banners-header" style="margin-top:30px;">
+      <div class="banners-title">Offer Slider Banners</div>
+      <button class="btn-add" onclick="openBannerModal()">+ Add Banner</button>
     </div>
     <div id="bannersList">
       <div class="empty-box" style="padding:20px;"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>No banners</h3></div>
@@ -389,7 +430,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="pcard">
       <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="prow-label">Email</div><div class="prow-val" id="profileEmail">-</div></div>
       <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="prow-label">Role</div><div class="prow-val">Platform Admin</div></div>
-      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="prow-label">Version</div><div class="prow-val">PureOrder v2.0</div></div>
+      <div class="prow"><div class="prow-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="prow-label">Version</div><div class="prow-val">PureOrder v2.1</div></div>
     </div>
     <button class="logout-btn" onclick="doLogout()">Sign Out</button>
     <button class="clear-data-btn" onclick="clearAllData()">⚠️ Clear All App Data</button>
@@ -407,18 +448,61 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 <div class="overlay" id="restSettingsModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title" id="rsTitle">Restaurant Settings</div>
-    <div class="sheet-sub">Set fees & discounts applied to cart</div>
+    <div class="sheet-title" id="rsTitle">Edit Restaurant</div>
     <input type="hidden" id="rsId">
+    
+    <div class="settings-section-title">Core Details</div>
+    <div class="field"><label>Restaurant Name</label><input type="text" id="rsName" placeholder="e.g. Mamu Bhanja Dhaba" /></div>
+    <div class="field"><label>Tagline</label><input type="text" id="rsTagline" placeholder="e.g. Fresh homestyle food" /></div>
+    
+    <div style="display:flex; gap:10px;">
+        <div class="field" style="flex:2;"><label>Restaurant Code</label><input type="text" id="rsCode" placeholder="e.g. KPO-MAM-02051234" /></div>
+        <div class="field" style="flex:1;"><label>Manual Rating</label><input type="number" step="0.1" id="rsRating" placeholder="e.g. 4.5" /></div>
+    </div>
+    
+    <div class="settings-section-title">Owner Information</div>
+    <div class="field"><label>Owner Full Name</label><input type="text" id="rsOwnerName" placeholder="Owner Name" /></div>
+    <div class="field"><label>Phone Number</label><input type="tel" id="rsPhone" placeholder="Phone Number" /></div>
+    <div class="field"><label>Email Address</label><input type="email" id="rsEmail" placeholder="Email" /></div>
+    
+    <div class="settings-section-title">Fee & Cart Settings</div>
     <div class="field"><label>Base Delivery Fee (₹)</label><input type="number" id="rsFee" placeholder="e.g. 40" /></div>
-    <div class="field"><label>Offer/Coupon Name (Optional)</label><input type="text" id="rsOfferName" placeholder="e.g. FLAT50" /></div>
-    <div class="field"><label>Offer Discount Amount (₹)</label><input type="number" id="rsOfferAmt" placeholder="e.g. 50" /></div>
-    <div class="sheet-btns" style="flex-wrap: wrap;">
+
+    <div class="settings-section-title" style="display:flex; justify-content:space-between; align-items:center;">
+        Offers & Coupons 
+        <button class="btn-add" style="padding:4px 10px; font-size:11px;" onclick="openAddOfferModalForRest()">+ Add</button>
+    </div>
+    <div id="rsOffersContainer">
+        </div>
+
+    <div class="sheet-btns" style="flex-wrap: wrap; margin-top:24px;">
       <button class="btn-cancel" style="flex-basis: 100%; margin-bottom: 8px; background:#FEF2F2; color:var(--red);" onclick="deleteRestaurant()">⚠️ Delete Restaurant</button>
       <div style="display:flex; gap:10px; width:100%;">
           <button class="btn-cancel" onclick="closeModal('restSettingsModal')">Cancel</button>
-          <button class="btn-save" id="saveRsBtn" onclick="saveRestSettings()">Save Settings</button>
+          <button class="btn-save" id="saveRsBtn" onclick="saveRestSettings()">Save All Changes</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="addOfferModal">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="offerModalTitle">Add Offer</div>
+    <input type="hidden" id="offerId">
+    
+    <div class="field">
+       <label>Select Restaurant</label>
+       <select id="offerRestId"></select>
+    </div>
+    <div class="field"><label>Offer Name <span style="color:var(--red)">*</span></label><input type="text" id="offName" placeholder="e.g. FLAT 50% OFF" /></div>
+    <div class="field"><label>Coupon Code</label><input type="text" id="offCode" placeholder="e.g. WELCOME50 (Leave blank for auto-apply)" style="text-transform:uppercase" /></div>
+    <div class="field"><label>Discount Amount (₹) <span style="color:var(--red)">*</span></label><input type="number" id="offAmt" placeholder="e.g. 50" /></div>
+    <div class="field"><label>Valid Till Date</label><input type="date" id="offDate" /></div>
+    
+    <div class="sheet-btns" style="margin-top:20px;">
+      <button class="btn-cancel" onclick="closeModal('addOfferModal')">Cancel</button>
+      <button class="btn-save" id="saveOfferBtn" onclick="saveOffer()">Save Offer</button>
     </div>
   </div>
 </div>
@@ -474,7 +558,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 <div class="overlay" id="addBannerModal">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Add Offer Banner</div>
+    <div class="sheet-title" id="bannerModalTitle">Add Offer Banner</div>
+    <input type="hidden" id="bId">
+    
     <div class="field"><label>Title (Optional)</label><input type="text" id="bTitle" placeholder="e.g. Weekend Special" /></div>
     <div class="field"><label>Image URL <span style="color:var(--red)">*</span></label><input type="url" id="bImage" placeholder="https://..." oninput="prevBanner(this.value)" />
       <div id="bannerPrevWrapper" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-top:8px; background:var(--light);"><img id="bannerPrev" style="width:100%; height:100%; object-fit:contain;" /></div>
@@ -488,7 +574,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
     <div class="field"><label>Linked Page URL (Optional)</label><input type="url" id="bLink" placeholder="https://..." /></div>
     <div class="sheet-btns">
       <button class="btn-cancel" onclick="closeModal('addBannerModal')">Cancel</button>
-      <button class="btn-save" id="saveBannerBtn" onclick="saveBanner()">Add Banner</button>
+      <button class="btn-save" id="saveBannerBtn" onclick="saveBanner()">Save Banner</button>
     </div>
   </div>
 </div>
@@ -514,7 +600,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null, userData = null;
-let owners = [], categories = [], banners = [], allGlobalOrders = [];
+let owners = [], categories = [], banners = [], allGlobalOrders = [], globalOffersList = [];
 let globalNotice = { active: false, title: '', message: '', imageUrl: '', showCount: 1, noticeId: '' };
 
 function showToast(msg, type='') {
@@ -561,12 +647,12 @@ onAuthStateChanged(auth, async user => {
 });
 
 async function initApp() {
-  await Promise.all([loadOwners(), loadCategories(), loadBanners(), loadNotice()]);
+  await Promise.all([loadOwners(), loadCategories(), loadBanners(), loadNotice(), loadGlobalOffers()]);
   loadAnalytics();
   setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
 }
 
-// ANALYTICS & DETAILED ORDERS
+// ANALYTICS & TOTAL ORDERS
 async function loadAnalytics() {
   try {
     const usersSnap = await getDocs(collection(db, 'users'));
@@ -609,15 +695,47 @@ async function loadAnalytics() {
   } catch(e) {}
 }
 
-function setupDetailedOrders() {
+window.setupDetailedOrders = () => {
+    document.getElementById('doRestList').style.display = 'block';
+    document.getElementById('doLogs').style.display = 'none';
+
+    const el = document.getElementById('doRestList');
+    if (!owners.length) {
+        el.innerHTML = `<div class="empty-box"><p>No restaurants found</p></div>`;
+        return;
+    }
+    el.innerHTML = owners.map(r => `
+        <div class="owner-card" onclick="viewRestOrders('${r.id}', '${r.name.replace(/'/g, "\\'")}')">
+            <div class="owner-av">${r.name.charAt(0)}</div>
+            <div class="owner-info">
+                <div class="owner-rest">${r.name}</div>
+                <div class="owner-name" style="font-size:12px;color:var(--gray)">Tap to view Order Logs</div>
+            </div>
+            <div style="font-size:11px; background:var(--light); font-weight:700; padding:6px 10px; border-radius:10px;">Select ></div>
+        </div>
+    `).join('');
+    
     const d = new Date();
     document.getElementById('filterTo').value = d.toISOString().split('T')[0];
     d.setDate(d.getDate() - 30);
     document.getElementById('filterFrom').value = d.toISOString().split('T')[0];
+};
+
+window.backToDoRests = () => {
+    document.getElementById('doRestList').style.display = 'block';
+    document.getElementById('doLogs').style.display = 'none';
+};
+
+window.viewRestOrders = (restId, restName) => {
+    document.getElementById('doRestList').style.display = 'none';
+    document.getElementById('doLogs').style.display = 'block';
+    document.getElementById('doRestNameTitle').textContent = restName + ' - Logs';
+    window.currentViewRestId = restId;
     window.applyOrderFilter();
-}
+};
 
 window.applyOrderFilter = () => {
+    if(!window.currentViewRestId) return;
     const fStr = document.getElementById('filterFrom').value;
     const tStr = document.getElementById('filterTo').value;
     if(!fStr || !tStr) return;
@@ -626,6 +744,7 @@ window.applyOrderFilter = () => {
     const tDate = new Date(tStr); tDate.setHours(23,59,59,999);
     
     const filtered = allGlobalOrders.filter(o => {
+        if(o.restaurantId !== window.currentViewRestId) return false;
         if(!o.createdAt) return false;
         const oDate = o.createdAt.toDate();
         return oDate >= fDate && oDate <= tDate;
@@ -758,7 +877,156 @@ window.sendRealPushNotification = async () => {
   btn.innerHTML = 'Send via Cloud Function'; btn.style.pointerEvents = 'auto';
 };
 
-// OWNERS & RESTAURANT SETTINGS
+
+// OFFERS & COUPONS MANAGEMENT (MARKETING & RESTAURANT SYNC)
+async function loadGlobalOffers() {
+    try {
+        const snap = await getDocs(collection(db, 'globalOffers'));
+        globalOffersList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderMarketingOffers();
+    } catch(e) { globalOffersList = []; }
+}
+
+function renderMarketingOffers() {
+    const el = document.getElementById('marketingOffersList');
+    if(!globalOffersList.length) {
+        el.innerHTML = `<div class="empty-box" style="padding:20px;"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>No offers created</h3></div>`;
+        return;
+    }
+    el.innerHTML = globalOffersList.map(o => `
+        <div class="offer-card">
+           <div class="offer-top">
+               <div class="offer-name">${o.offerName}</div>
+               ${o.couponCode ? `<div class="offer-code">${o.couponCode}</div>` : `<div class="offer-code" style="color:var(--green)">AUTO APPLY</div>`}
+           </div>
+           <div style="font-size:13px; font-weight:700;">Discount: ₹${o.discountAmt}</div>
+           <div class="offer-meta">
+               <div>Rest: ${o.restaurantName || 'All'} • Valid: ${o.validTill || 'Forever'}</div>
+               <div class="offer-status">
+                   <label class="toggle"><input type="checkbox" ${o.active?'checked':''} onchange="toggleOffer('${o.id}',this.checked)"><div class="toggle-track"></div></label>
+                   <button class="banner-btn-small red" onclick="deleteOffer('${o.id}')">Delete</button>
+               </div>
+           </div>
+        </div>
+    `).join('');
+}
+
+function renderRestOffers(restId) {
+    const el = document.getElementById('rsOffersContainer');
+    const myOffers = globalOffersList.filter(o => o.restaurantId === restId);
+    if(!myOffers.length) {
+        el.innerHTML = '<div style="font-size:12px; color:var(--gray); font-style:italic; margin-bottom:10px;">No offers created for this restaurant.</div>';
+        return;
+    }
+    el.innerHTML = myOffers.map(o => `
+        <div style="background:var(--light); padding:10px; border-radius:10px; margin-bottom:8px; border:1px solid var(--border);">
+           <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+               <div style="font-weight:700; font-size:13px; color:var(--orange);">${o.offerName}</div>
+               <button style="background:none; border:none; color:var(--red); font-size:11px; font-weight:700; cursor:pointer;" onclick="deleteOffer('${o.id}', true)">Remove</button>
+           </div>
+           <div style="font-size:11px; color:var(--dark);">Code: <b>${o.couponCode || 'Auto'}</b> | Off: ₹${o.discountAmt} | Till: ${o.validTill || 'No Expiry'}</div>
+           <div style="margin-top:6px;"><label class="toggle"><input type="checkbox" ${o.active?'checked':''} onchange="toggleOffer('${o.id}',this.checked, true)"><div class="toggle-track"></div></label></div>
+        </div>
+    `).join('');
+}
+
+window.openAddOfferModal = () => {
+    document.getElementById('offerModalTitle').textContent = 'Add Global Offer';
+    document.getElementById('offerId').value = '';
+    
+    const sel = document.getElementById('offerRestId');
+    sel.innerHTML = '<option value="ALL">All Restaurants</option>' + owners.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+    sel.disabled = false;
+    
+    ['offName','offCode','offAmt','offDate'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('addOfferModal').classList.add('open');
+}
+
+window.openAddOfferModalForRest = () => {
+    const restId = document.getElementById('rsId').value;
+    const r = owners.find(x => x.id === restId);
+    if(!r) return;
+    
+    document.getElementById('offerModalTitle').textContent = 'Add Offer for ' + r.name;
+    document.getElementById('offerId').value = '';
+    
+    const sel = document.getElementById('offerRestId');
+    sel.innerHTML = `<option value="${r.id}">${r.name}</option>`;
+    sel.disabled = true;
+    
+    ['offName','offCode','offAmt','offDate'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('addOfferModal').classList.add('open');
+}
+
+window.saveOffer = async () => {
+    const restId = document.getElementById('offerRestId').value;
+    const offName = document.getElementById('offName').value.trim();
+    const offCode = document.getElementById('offCode').value.trim().toUpperCase();
+    const offAmt = parseInt(document.getElementById('offAmt').value) || 0;
+    const offDate = document.getElementById('offDate').value;
+    
+    if(!offName || !offAmt) { showToast('Offer Name and Discount required', 'error'); return; }
+    
+    const btn = document.getElementById('saveOfferBtn');
+    btn.innerHTML = '<div class="spinner white"></div>'; btn.style.pointerEvents = 'none';
+    
+    let rName = 'All Restaurants';
+    if(restId !== 'ALL') { const ro = owners.find(x=>x.id===restId); if(ro) rName = ro.name; }
+
+    const data = {
+        restaurantId: restId, restaurantName: rName,
+        offerName: offName, couponCode: offCode,
+        discountAmt: offAmt, validTill: offDate,
+        active: true, createdAt: serverTimestamp()
+    };
+
+    try {
+        const ref = await addDoc(collection(db, 'globalOffers'), data);
+        globalOffersList.push({ id: ref.id, ...data });
+        
+        renderMarketingOffers();
+        // If the edit restaurant modal is open, refresh it
+        if(document.getElementById('restSettingsModal').classList.contains('open')) {
+            renderRestOffers(document.getElementById('rsId').value);
+        }
+        
+        // Backward compatibility sync for older app architectures (sync primary offer directly to Rest Doc)
+        if(restId !== 'ALL') {
+            await updateDoc(doc(db, 'restaurants', restId), { offerName: offName, offerDiscount: offAmt, offerDesc: `Save ₹${offAmt} on your order.` });
+            const ro = owners.find(x=>x.id===restId); 
+            if(ro) { ro.offerName = offName; ro.offerDiscount = offAmt; }
+        }
+
+        closeModal('addOfferModal');
+        showToast('Offer added successfully', 'success');
+    } catch(e) { showToast('Failed to add offer', 'error'); }
+    
+    btn.innerHTML = 'Save Offer'; btn.style.pointerEvents = 'auto';
+};
+
+window.toggleOffer = async (id, val, isFromRestModal = false) => {
+    try {
+        await updateDoc(doc(db, 'globalOffers', id), { active: val });
+        const o = globalOffersList.find(x => x.id === id);
+        if (o) o.active = val;
+        renderMarketingOffers();
+        if(isFromRestModal) renderRestOffers(document.getElementById('rsId').value);
+        showToast(val ? 'Offer enabled' : 'Offer disabled');
+    } catch(e) { showToast('Failed', 'error'); }
+};
+
+window.deleteOffer = async (id, isFromRestModal = false) => {
+    if(!confirm('Delete this offer?')) return;
+    try {
+        await deleteDoc(doc(db, 'globalOffers', id));
+        globalOffersList = globalOffersList.filter(o => o.id !== id);
+        renderMarketingOffers();
+        if(isFromRestModal) renderRestOffers(document.getElementById('rsId').value);
+        showToast('Offer removed', 'success');
+    } catch(e) { showToast('Failed', 'error'); }
+};
+
+// OWNERS & RESTAURANT EXPANDED SETTINGS
 async function loadOwners() {
   try {
     const snap = await getDocs(query(collection(db, 'restaurants')));
@@ -781,38 +1049,66 @@ function renderOwners() {
         <div class="owner-name" style="font-size:12px; font-weight:500; color:var(--gray)">${o.ownerName||''}</div>
         <div style="font-size:11px; margin-top:4px; font-weight:700; color:var(--orange)">Delivery Fee: ₹${o.deliveryFee || 0}</div>
       </div>
-      <div style="font-size:11px; background:#F0FDF4; color:var(--green); font-weight:700; padding:4px 8px; border-radius:10px;">Edit ></div>
+      <div style="font-size:11px; background:#F0FDF4; color:var(--green); font-weight:700; padding:6px 12px; border-radius:10px;">Edit ></div>
     </div>`).join('');
 }
 
 window.openRestSettings = (id) => {
     const r = owners.find(x => x.id === id);
     if(!r) return;
-    document.getElementById('rsTitle').textContent = r.name;
     document.getElementById('rsId').value = id;
-    document.getElementById('rsFee').value = r.deliveryFee || '';
-    document.getElementById('rsOfferName').value = r.offerName || '';
-    document.getElementById('rsOfferAmt').value = r.offerDiscount || '';
+    
+    document.getElementById('rsName').value = r.name || '';
+    document.getElementById('rsTagline').value = r.tagline || '';
+    document.getElementById('rsCode').value = r.restaurantCode || '';
+    document.getElementById('rsRating').value = r.rating || '';
+    
+    document.getElementById('rsOwnerName').value = r.ownerName || '';
+    document.getElementById('rsPhone').value = r.phone || '';
+    document.getElementById('rsEmail').value = r.ownerEmail || '';
+    
+    document.getElementById('rsFee').value = r.deliveryFee || 0;
+    
+    renderRestOffers(id);
+    
     document.getElementById('restSettingsModal').classList.add('open');
 };
 
 window.saveRestSettings = async () => {
     const id = document.getElementById('rsId').value;
     const fee = parseInt(document.getElementById('rsFee').value) || 0;
-    const oName = document.getElementById('rsOfferName').value.trim();
-    const oAmt = parseInt(document.getElementById('rsOfferAmt').value) || 0;
+    
+    const rName = document.getElementById('rsName').value.trim();
+    const rTagline = document.getElementById('rsTagline').value.trim();
+    const rCode = document.getElementById('rsCode').value.trim();
+    const rRating = document.getElementById('rsRating').value.trim();
+    
+    const oName = document.getElementById('rsOwnerName').value.trim();
+    const oPhone = document.getElementById('rsPhone').value.trim();
+    const oEmail = document.getElementById('rsEmail').value.trim();
+
     const btn = document.getElementById('saveRsBtn');
     
+    if(!rName || !oName) { showToast('Restaurant and Owner Name required', 'error'); return; }
+    
     btn.innerHTML = '<div class="spinner white"></div>'; btn.style.pointerEvents = 'none';
+    
+    const updateData = { 
+        name: rName, tagline: rTagline, restaurantCode: rCode, rating: rRating,
+        ownerName: oName, phone: oPhone, ownerEmail: oEmail, deliveryFee: fee
+    };
+
     try {
-        await updateDoc(doc(db, 'restaurants', id), { deliveryFee: fee, offerName: oName, offerDiscount: oAmt });
+        await updateDoc(doc(db, 'restaurants', id), updateData);
+        
         const r = owners.find(x => x.id === id);
-        if(r) { r.deliveryFee = fee; r.offerName = oName; r.offerDiscount = oAmt; }
+        if(r) Object.assign(r, updateData);
+        
         renderOwners();
         closeModal('restSettingsModal');
-        showToast('Settings saved successfully', 'success');
+        showToast('All details saved successfully', 'success');
     } catch(e) { showToast('Error saving settings', 'error'); }
-    btn.innerHTML = 'Save Settings'; btn.style.pointerEvents = 'auto';
+    btn.innerHTML = 'Save All Changes'; btn.style.pointerEvents = 'auto';
 };
 
 window.deleteRestaurant = async () => {
@@ -861,7 +1157,7 @@ window.createOwner = async () => {
   btn.innerHTML = 'Create Account'; btn.style.pointerEvents = 'auto';
 };
 
-// CATEGORIES & ALL DISHES
+// CATEGORIES & DISHES DRILL-DOWN
 async function loadCategories() {
   try {
     const snap = await getDocs(collection(db, 'globalCategories'));
@@ -884,7 +1180,7 @@ function renderCategories() {
         <div class="cat-count">Active globally</div>
       </div>
       <div class="cat-actions">
-        <button class="ic-btn ic-del" onclick="deleteCategory('${cat.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+        <button class="ic-btn ic-del" style="background:none; border:none; color:var(--red); padding:10px;" onclick="deleteCategory('${cat.id}')"><svg viewBox="0 0 24 24" width="20" stroke="currentColor" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
       </div>
     </div>`).join('');
 }
@@ -926,21 +1222,49 @@ window.deleteCategory = async id => {
   } catch(e) {}
 };
 
-async function loadAllDishes() {
+window.loadAllDishes = () => {
+    document.getElementById('adRestList').style.display = 'block';
+    document.getElementById('adDishesListWrap').style.display = 'none';
+
+    const el = document.getElementById('adRestList');
+    if (!owners.length) { el.innerHTML = `<div class="empty-box"><p>No restaurants found</p></div>`; return; }
+    
+    el.innerHTML = owners.map(r => `
+        <div class="owner-card" onclick="viewRestDishes('${r.id}', '${r.name.replace(/'/g, "\\'")}')">
+            <div class="owner-av">${r.name.charAt(0)}</div>
+            <div class="owner-info">
+                <div class="owner-rest">${r.name}</div>
+                <div class="owner-name" style="font-size:12px;color:var(--gray)">Manage Menu & Popular Items</div>
+            </div>
+            <div style="font-size:11px; background:var(--light); font-weight:700; padding:6px 10px; border-radius:10px;">Select ></div>
+        </div>
+    `).join('');
+};
+
+window.backToAdRests = () => {
+    document.getElementById('adRestList').style.display = 'block';
+    document.getElementById('adDishesListWrap').style.display = 'none';
+};
+
+window.viewRestDishes = async (restId, restName) => {
+    document.getElementById('adRestList').style.display = 'none';
+    document.getElementById('adDishesListWrap').style.display = 'block';
+    document.getElementById('adRestNameTitle').textContent = restName + ' - Menu';
+    
+    const el = document.getElementById('allDishesList');
+    el.innerHTML = '<div style="text-align:center;padding:20px;">Loading...</div>';
+    
     try {
-        const el = document.getElementById('allDishesList');
-        const snap = await getDocs(collection(db, 'menu'));
+        const snap = await getDocs(query(collection(db, 'menu'), where('restaurantId', '==', restId)));
         const menus = snap.docs.map(d => ({id: d.id, ...d.data()}));
         if(!menus.length) {
-            el.innerHTML = '<div style="text-align:center;color:var(--gray);padding:30px;">No items created by any restaurant yet.</div>';
+            el.innerHTML = '<div class="empty-box" style="padding:30px;"><div class="empty-icon"><svg viewBox="0 0 24 24" stroke="var(--gray)" stroke-width="1.5" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><p>No dishes found for this restaurant.</p></div>';
             return;
         }
-        
         el.innerHTML = menus.map(m => `
             <div class="dish-card">
-                <div class="dish-img">${m.imageUrl ? `<img src="${m.imageUrl}" onerror="this.style.display='none'">` : m.name}</div>
+                <div class="dish-img">${m.imageUrl ? `<img src="${m.imageUrl}" onerror="this.style.display='none'">` : `<span style="font-size:10px">${m.name}</span>`}</div>
                 <div class="dish-info">
-                    <div class="dish-rest">${m.restaurantName || 'Unknown Rest'}</div>
                     <div class="dish-name">${m.name}</div>
                     <div class="dish-price">₹${m.price}</div>
                 </div>
@@ -951,9 +1275,9 @@ async function loadAllDishes() {
             </div>
         `).join('');
     } catch(e) {
-        document.getElementById('allDishesList').innerHTML = '<div style="text-align:center;color:var(--red);">Error loading dishes</div>';
+        el.innerHTML = '<div style="text-align:center;color:var(--red);">Error fetching menu</div>';
     }
-}
+};
 
 window.toggleDishPopular = async (id, val) => {
     try {
@@ -962,7 +1286,7 @@ window.toggleDishPopular = async (id, val) => {
     } catch(e) { showToast('Failed to update', 'error'); }
 };
 
-// BANNERS (WITH LIVE HEIGHT CONFIG PREVIEW)
+// FULL BANNER EDITING (EDIT HEIGHTS & LINKS)
 async function loadBanners() {
   try {
     const snap = await getDocs(collection(db, 'banners'));
@@ -987,21 +1311,47 @@ function renderBanners() {
       </div>
       <div class="banner-footer">
         <div class="banner-status">${b.active?'Visible':'Hidden'}</div>
-        <button class="banner-del" onclick="deleteBanner('${b.id}')">Remove</button>
+        <div class="banner-action-btns">
+            <button class="banner-btn-small" onclick="openBannerModal('${b.id}')">Edit</button>
+            <button class="banner-btn-small red" onclick="deleteBanner('${b.id}')">Delete</button>
+        </div>
       </div>
     </div>`;
   }).join('');
 }
 
-window.openAddBanner = () => {
-  ['bImage','bTitle','bLink'].forEach(id => { 
-      const el = document.getElementById(id);
-      if(el) el.value = ''; 
-  });
-  document.getElementById('bHeightVal').value = '150';
-  document.getElementById('bUnit').value = 'px';
-  document.getElementById('bannerPrevWrapper').style.display = 'none';
-  document.getElementById('addBannerModal').classList.add('open');
+window.openBannerModal = (editId = null) => {
+    const modalTitle = document.getElementById('bannerModalTitle');
+    const bId = document.getElementById('bId');
+    const bImg = document.getElementById('bImage');
+    const bTit = document.getElementById('bTitle');
+    const bLnk = document.getElementById('bLink');
+    const bUnt = document.getElementById('bUnit');
+    const bHgt = document.getElementById('bHeightVal');
+    
+    if(editId) {
+        const b = banners.find(x => x.id === editId);
+        if(!b) return;
+        modalTitle.textContent = "Edit Banner Slider";
+        bId.value = b.id;
+        bImg.value = b.imageUrl || '';
+        bTit.value = b.title || '';
+        bLnk.value = b.linkUrl || '';
+        bUnt.value = b.heightUnit || 'px';
+        bHgt.value = b.heightVal || '150';
+        window.prevBanner(b.imageUrl);
+    } else {
+        modalTitle.textContent = "Add Banner Slider";
+        bId.value = '';
+        bImg.value = '';
+        bTit.value = '';
+        bLnk.value = '';
+        bUnt.value = 'px';
+        bHgt.value = '150';
+        window.prevBanner('');
+    }
+    
+    document.getElementById('addBannerModal').classList.add('open');
 };
 
 window.updateBannerPrevHeight = () => {
@@ -1025,6 +1375,7 @@ window.prevBanner = url => {
 };
 
 window.saveBanner = async () => {
+  const id = document.getElementById('bId').value;
   const imageUrl = document.getElementById('bImage').value.trim();
   const title = document.getElementById('bTitle') ? document.getElementById('bTitle').value.trim() : '';
   const linkUrl = document.getElementById('bLink').value.trim();
@@ -1036,15 +1387,27 @@ window.saveBanner = async () => {
   
   btn.innerHTML = '<div class="spinner white"></div>'; btn.style.pointerEvents = 'none';
   try {
-    const data = { imageUrl, title, linkUrl, heightUnit, heightVal, active: true, createdAt: serverTimestamp() };
-    const ref = await addDoc(collection(db, 'banners'), data);
-    banners.push({ id: ref.id, ...data });
+    const data = { imageUrl, title, linkUrl, heightUnit, heightVal, updatedAt: serverTimestamp() };
+    
+    if(id) {
+        await updateDoc(doc(db, 'banners', id), data);
+        const idx = banners.findIndex(x => x.id === id);
+        if(idx !== -1) Object.assign(banners[idx], data);
+        showToast('Banner Updated!', 'success');
+    } else {
+        data.active = true;
+        data.createdAt = serverTimestamp();
+        const ref = await addDoc(collection(db, 'banners'), data);
+        banners.push({ id: ref.id, ...data });
+        showToast('Banner Added!', 'success');
+    }
+    
     renderBanners();
     closeModal('addBannerModal');
-    showToast('Banner added!', 'success');
-  } catch(e) { showToast('Failed', 'error'); }
-  btn.innerHTML = 'Add Banner'; btn.style.pointerEvents = 'auto';
+  } catch(e) { showToast('Failed to save banner', 'error'); }
+  btn.innerHTML = 'Save Banner'; btn.style.pointerEvents = 'auto';
 };
+
 window.toggleBanner = async (id, val) => {
   try {
     await updateDoc(doc(db, 'banners', id), { active: val });
@@ -1054,6 +1417,7 @@ window.toggleBanner = async (id, val) => {
     showToast(val ? 'Banner visible' : 'Banner hidden');
   } catch(e) { showToast('Failed', 'error'); }
 };
+
 window.deleteBanner = async id => {
   if (!confirm('Remove this banner?')) return;
   try {
@@ -1082,7 +1446,7 @@ window.clearAllData = async () => {
   showToast("Wiping data, please do not close window...");
   document.getElementById('loadingScreen').classList.remove('hide');
   try {
-    const collectionsToClear = ['orders', 'menu', 'restaurants', 'banners', 'globalCategories', 'notifications', 'pending_owners'];
+    const collectionsToClear = ['orders', 'menu', 'restaurants', 'banners', 'globalCategories', 'notifications', 'pending_owners', 'globalOffers'];
     for (let colName of collectionsToClear) {
        const snap = await getDocs(collection(db, colName));
        const deletePromises = snap.docs.map(d => deleteDoc(doc(db, colName, d.id)));
