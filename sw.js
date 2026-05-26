@@ -5,12 +5,25 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => clients.claim())
+  );
 });
 
 self.addEventListener('fetch', (event) => {
-  // PWA install criteria ke liye basic fetch listener zaroori hai
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request)
+      .then((response) => {
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
