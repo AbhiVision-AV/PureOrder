@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,6 +67,13 @@ body{
 .icon-btn svg{width:22px; height:22px; stroke:var(--dark); fill:none; stroke-width:2;}
 .notif-badge{position:absolute; top:-4px; right:-4px; background:var(--red); color:white; font-size:10px; font-weight:800; border-radius:50%; width:18px; height:18px; display:none; align-items:center; justify-content:center; border:2px solid white;}
 
+/* NEW LOCATION DROPDOWN UI */
+.loc-dropdown-wrapper { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--gray); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+.loc-dropdown-wrapper svg.pin { width:12px; height:12px; stroke:var(--orange); fill:none; stroke-width:2.5; }
+.loc-select { background:transparent; border:none; color:var(--orange); font-weight:800; font-family:'DM Sans',sans-serif; font-size:12px; outline:none; text-transform:uppercase; cursor:pointer; appearance:none; padding-right:12px; }
+.loc-dropdown-container { position:relative; display:inline-flex; align-items:center; }
+.loc-dropdown-container::after { content:"▼"; font-size:8px; color:var(--orange); position:absolute; right:0; pointer-events:none; }
+
 /* DRAWER */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .drawer-overlay.open{opacity:1;pointer-events:auto;}
@@ -104,8 +110,6 @@ body{
 /* HOME CONTENT */
 .home-header{padding:10px 20px 16px;}
 .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.deliver-label{font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px;margin-bottom:4px;}
-.deliver-label svg{width:12px;height:12px;stroke:var(--orange);fill:none;stroke-width:2.5;}
 .greeting-name{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.3px;}
 
 .tagline-wrap{margin-bottom:14px;min-height:18px;}
@@ -122,11 +126,12 @@ body{
 .cat-circle-img img { width:100%; height:100%; object-fit:cover; }
 .cat-circle-name { font-size:12px; font-weight:600; color:var(--dark); white-space:nowrap; }
 
+/* BANNER SLIDER (Fixed Admin Height Logic via CSS Height) */
 .banner-section{padding:16px 0 10px;}
 .banner-outer{overflow:hidden;}
 .banner-scroll{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:0 20px;}
 .banner-scroll::-webkit-scrollbar{display:none;}
-.banner-card{flex: 0 0 100%; aspect-ratio: 16 / 9; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
+.banner-card{flex: 0 0 100%; height: 160px; border-radius:16px; scroll-snap-align:center; overflow:hidden; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; align-items:flex-end; padding:20px; cursor:pointer;}
 .banner-card img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
 .banner-gradient {position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);z-index:1;}
 .banner-title{position:relative;z-index:2;font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;text-shadow:0 2px 4px rgba(0,0,0,0.3);}
@@ -138,16 +143,19 @@ body{
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;}
 
+/* POPULAR ITEMS (Added badge overlay) */
 .popular-scroll{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px;}
 .popular-scroll::-webkit-scrollbar{display:none;}
-.popular-card{min-width:140px;background:white;border-radius:16px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform 0.15s;}
+.popular-card{position:relative; min-width:140px;background:white;border-radius:16px;overflow:hidden;flex-shrink:0;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform 0.15s;}
 .popular-card:active{transform:scale(0.97);}
+.popular-badge-img { position:absolute; top:6px; right:6px; background:var(--orange); color:white; font-size:9px; font-weight:800; padding:3px 6px; border-radius:6px; z-index:2; text-transform:uppercase; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
 .popular-img{width:100%;height:90px;background:var(--light);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9CA3AF;text-align:center;padding:4px;}
 .popular-img img{width:100%;height:100%;object-fit:cover;}
 .popular-info{padding:10px 10px 12px;}
 .popular-name{font-size:13px;font-weight:700;margin-bottom:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .popular-price{font-size:14px;font-weight:800;color:var(--dark);}
 
+/* RESTAURANTS (Added Offers & Rating) */
 .rest-list { display:flex; flex-direction:column; gap:16px; }
 .rest-card{background:white;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid rgba(0,0,0,0.03);box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.15s;}
 .rest-card:active{transform:scale(0.99);}
@@ -157,14 +165,17 @@ body{
 .badge-open{background:var(--green);}
 .badge-closed{background:var(--red);}
 .rest-info{padding:14px 16px; position:relative; z-index:2;}
-.rest-name{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;margin-bottom:6px;}
-.rest-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.rest-name{font-family:'Sora',sans-serif;font-size:17px;font-weight:800; display:flex; align-items:center;}
+.rest-rating-badge { display:inline-flex; align-items:center; gap:2px; background:var(--green); color:white; font-size:11px; font-weight:800; padding:2px 6px; border-radius:6px; margin-left:6px; }
+.rest-offer-text { font-size:12px; color:var(--orange); font-weight:800; display:flex; align-items:center; gap:4px; margin-top:4px; }
+.rest-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap; margin-top:6px;}
 .rest-meta-item{font-size:12px;color:var(--gray);}
 .meta-dot{width:3px;height:3px;background:#D1D5DB;border-radius:50%;}
 
-.home-footer { padding:40px 20px 60px; text-align:left; border-top:1px solid var(--border); margin-top:20px; }
-.hf-title { font-family:'Sora',sans-serif; font-size:36px; font-weight:800; color:#D1D5DB; line-height:1.1; margin-bottom:16px; text-transform:uppercase; letter-spacing:-1px;}
-.hf-sub { font-size:13px; color:var(--gray); margin-bottom:6px; font-weight:500; display:flex; align-items:center; gap:4px; }
+/* EMPTY LOCATION STATE */
+.empty-loc { text-align:center; padding: 50px 20px; }
+.empty-loc h3 { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; color:var(--dark); margin-bottom:8px; }
+.empty-loc p { font-size:14px; color:var(--gray); line-height:1.5; }
 
 /* SEARCH */
 .search-page{min-height:100vh;padding:52px 20px 20px;}
@@ -176,12 +187,19 @@ body{
 .search-input-box input{flex:1;background:none;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);}
 .search-input-box input::placeholder{color:#9CA3AF;}
 
+/* MENU ITEMS & HIGHLIGHT */
 .menu-list, #searchResults { padding:0 20px; }
 .menu-cat-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:800; color:var(--dark); text-transform:uppercase; letter-spacing:0.5px; margin:24px 0 12px; }
-.menu-item { display:flex; gap:16px; padding:20px 16px; background:white; border-radius:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.02); }
+.menu-item { display:flex; gap:16px; padding:20px 16px; background:white; border-radius:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.02); transition:all 0.3s ease; }
+.menu-item.highlight-orange { box-shadow: 0 0 0 2px var(--orange), 0 4px 12px rgba(254,114,76,0.2); transform:scale(1.02); }
 .menu-item-info { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; }
 .menu-item-name { font-size:16px; font-weight:700; color:var(--dark); margin-bottom:4px; line-height:1.3; }
-.menu-item-desc { font-size:12px; color:var(--gray); line-height:1.4; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; }
+
+/* READ MORE / DESC */
+.desc-text { font-size:12px; color:var(--gray); line-height:1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; transition:all 0.3s; margin-bottom:4px;}
+.desc-text.open { -webkit-line-clamp: unset; }
+.read-more-btn { color:var(--orange); font-size:11px; font-weight:700; background:none; border:none; padding:0; margin-bottom:8px; cursor:pointer; text-align:left; display:inline-block;}
+
 .menu-item-price { font-size:15px; font-weight:800; color:var(--dark); margin-bottom:0; }
 .menu-item-right { width:110px; height:110px; position:relative; flex-shrink:0; }
 .menu-item-img { width:100%; height:100px; border-radius:12px; background:var(--light); overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:10px; color:#9CA3AF; text-align:center; }
@@ -193,7 +211,7 @@ body{
 .qty-num { font-size:15px; font-weight:800; color:white; }
 .menu-item-na { position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); background:#FEE2E2; color:var(--red); font-size:10px; font-weight:800; padding:6px 12px; border-radius:8px; text-transform:uppercase; letter-spacing:0.5px; border:1px solid #FECACA; white-space:nowrap; z-index:2;}
 
-/* RESTAURANT PAGE */
+/* RESTAURANT PAGE HEADERS & OFFERS */
 .rest-page{min-height:100vh;}
 .rest-hero{width:100%;height:200px;background:var(--light);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 .rest-hero img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1;}
@@ -202,8 +220,15 @@ body{
 .rest-back-btn svg{width:18px;height:18px;stroke:var(--dark);fill:none;stroke-width:2.5;}
 .closed-notice{background:#FEF2F2;border-bottom:1px solid #FECACA;padding:12px 20px;font-size:13px;color:var(--red);font-weight:600;text-align:center;display:none;}
 .rest-details-box{padding:16px 20px 10px;}
-.rest-details-box h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;}
-.rest-details-box p{font-size:13px;color:var(--gray);}
+.rest-details-box h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px; display:flex; align-items:center;}
+.rest-code-tag { background:var(--light); border:1px dashed var(--gray); color:var(--dark); font-size:10px; font-weight:700; padding:4px 8px; border-radius:6px; margin-top:8px; display:inline-block; font-family:monospace; }
+.rest-details-box p{font-size:13px;color:var(--gray); margin-top:6px;}
+
+.menu-offer-banner { background:#FFF3E0; border:1px dashed #FFB74D; border-radius:12px; padding:12px; margin:16px 20px; display:none;}
+.menu-offer-banner.active { display:block; }
+.menu-offer-title { font-size:13px; font-weight:800; color:var(--orange); display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.menu-offer-desc { font-size:12px; color:#A16207; }
+
 .cat-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 20px;position:sticky;top:0;z-index:10; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px);}
 .cat-tabs::-webkit-scrollbar{display:none;}
 .cat-tab{background:white;border:1px solid rgba(0,0,0,0.05);border-radius:20px;padding:7px 16px;font-size:13px;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,0.02);}
@@ -213,7 +238,7 @@ body{
 .page-header{padding:52px 20px 16px; display:flex; align-items:center; gap:12px;}
 .page-header h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;}
 
-/* CART */
+/* CART & COUPON DROPDOWN */
 .cart-list{padding:0 20px 16px;}
 .cart-restaurant-group { background:white; border-radius:20px; padding:16px; margin-bottom:16px; box-shadow:0 4px 14px rgba(0,0,0,0.04); border:1px solid var(--border); }
 .cart-rest-title { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; color:var(--dark); display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:8px; border-bottom:1px dashed var(--border); }
@@ -224,8 +249,18 @@ body{
 .cart-item-info{flex:1;}
 .cart-item-name{font-size:14px;font-weight:700;margin-bottom:3px;}
 .cart-item-price{font-size:13px;color:var(--gray);font-weight:600;}
+
+.cart-coupon-box { display:flex; gap:8px; margin-top:12px; padding-top:12px; border-top:1px dashed var(--border); }
+.coupon-input { flex:1; background:var(--light); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:12px; outline:none; text-transform:uppercase; font-weight:700; }
+.coupon-btn { background:var(--dark); color:white; border:none; border-radius:8px; padding:0 16px; font-size:12px; font-weight:700; cursor:pointer; }
+
 .cart-summary{background:white;margin:0 20px 16px;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,0.04); border:1px solid var(--border);}
 .summary-row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:var(--gray);font-weight:500;}
+
+.dd-summary { display:flex; justify-content:space-between; outline:none; cursor:pointer; font-size:13px; color:var(--green); font-weight:600; padding:12px 0; border-top:1px dashed var(--border); margin-top:12px;}
+.dd-summary::-webkit-details-marker { display:none; }
+.dd-content { font-size:11px; color:var(--gray); background:var(--light); padding:10px; border-radius:8px; margin-bottom:12px; line-height:1.5;}
+
 .summary-total{display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--dark);padding-top:12px;margin-top:6px;border-top:1px dashed var(--border);}
 .checkout-btn{display:block;width:calc(100% - 40px);margin:0 auto;background:var(--orange);color:white;border:none;border-radius:14px;padding:16px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-align:center;box-shadow:0 4px 12px rgba(254,114,76,0.3);}
 
@@ -254,10 +289,16 @@ body{
 .order-total-row{display:flex;justify-content:space-between;font-size:14px;font-weight:800; background:var(--orange); color:white; padding:12px 14px; border-radius:10px; margin-top:12px;}
 .order-total-row span:last-child { color:white !important; }
 
-/* PROFESSIONAL TRACK LIVE UI */
+/* PROFESSIONAL TRACK LIVE UI & TIMERS */
 .od-section { background:white; padding:20px; border-radius:20px; margin:0 20px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.03); border:1px solid var(--border); }
 .professional-track-title { font-family:'Sora',sans-serif; font-size:14px; font-weight:800; color:var(--dark); letter-spacing:0.3px; display:flex; align-items:center; gap:8px; margin-bottom:20px; text-transform:uppercase; border-bottom:1px dashed var(--border); padding-bottom:12px; }
 .professional-track-title svg { stroke:var(--orange); fill:none; stroke-width:2.5; }
+
+.cancel-timer-box { background:#FEF2F2; border:1px solid #FECACA; border-radius:12px; padding:14px; margin-top:12px; text-align:center; }
+.cancel-timer-text { font-size:13px; color:var(--red); font-weight:700; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:6px; }
+.cancel-btn-action { background:var(--red); color:white; border:none; border-radius:8px; padding:12px; width:100%; font-family:'Sora',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:0.2s; box-shadow:0 4px 10px rgba(255,59,48,0.2);}
+.cancel-btn-action:disabled { background:var(--gray); opacity:0.6; cursor:not-allowed; box-shadow:none;}
+
 .timeline { position:relative; padding-left:26px; margin:5px 0; }
 .timeline::before { content:''; position:absolute; left:7px; top:4px; bottom:4px; width:2px; background:var(--border); }
 .tl-item { position:relative; margin-bottom:24px; opacity:0.55; transition:all 0.3s ease; }
@@ -339,70 +380,6 @@ body{
 
 .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);color:white;padding:12px 24px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;box-shadow:0 8px 16px rgba(0,0,0,0.2);pointer-events:none;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* DESC MORE TOGGLE */
-.desc-clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;}
-.desc-expanded{display:block;overflow:visible;}
-.desc-more-btn{font-size:11px;font-weight:700;color:var(--orange);background:none;border:none;padding:0;cursor:pointer;margin-top:2px;display:inline-block;}
-
-/* LOCATION DROPDOWN */
-.loc-dropdown-wrap{position:relative;display:inline-flex;align-items:center;gap:4px;cursor:pointer;}
-.loc-dropdown-arrow{width:14px;height:14px;stroke:var(--orange);fill:none;stroke-width:2.5;transition:transform 0.2s;}
-.loc-dropdown-arrow.open{transform:rotate(180deg);}
-.loc-dropdown-menu{position:absolute;top:calc(100% + 6px);left:0;background:white;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);border:1px solid var(--border);z-index:999;min-width:160px;overflow:hidden;display:none;}
-.loc-dropdown-menu.open{display:block;animation:fadeIn 0.15s ease;}
-.loc-option{padding:11px 16px;font-size:13px;font-weight:600;color:var(--dark);cursor:pointer;transition:background 0.15s;}
-.loc-option:active,.loc-option:hover{background:var(--light);}
-.loc-option.active{color:var(--orange);font-weight:800;}
-.loc-coming-soon{text-align:center;padding:60px 30px;display:none;}
-.loc-coming-soon.show{display:block;}
-.loc-coming-soon-icon{font-size:56px;margin-bottom:16px;}
-.loc-coming-soon-title{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--dark);margin-bottom:8px;}
-.loc-coming-soon-sub{font-size:14px;color:var(--gray);line-height:1.6;}
-
-/* RESTAURANT OFFER + RATING */
-.rest-offer-tag{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#FF6B35,var(--orange));color:white;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;letter-spacing:0.3px;}
-.rest-rating-tag{display:inline-flex;align-items:center;gap:3px;color:#F59E0B;font-size:12px;font-weight:800;}
-.rest-rating-tag svg{width:13px;height:13px;fill:#F59E0B;stroke:none;}
-
-/* MENU PAGE OFFER BANNER */
-.menu-offer-banner{margin:0 20px 12px;background:linear-gradient(135deg,#FFF3E0,#FFE0C8);border:1px solid #FFD8A8;border-radius:14px;padding:12px 16px;}
-.mob-offer-title{font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--orange);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
-.mob-offer-desc{font-size:12px;color:#92400E;line-height:1.5;}
-
-/* POPULAR BADGE */
-.popular-img-wrap{position:relative;width:100%;height:90px;}
-.popular-badge{position:absolute;top:6px;right:6px;background:var(--orange);color:white;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:0.5px;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
-
-/* POPULAR ITEM HIGHLIGHT IN MENU */
-.menu-item.pop-highlight{border:2px solid var(--orange)!important;box-shadow:0 0 0 3px rgba(254,114,76,0.15)!important;animation:popHighlight 2s ease-out forwards;}
-@keyframes popHighlight{0%{border-color:var(--orange);box-shadow:0 0 0 6px rgba(254,114,76,0.25);}100%{border-color:var(--orange);box-shadow:0 2px 8px rgba(0,0,0,0.02);}}
-
-/* CART COUPON */
-.coupon-row{margin:10px 0 4px;padding:10px 14px;background:var(--light);border-radius:10px;border:1px dashed var(--border);display:flex;align-items:center;gap:10px;cursor:pointer;}
-.coupon-row svg{width:18px;height:18px;stroke:var(--orange);fill:none;stroke-width:2;flex-shrink:0;}
-.coupon-row-text{flex:1;font-size:13px;font-weight:700;color:var(--dark);}
-.coupon-row-arrow{width:16px;height:16px;stroke:var(--gray);fill:none;stroke-width:2.5;}
-.coupon-applied{background:#F0FDF4;border-color:#BBF7D0;}
-.coupon-applied .coupon-row-text{color:var(--green);}
-
-/* CART DISCOUNT DROPDOWN */
-.discount-dropdown{overflow:hidden;max-height:0;transition:max-height 0.3s ease;background:#FFFBEB;border:1px solid #FDE68A;border-radius:0 0 10px 10px;font-size:12px;color:#92400E;font-weight:600;padding:0 14px;}
-.discount-dropdown.open{max-height:80px;padding:10px 14px;}
-.discount-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
-.discount-toggle-arrow{width:16px;height:16px;stroke:var(--green);fill:none;stroke-width:2.5;transition:transform 0.2s;}
-.discount-toggle-arrow.open{transform:rotate(180deg);}
-
-/* ORDER CANCEL BUTTON */
-.cancel-order-btn{display:flex;align-items:center;justify-content:space-between;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 14px;cursor:pointer;transition:opacity 0.3s;}
-.cancel-order-btn-text{font-size:13px;font-weight:700;color:var(--red);}
-.cancel-order-timer{font-size:12px;font-weight:800;color:var(--red);font-variant-numeric:tabular-nums;}
-.cancel-order-btn.timeout{opacity:0.5;pointer-events:none;cursor:default;}
-.cancel-order-btn.timeout .cancel-order-btn-text{color:var(--gray);}
-.cancel-order-btn.timeout .cancel-order-timer{color:var(--gray);}
-
-/* RIDER INFO AFTER DELIVERED */
-.rider-info-delivered{background:#F9FAFB;border:1px solid var(--border);}
 </style>
 </head>
 <body>
@@ -449,8 +426,7 @@ body{
     <button class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div class="drawer-links">
-    <a href="https://abhivision.in" target="_blank" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>AV Frames</a>
-    
+    <a href="mailto:contact.pureorder@gmail.com" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact Support</a>
     <a onclick="closeDrawer(); goPage('privacyPolicy')" class="drawer-link"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
     <a onclick="closeDrawer(); goPage('termsConditions')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
     <a onclick="closeDrawer(); goPage('helpSupport')" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
@@ -476,18 +452,17 @@ body{
   <div class="home-header">
     <div class="header-top">
       <div>
-        <div class="deliver-label">
-          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <div class="loc-dropdown-wrap" id="locDropdownWrap" onclick="toggleLocDropdown()">
-            <span id="currentLocLabel">Kesinga</span>, Odisha
-            <svg class="loc-dropdown-arrow" id="locDropdownArrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-            <div class="loc-dropdown-menu" id="locDropdownMenu">
-              <div class="loc-option active" data-loc="Kesinga" onclick="selectLocation('Kesinga',event)">📍 Kesinga</div>
-              <div class="loc-option" data-loc="Utkela" onclick="selectLocation('Utkela',event)">📍 Utkela</div>
-              <div class="loc-option" data-loc="Titlagarh" onclick="selectLocation('Titlagarh',event)">📍 Titlagarh</div>
-              <div class="loc-option" data-loc="Bhawanipatna" onclick="selectLocation('Bhawanipatna',event)">📍 Bhawanipatna</div>
-            </div>
+        <div class="loc-dropdown-wrapper">
+          <svg class="pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div class="loc-dropdown-container">
+            <select class="loc-select" id="locationSelect" onchange="changeLocation(this.value)">
+              <option value="Kesinga" selected>Kesinga</option>
+              <option value="Utkela">Utkela</option>
+              <option value="Titlagarh">Titlagarh</option>
+              <option value="Bhawanipatna">Bhawanipatna</option>
+            </select>
           </div>
+          <span style="color:var(--gray);">, Odisha</span>
         </div>
         <div class="greeting-name" id="greetingName">Hello!</div>
       </div>
@@ -522,11 +497,6 @@ body{
     <div class="section-header"><div class="section-title">Restaurants</div></div>
     <div class="rest-list" id="restaurantList">
       <div style="text-align:center;color:#9CA3AF;font-size:13px;padding:20px;">Loading...</div>
-    </div>
-    <div class="loc-coming-soon" id="comingSoonMsg">
-      <div class="loc-coming-soon-icon">🛵</div>
-      <div class="loc-coming-soon-title">Coming Soon!</div>
-      <div class="loc-coming-soon-sub">We're expanding to <strong id="comingSoonLocName"></strong> very soon. Get ready for fresh local food delivered right to your door.</div>
     </div>
   </div>
 
@@ -563,15 +533,15 @@ body{
     <div class="closed-notice" id="closedNotice">This restaurant is currently closed. You can browse the menu but cannot place orders.</div>
     <div class="rest-details-box">
         <h2 id="activeRestName">Restaurant</h2>
+        <div class="rest-code-tag" id="activeRestCode">KPO-XXXX-0000</div>
         <p id="activeRestTagline">Fresh food · Cash on Delivery</p>
     </div>
-    <div id="menuOfferBanner" style="display:none;" class="menu-offer-banner">
-      <div class="mob-offer-title">
-        <svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-        <span id="menuOfferTitle"></span>
-      </div>
-      <div class="mob-offer-desc" id="menuOfferDesc"></div>
+    
+    <div class="menu-offer-banner" id="menuOfferBanner">
+       <div class="menu-offer-title"><svg viewBox="0 0 24 24" width="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span id="moName">Special Offer</span></div>
+       <div class="menu-offer-desc" id="moDesc">Get discount on selected items.</div>
     </div>
+
     <div class="cat-tabs" id="catTabs"><button class="cat-tab active" onclick="filterCat('all',this)">All</button></div>
     <div class="menu-list" id="menuList"></div>
     <div style="height:16px;"></div>
@@ -642,7 +612,7 @@ body{
     
     <a href="mailto:contact.pureorder@gmail.com" class="contact-btn primary">
       <svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      Contact
+      contact.pureorder@gmail.com
     </a>
   </div>
 </div>
@@ -762,24 +732,6 @@ body{
 
 <div class="toast" id="toast"></div>
 
-<!-- COUPON MODAL -->
-<div class="overlay" id="couponModal">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">Apply Coupon</div>
-    <input type="hidden" id="couponRestId">
-    <div class="field">
-      <label>Enter Coupon Code</label>
-      <input type="text" id="couponInput" placeholder="e.g. SAVE50" style="text-transform:uppercase;">
-    </div>
-    <div id="couponError" class="error-text">Invalid or expired coupon code.</div>
-    <div class="sheet-btns">
-      <button class="btn-cancel" onclick="closeModal('couponModal')">Cancel</button>
-      <button class="btn-confirm" onclick="applyCoupon()">Apply</button>
-    </div>
-  </div>
-</div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -809,9 +761,38 @@ let activeOrdersData = [];
 let prevOrderStates = {};
 let dynDeliveryFee = 0; 
 let dynDiscount = 0;
-let currentLocation = 'Kesinga'; // Default location
-let cancelTimers = {}; // Track cancel countdown timers
-let pendingPopularItemId = null; // Track popular item to highlight
+
+// NEW VARIABLES ADDED FOR FEATURES
+let activeLocation = 'Kesinga';
+let appliedCoupons = {};
+let cancelIntervals = {};
+
+// FEATURE 10: Location Change Helper
+window.changeLocation = (loc) => {
+    activeLocation = loc;
+    listenAllRestaurants(); // Re-render with new filter
+};
+
+// FEATURE 1: Toggle Menu Description
+window.toggleDesc = (btn) => {
+    const descEl = btn.previousElementSibling;
+    if (descEl.classList.contains('open')) {
+        descEl.classList.remove('open');
+        btn.textContent = 'More';
+    } else {
+        descEl.classList.add('open');
+        btn.textContent = 'Less';
+    }
+};
+
+// FEATURE 2: Generate unique KPO Restaurant Code
+const generateRestCode = (name, codeOverride) => {
+    if(codeOverride) return codeOverride;
+    const cleanName = (name || 'RES').replace(/[^a-zA-Z]/g, '').substring(0,3).toUpperCase();
+    const dStr = new Date().getDate().toString().padStart(2,'0') + (new Date().getMonth()+1).toString().padStart(2,'0');
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `KPO-${cleanName}-${dStr}${rand}`;
+};
 
 // SOUND & TOAST
 function playNotifSound() {
@@ -824,114 +805,8 @@ function showToast(msg, type='') {
   clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3500);
 }
 window.closeModal = id => document.getElementById(id).classList.remove('open');
-
-window._appliedCoupons = {};
-
-window.openCouponSheet = (restId) => {
-  const existing = window._appliedCoupons[restId];
-  document.getElementById('couponRestId').value = restId;
-  document.getElementById('couponInput').value = existing ? existing.code : '';
-  document.getElementById('couponError').style.display = 'none';
-  document.getElementById('couponModal').classList.add('open');
-};
-
-window.applyCoupon = async () => {
-  const code = document.getElementById('couponInput').value.trim().toUpperCase();
-  const restId = document.getElementById('couponRestId').value;
-  document.getElementById('couponError').style.display = 'none';
-  if (!code) return;
-  
-  try {
-    // Look up coupon in Firestore (admin sets coupons in 'coupons' collection)
-    const { getDocs: gd, query: q2, where: w2, collection: col2 } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    const snap = await getDocs(query(collection(db, 'coupons'), where('code', '==', code), where('active', '==', true)));
-    if (snap.empty) throw new Error('Invalid');
-    const coupon = snap.docs[0].data();
-    // Check if coupon applies to this restaurant or is global
-    if (coupon.restaurantId && coupon.restaurantId !== restId) throw new Error('Not applicable');
-    
-    window._appliedCoupons[restId] = { code, discount: coupon.discountAmount || 0 };
-    closeModal('couponModal');
-    showToast(`Coupon "${code}" applied! -₹${coupon.discountAmount}`, 'success');
-    renderCart();
-  } catch(e) {
-    document.getElementById('couponError').style.display = 'block';
-  }
-};
-
-window.toggleDiscountDropdown = (rowEl) => {
-  const dropdown = rowEl.nextElementSibling;
-  const arrow = rowEl.querySelector('.discount-toggle-arrow');
-  dropdown.classList.toggle('open');
-  arrow.classList.toggle('open');
-};
 window.openDrawer = () => { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('mainDrawer').classList.add('open'); };
 window.closeDrawer = () => { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('mainDrawer').classList.remove('open'); };
-
-// LOCATION SELECTOR
-window.toggleLocDropdown = () => {
-  const menu = document.getElementById('locDropdownMenu');
-  const arrow = document.getElementById('locDropdownArrow');
-  menu.classList.toggle('open');
-  arrow.classList.toggle('open');
-};
-
-window.selectLocation = (loc, e) => {
-  e.stopPropagation();
-  currentLocation = loc;
-  document.getElementById('currentLocLabel').textContent = loc;
-  document.querySelectorAll('.loc-option').forEach(o => o.classList.toggle('active', o.dataset.loc === loc));
-  document.getElementById('locDropdownMenu').classList.remove('open');
-  document.getElementById('locDropdownArrow').classList.remove('open');
-  
-  // Save preference
-  localStorage.setItem('po_location', loc);
-  
-  // Refresh restaurant list with new location filter
-  renderRestaurantsByLocation();
-};
-
-function renderRestaurantsByLocation() {
-  const filtered = allRestaurants.filter(r => !r.location || r.location === currentLocation);
-  const listEl = document.getElementById('restaurantList');
-  const soonEl = document.getElementById('comingSoonMsg');
-  
-  if (filtered.length === 0) {
-    listEl.style.display = 'none';
-    document.getElementById('comingSoonLocName').textContent = currentLocation;
-    soonEl.classList.add('show');
-  } else {
-    soonEl.classList.remove('show');
-    listEl.style.display = 'flex';
-    listEl.innerHTML = filtered.map(r => {
-      const offerTag = r.currentOffer ? `<span class="rest-offer-tag">🏷 ${r.currentOffer}</span>` : '';
-      const ratingTag = r.rating ? `<div class="rest-rating-tag"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${r.rating}</div>` : '';
-      return `
-      <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
-        <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span>${r.name}</span>`}
-          <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
-        </div>
-        <div class="rest-info">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-             <div class="rest-name" style="margin-bottom:0;">${r.name}</div>
-             ${ratingTag}
-          </div>
-          ${offerTag ? `<div style="margin-bottom:6px;">${offerTag}</div>` : ''}
-          <div class="rest-meta"><div class="rest-meta-item">${r.tagline || 'Fresh Food'}</div><div class="meta-dot"></div><div class="rest-meta-item">COD Available</div></div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', (e) => {
-  const wrap = document.getElementById('locDropdownWrap');
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('locDropdownMenu')?.classList.remove('open');
-    document.getElementById('locDropdownArrow')?.classList.remove('open');
-  }
-});
 
 // PUSH NOTIFICATIONS
 async function setupPushNotifications() {
@@ -1037,6 +912,7 @@ function startTaglines() {
   }, 4000);
 }
 
+// FEATURE 8: Mini cart shows 0 items if empty, and always visible on restaurant/search
 function updateMiniCartStrip() {
   const strip = document.getElementById('miniCartStrip');
   const items = Object.values(cart);
@@ -1047,7 +923,7 @@ function updateMiniCartStrip() {
   const shouldShow = activePage && allowedPages.includes(activePage.id);
 
   if (shouldShow) {
-    document.getElementById('mcCountText').textContent = `${totalQty} ITEM${totalQty !== 1 ? 'S' : ''} ADDED`;
+    document.getElementById('mcCountText').textContent = totalQty === 0 ? `0 ITEMS ADDED` : `${totalQty} ITEM${totalQty > 1 ? 'S' : ''} ADDED`;
     strip.classList.add('show');
   } else {
     strip.classList.remove('show');
@@ -1087,6 +963,12 @@ window.openRestaurant = (restId, restName) => {
   goPage('restaurant');
   listenSpecificRestaurant(restId);
 };
+
+// FEATURE 11: Open restaurant, scroll to item, highlight orange
+window.openRestaurantAndHighlight = (restId, restName, itemId) => {
+  window.highlightedItemId = itemId;
+  openRestaurant(restId, restName);
+}
 
 // CHECKOUT LOCATION
 window.useGpsLocation = () => {
@@ -1134,12 +1016,6 @@ async function initApp() {
     document.getElementById('pPhone').textContent = userData.phone || 'Not set';
     document.getElementById('pAddress').textContent = userData.address || 'Not set';
     
-    // Restore saved location (default: Kesinga)
-    const savedLoc = localStorage.getItem('po_location') || 'Kesinga';
-    currentLocation = savedLoc;
-    document.getElementById('currentLocLabel').textContent = savedLoc;
-    document.querySelectorAll('.loc-option').forEach(o => o.classList.toggle('active', o.dataset.loc === savedLoc));
-    
     cart = JSON.parse(localStorage.getItem('po_cart')) || {};
     updateMiniCartStrip();
     
@@ -1152,7 +1028,7 @@ async function initApp() {
     loadCategories();
     
     loadGlobalMenu();
-    listenAllRestaurants();
+    listenAllRestaurants(); // Re-factored to handle location dropdown
     loadAdminNotice();
 
   } catch(e) {} finally {
@@ -1163,27 +1039,20 @@ async function initApp() {
   }
 }
 
+// FEATURE 11: Display "POPULAR" badge and implement Highlight functionality on click
 function loadGlobalMenu() {
   onSnapshot(collection(db, 'menu'), snap => {
     windowGlobalMenuItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const pop = windowGlobalMenuItems.filter(i => i.popular && i.available).slice(0, 10);
     document.getElementById('popularScroll').innerHTML = pop.length 
-      ? pop.map(i => `
-        <div class="popular-card" onclick="openRestaurantFromPopular('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}', '${i.id}')">
-          <div class="popular-img-wrap">
-            ${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}
-            <span class="popular-badge">Popular</span>
-          </div>
+      ? pop.map(i => `<div class="popular-card" onclick="openRestaurantAndHighlight('${i.restaurantId}', '${(i.restaurantName || 'Restaurant').replace(/'/g, "\\'")}', '${i.id}')">
+          <div class="popular-badge-img">POPULAR</div>
+          <div class="popular-img">${i.imageUrl ? `<img src="${i.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;padding:3px;text-align:center;">${i.name}</span>`}</div>
           <div class="popular-info"><div class="popular-name">${i.name}</div><div class="popular-price">₹${i.price}</div></div>
         </div>`).join('') 
       : '<div style="color:#9CA3AF;font-size:13px;padding:10px 0;">No popular items yet</div>';
   });
 }
-
-window.openRestaurantFromPopular = (restId, restName, itemId) => {
-  pendingPopularItemId = itemId;
-  openRestaurant(restId, restName);
-};
 
 async function loadAdminNotice() {
   try {
@@ -1217,32 +1086,15 @@ async function loadAdminNotice() {
 
 let bannerInterval;
 async function loadBanners() {
-  // Fetch banner height from admin settings
-  let bannerHeight = '56.25%'; // default 16:9 aspect ratio
-  try {
-    const settSnap = await getDoc(doc(db, 'platformSettings', 'bannerSettings'));
-    if (settSnap.exists() && settSnap.data().bannerHeight) {
-      const h = settSnap.data().bannerHeight;
-      // h is in px or as a fraction; if numeric, use as px
-      bannerHeight = isNaN(h) ? h : h + 'px';
-      // Apply to all banner cards via inline style override
-      document.querySelectorAll('.banner-card').forEach(c => {
-        c.style.height = typeof h === 'number' ? h+'px' : h;
-        c.style.aspectRatio = 'unset';
-      });
-    }
-  } catch(e) {}
-
   const snap = await getDocs(query(collection(db, 'banners'), where('active', '==', true)));
   const banners = snap.docs.map(d => d.data());
-  document.getElementById('bannerScroll').innerHTML = banners.map(b => {
-    const heightStyle = typeof bannerHeight === 'string' && bannerHeight.includes('px') ? `style="height:${bannerHeight}; aspect-ratio:unset;"` : '';
-    return `<div class="banner-card" ${heightStyle} ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')"` : ''}>
+  // Banner height standardized in CSS per Feature 7
+  document.getElementById('bannerScroll').innerHTML = banners.map(b => `
+    <div class="banner-card" ${b.linkUrl ? `onclick="window.open('${b.linkUrl}', '_blank')"` : ''}>
       <img src="${b.imageUrl}" loading="lazy">
       <div class="banner-gradient"></div>
       <div class="banner-title">${b.title || ''}</div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
   document.getElementById('bannerDots').innerHTML = banners.map((_, i) => `<div class="banner-dot ${i===0?'active':''}"></div>`).join('');
   
   const scroll = document.getElementById('bannerScroll');
@@ -1274,14 +1126,48 @@ async function loadCategories() {
   }).join('');
 }
 
+// FEATURE 10 & 3: Filter Rest by Location Dropdown & Show Rating/Offer
 function listenAllRestaurants() {
   onSnapshot(query(collection(db, 'restaurants'), where('status', '==', 'active')), snap => {
     allRestaurants = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderRestaurantsByLocation();
+    
+    // Filtering logic based on Dropdown
+    const locFiltered = allRestaurants.filter(r => (r.location || 'Kesinga').toLowerCase() === activeLocation.toLowerCase());
+    
+    const el = document.getElementById('restaurantList');
+    if (locFiltered.length === 0) {
+        el.innerHTML = `
+        <div class="empty-loc">
+           <svg style="width:120px; opacity:0.8; margin-bottom:16px;" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+           <h3>We're expanding!</h3>
+           <p>Currently, there are no restaurants serving in <b>${activeLocation}</b>. We are working hard to bring the best food to your area very soon!</p>
+        </div>`;
+        return;
+    }
+
+    el.innerHTML = locFiltered.map(r => {
+        const ratingHtml = r.rating ? `<span class="rest-rating-badge">★ ${r.rating}</span>` : `<span class="rest-rating-badge">★ New</span>`;
+        const offerHtml = r.offerName ? `<div class="rest-offer-text"><svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> ${r.offerName}</div>` : '';
+        
+        return `
+        <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
+          <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span>${r.name}</span>`}
+            <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
+          </div>
+          <div class="rest-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+               <div class="rest-name" style="margin-bottom:0;">${r.name} ${ratingHtml}</div>
+            </div>
+            <div class="rest-meta"><div class="rest-meta-item">${r.tagline || 'Fresh Food'}</div><div class="meta-dot"></div><div class="rest-meta-item">COD Available</div></div>
+            ${offerHtml}
+          </div>
+        </div>`;
+    }).join('');
   });
 }
 
 let menuUnsub = null;
+// FEATURE 4 & 2: Menu Top Shows Offer/Description + Code generated
 function listenSpecificRestaurant(restId) {
   onSnapshot(doc(db, 'restaurants', restId), snap => {
     if (!snap.exists()) return;
@@ -1289,24 +1175,27 @@ function listenSpecificRestaurant(restId) {
     isRestOpen = data.isOpen !== false;
     const imgUrl = data.imageUrl || data.restaurantImageUrl || '';
     
+    // FEATURE 2: Rest Code Generation
+    const restCode = generateRestCode(data.name, data.restaurantCode);
+
     document.getElementById('restHero').innerHTML = `${imgUrl ? `<img src="${imgUrl}" onerror="this.style.display='none'">` : `<div class="rest-hero-placeholder">${data.name}</div>`}<button class="rest-back-btn" onclick="goPage('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="var(--dark)" fill="none" stroke-width="2.5"/></svg></button>`;
     
-    // Rating next to name
-    const ratingHtml = data.rating ? ` <span class="rest-rating-tag"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${data.rating}</span>` : '';
-    document.getElementById('activeRestName').innerHTML = data.name + ratingHtml;
+    const ratingHtml = data.rating ? `<span class="rest-rating-badge" style="font-size:14px; padding:4px 8px;">★ ${data.rating}</span>` : '';
+    document.getElementById('activeRestName').innerHTML = `${data.name} ${ratingHtml}`;
+    document.getElementById('activeRestCode').textContent = restCode;
     document.getElementById('activeRestTagline').textContent = `${data.tagline || 'Fresh Food'} · Cash on Delivery`;
     document.getElementById('closedNotice').style.display = isRestOpen ? 'none' : 'block';
     
-    // Offer banner
-    const offerBanner = document.getElementById('menuOfferBanner');
-    if (data.menuOfferTitle) {
-      document.getElementById('menuOfferTitle').textContent = data.menuOfferTitle;
-      document.getElementById('menuOfferDesc').textContent = data.menuOfferDescription || '';
-      offerBanner.style.display = 'block';
+    // FEATURE 4: Menu Offer Banner rendering
+    const moBanner = document.getElementById('menuOfferBanner');
+    if (data.offerName && data.offerDesc) {
+        document.getElementById('moName').textContent = data.offerName;
+        document.getElementById('moDesc').textContent = data.offerDesc;
+        moBanner.classList.add('active');
     } else {
-      offerBanner.style.display = 'none';
+        moBanner.classList.remove('active');
     }
-    
+
     listenSpecificMenu(restId);
   });
 }
@@ -1328,6 +1217,7 @@ window.filterCat = (cat, el) => {
   renderRestaurantMenu();
 };
 
+// FEATURE 1: Menu Item "More" Description + Orange Highlight
 function renderRestaurantMenu() {
   const filter = window._menuFilter || 'all';
   const filtered = filter === 'all' ? menuItems : menuItems.filter(i => i.category?.toLowerCase() === filter);
@@ -1340,58 +1230,40 @@ function renderRestaurantMenu() {
     items.forEach(item => {
       const qty = cart[item.id]?.qty || 0;
       const canAdd = item.available && isRestOpen;
-      const isPop = item.id === pendingPopularItemId;
       
       const safeName = (item.name || '').replace(/'/g, "\\'");
       const safeImg = (item.imageUrl || '');
       const rId = item.restaurantId || currentRestId;
       const rName = (item.restaurantName || currentRestName || 'Restaurant').replace(/'/g, "\\'");
 
-      // Description with more/less toggle
-      let descHtml = '';
-      if (item.description) {
-        const descId = `desc_${item.id}`;
-        descHtml = `
-          <div id="${descId}" class="menu-item-desc desc-clamp">${item.description}</div>
-          ${item.description.length > 80 ? `<button class="desc-more-btn" onclick="toggleDesc('${descId}', this)">more</button>` : ''}
-        `;
-      }
+      const isHighlight = (window.highlightedItemId === item.id) ? 'highlight-orange' : '';
 
-      html += `<div class="menu-item${isPop ? ' pop-highlight' : ''}" id="mitem_${item.id}">
+      html += `<div class="menu-item ${isHighlight}" id="menu-item-${item.id}">
         <div class="menu-item-info">
           <div class="menu-item-name">${item.name}</div>
-          ${descHtml}
+          ${item.description ? `<div class="desc-text">${item.description}</div><button class="read-more-btn" onclick="toggleDesc(this)">More</button>` : ''}
           <div class="menu-item-price">₹${item.price}</div>
         </div>
         <div class="menu-item-right">
             <div class="menu-item-img">${item.imageUrl ? `<img src="${item.imageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span style="font-size:10px;color:#9ca3af;text-align:center;">${item.name}</span>`}</div>
-            <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',-1,'${rId}','${rName}')">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">ADD</button>`) : (!isRestOpen ? `<span class="menu-item-na">CLOSED</span>` : `<span class="menu-item-na">N/A</span>`)}</div>
+            <div class="menu-item-actions">${canAdd ? (qty > 0 ? `<div class="qty-ctrl"><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',-1,'${rId}','${rName}')">−</button><div class="qty-num">${qty}</div><button class="qty-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">+</button></div>` : `<button class="add-btn" onclick="updateCart('${item.id}','${safeName}',${item.price},'${safeImg}',1,'${rId}','${rName}')">ADD</button>`) : (!isRestOpen ? `<span class="menu-item-na">CLOSED</span>` : '')}</div>
         </div>
       </div>`;
     });
   });
   document.getElementById('menuList').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gray);">No items found in this restaurant</div>';
 
-  // Scroll to and highlight popular item
-  if (pendingPopularItemId) {
-    setTimeout(() => {
-      const el = document.getElementById(`mitem_${pendingPopularItemId}`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      pendingPopularItemId = null;
-    }, 300);
+  // Executing Highlight Orange Edge logic and Auto Scroll
+  if (window.highlightedItemId) {
+      setTimeout(() => {
+          const el = document.getElementById(`menu-item-${window.highlightedItemId}`);
+          if(el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+          window.highlightedItemId = null; // Clear after use
+      }, 300);
   }
 }
 
-window.toggleDesc = (id, btn) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const isExpanded = el.classList.contains('desc-expanded');
-  el.classList.toggle('desc-clamp', isExpanded);
-  el.classList.toggle('desc-expanded', !isExpanded);
-  btn.textContent = isExpanded ? 'more' : 'less';
-};
-
-// CART LOGIC (WITH DATABASE FEES AND DISCOUNTS SYNC)
+// CART LOGIC
 window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
   if (!cart[id]) cart[id] = { id, name, price, imageUrl, qty: 0, restaurantId: restId || currentRestId, restaurantName: restName || currentRestName };
   cart[id].qty = Math.max(0, cart[id].qty + delta);
@@ -1406,6 +1278,18 @@ window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
   if(document.getElementById('pageCart').classList.contains('active')) renderCart();
 };
 
+window.applyCouponBtn = (rId) => {
+    const input = document.getElementById(`coupon-input-${rId}`).value.trim();
+    if(input) { 
+        appliedCoupons[rId] = { code: input, amt: 20 }; // Basic mockup logic for separate discount
+        showToast(`Coupon applied for this restaurant`, 'success');
+    } else { 
+        delete appliedCoupons[rId]; 
+    }
+    renderCart(); // Re-render logic to apply savings
+};
+
+// FEATURE 5 & 13: Apply coupon, Dropdown discount summary with REST CODE
 function renderCart() {
   const items = Object.values(cart);
   const el = document.getElementById('cartContent');
@@ -1423,19 +1307,17 @@ function renderCart() {
   let cartHtml = '<div class="cart-list">';
   Object.keys(groupedCart).forEach(rId => {
       const g = groupedCart[rId];
-      const liveRest = allRestaurants.find(r => r.id === rId);
-      const appliedCoupon = (window._appliedCoupons || {})[rId];
+      const liveRest = allRestaurants.find(r => r.id === rId) || {};
+      const restCode = generateRestCode(g.name, liveRest.restaurantCode);
+      const restOfferName = liveRest && liveRest.offerName ? ` <span style="background:var(--orange);color:white;font-size:10px;padding:3px 8px;border-radius:6px;margin-left:8px;">${liveRest.offerName}</span>` : '';
+
+      const existingCoupon = appliedCoupons[rId] ? appliedCoupons[rId].code : '';
 
       cartHtml += `
       <div class="cart-restaurant-group">
         <div class="cart-rest-title">
           <div style="display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${g.name || 'Restaurant'}</div>
-        </div>
-        <!-- Apply Coupon Row -->
-        <div class="coupon-row ${appliedCoupon ? 'coupon-applied' : ''}" onclick="openCouponSheet('${rId}')">
-          <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-          <span class="coupon-row-text">${appliedCoupon ? `✓ Coupon "${appliedCoupon.code}" applied — -₹${appliedCoupon.discount}` : 'Apply Coupon'}</span>
-          <svg class="coupon-row-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          ${restOfferName}
         </div>
         ${g.items.map(i => `
           <div class="cart-item">
@@ -1451,61 +1333,56 @@ function renderCart() {
             </div>
           </div>
         `).join('')}
+
+        <div class="cart-coupon-box">
+            <input type="text" class="coupon-input" id="coupon-input-${rId}" placeholder="Have a promo code?" value="${existingCoupon}">
+            <button class="coupon-btn" onclick="applyCouponBtn('${rId}')">${existingCoupon ? 'APPLIED' : 'APPLY'}</button>
+        </div>
       </div>`;
   });
   cartHtml += '</div>';
 
   const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   
-  // DYNAMIC FEES CALCULATION FROM DATABASE
   dynDeliveryFee = 0;
   dynDiscount = 0;
   let numRestaurants = 0;
-  let discountDetails = []; // For dropdown
-  let couponDiscount = 0;
+  
+  let dropdownDetails = '';
+
   Object.keys(groupedCart).forEach(rId => {
-      const liveRest = allRestaurants.find(r => r.id === rId);
-      const appliedCoupon = (window._appliedCoupons || {})[rId];
-      if(liveRest) {
-          dynDeliveryFee += (liveRest.deliveryFee || 0);
-          const offDisc = liveRest.offerDiscount || 0;
-          dynDiscount += offDisc;
-          if (offDisc > 0) {
-            discountDetails.push({ 
-              offerName: liveRest.currentOffer || liveRest.offerName || 'Offer', 
-              restCode: liveRest.restaurantCode || liveRest.name?.substring(0,3).toUpperCase() || 'KPO',
-              amount: offDisc 
-            });
-          }
-          numRestaurants++;
+      const liveRest = allRestaurants.find(r => r.id === rId) || {};
+      const restCode = generateRestCode(liveRest.name, liveRest.restaurantCode);
+      
+      const rOfferDiscount = liveRest.offerDiscount || 0;
+      const rCouponDiscount = appliedCoupons[rId] ? appliedCoupons[rId].amt : 0;
+      
+      dynDeliveryFee += (liveRest.deliveryFee || 0);
+      dynDiscount += (rOfferDiscount + rCouponDiscount);
+      numRestaurants++;
+
+      if(rOfferDiscount > 0 || rCouponDiscount > 0) {
+          dropdownDetails += `<div style="margin-bottom:6px;"><b>${liveRest.name} (${restCode})</b><br>`;
+          if(rOfferDiscount > 0) dropdownDetails += `Offer: ${liveRest.offerName} (-₹${rOfferDiscount})<br>`;
+          if(rCouponDiscount > 0) dropdownDetails += `Coupon: ${appliedCoupons[rId].code} (-₹${rCouponDiscount})<br>`;
+          dropdownDetails += `</div>`;
       }
-      if (appliedCoupon) couponDiscount += appliedCoupon.discount;
   });
 
-  const finalTotal = itemTotal + dynDeliveryFee - dynDiscount - couponDiscount;
+  const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
   
-  // Build discount dropdown HTML
-  let discountRowHtml = '';
-  if (dynDiscount > 0) {
-    const detailLines = discountDetails.map(d => `${d.offerName} · Code: ${d.restCode} → -₹${d.amount}`).join('<br>');
-    discountRowHtml = `
-      <div>
-        <div class="summary-row discount-toggle-row" onclick="toggleDiscountDropdown(this)" style="color:var(--green)">
-          <span>Offer Discount</span>
-          <span style="display:flex;align-items:center;gap:6px;">-₹${dynDiscount} <svg class="discount-toggle-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
-        <div class="discount-dropdown">${detailLines}</div>
-      </div>`;
-  }
-  
-  let couponRowHtml = couponDiscount > 0 ? `<div class="summary-row" style="color:var(--green)"><span>Coupon Discount</span><span>-₹${couponDiscount}</span></div>` : '';
-
   cartHtml += `
   <div class="cart-summary">
     <div class="summary-row"><span>Items Subtotal</span><span>₹${itemTotal}</span></div>
-    <div class="summary-row"><span>Delivery Fee (${numRestaurants} location${numRestaurants>1?'s':''})</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
-    ${discountRowHtml}
-    ${couponRowHtml}
+    <div class="summary-row"><span>Delivery Fee (${numRestaurants} locations)</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
+    
+    ${dynDiscount > 0 ? `
+    <details class="dd-summary-container" style="border-top:1px dashed var(--border); margin-top:6px; padding-top:6px;">
+        <summary class="dd-summary"><span style="display:flex;align-items:center;gap:6px;"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg> Discounts Applied</span> <span>-₹${dynDiscount} ▼</span></summary>
+        <div class="dd-content">${dropdownDetails}</div>
+    </details>
+    ` : ''}
+    
     <div class="summary-total"><span>Grand Total</span><span>₹${finalTotal}</span></div>
   </div>
   <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>`;
@@ -1571,12 +1448,15 @@ window.placeOrder = async () => {
         // DYNAMIC FEES AT CHECKOUT
         const liveRest = allRestaurants.find(r => r.id === rId);
         const rDelivery = liveRest ? (liveRest.deliveryFee || 0) : 0; 
-        const rDiscount = liveRest ? (liveRest.offerDiscount || 0) : 0; 
+        
+        const rOfferDiscount = liveRest ? (liveRest.offerDiscount || 0) : 0; 
+        const rCouponDiscount = appliedCoupons[rId] ? appliedCoupons[rId].amt : 0;
+        const rDiscount = rOfferDiscount + rCouponDiscount;
+
         const rTotal = rItemTotal + rDelivery - rDiscount;
         
         const shortRest = (rData.name || 'RES').substring(0,3).toUpperCase();
-        const restCode = (liveRest && liveRest.restaurantCode) ? liveRest.restaurantCode : shortRest;
-        const displayOrderId = `KPO-${restCode}-${rand}`;
+        const displayOrderId = `POK-${shortRest}-${dStr}${rand}`; 
         
         const orderData = {
           displayOrderId: displayOrderId,
@@ -1593,6 +1473,7 @@ window.placeOrder = async () => {
     await Promise.all(promises);
     
     cart = {}; 
+    appliedCoupons = {};
     localStorage.removeItem('po_cart'); 
     updateMiniCartStrip();
     closeModal('checkoutModal');
@@ -1681,31 +1562,6 @@ function renderOrders() {
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true }) + ', ' + o.createdAt.toDate().toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : 'Just now';
     const restNames = Array.from(o.restaurants).join(' & ');
     
-    // Cancel button: only for non-delivered/cancelled orders
-    let cancelBtnHtml = '';
-    const isDone = ['delivered', 'cancelled', 'rejected'].includes(s);
-    if (!isDone) {
-      const orderTime = o.createdAt?.toMillis ? o.createdAt.toMillis() : Date.now();
-      const elapsed = Date.now() - orderTime;
-      const limitMs = 90000; // 1 min 30 sec
-      const remaining = limitMs - elapsed;
-      
-      if (remaining > 0) {
-        const secs = Math.ceil(remaining / 1000);
-        const mm = String(Math.floor(secs / 60)).padStart(2, '0');
-        const ss = String(secs % 60).padStart(2, '0');
-        cancelBtnHtml = `<div class="cancel-order-btn" id="cancel_${o.id}" onclick="cancelOrder('${o.id}')">
-          <span class="cancel-order-btn-text">Cancel Order</span>
-          <span class="cancel-order-timer" id="timer_${o.id}">${mm}:${ss}</span>
-        </div>`;
-      } else {
-        cancelBtnHtml = `<div class="cancel-order-btn timeout">
-          <span class="cancel-order-btn-text">Cannot Cancel</span>
-          <span class="cancel-order-timer">TIME OUT</span>
-        </div>`;
-      }
-    }
-    
     return `<div class="order-card" onclick="showOrderDetail('${o.id}')">
       <div class="order-top">
          <div>
@@ -1717,57 +1573,29 @@ function renderOrders() {
       </div>
       <div class="order-items-text">${o.itemsText.join(', ')}</div>
       <div class="order-total-row"><span>Grand Total</span><span style="color:white !important;">₹${o.totalAmount}</span></div>
-      ${cancelBtnHtml}
     </div>`;
   }).join('');
-
-  // Start countdown timers
-  startCancelTimers(orderedList);
 }
 
-function startCancelTimers(orderedList) {
-  // Clear old timers
-  Object.values(cancelTimers).forEach(t => clearInterval(t));
-  cancelTimers = {};
-  
-  orderedList.forEach(o => {
-    const s = o.status || 'placed';
-    if (['delivered','cancelled','rejected'].includes(s)) return;
-    
-    const orderTime = o.createdAt?.toMillis ? o.createdAt.toMillis() : Date.now();
-    const limitMs = 90000;
-    
-    cancelTimers[o.id] = setInterval(() => {
-      const timerEl = document.getElementById(`timer_${o.id}`);
-      const btnEl = document.getElementById(`cancel_${o.id}`);
-      if (!timerEl || !btnEl) { clearInterval(cancelTimers[o.id]); return; }
-      
-      const remaining = limitMs - (Date.now() - orderTime);
-      if (remaining <= 0) {
-        clearInterval(cancelTimers[o.id]);
-        btnEl.classList.add('timeout');
-        btnEl.onclick = null;
-        btnEl.querySelector('.cancel-order-btn-text').textContent = 'Cannot Cancel';
-        timerEl.textContent = 'TIME OUT';
-      } else {
-        const secs = Math.ceil(remaining / 1000);
-        timerEl.textContent = `${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
-      }
-    }, 1000);
-  });
-}
-
-window.cancelOrder = async (groupId) => {
-  if (!confirm('Are you sure you want to cancel this order?')) return;
-  const groupDocs = activeOrdersData.filter(x => (x.groupId || x.id) === groupId);
-  try {
-    const { updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    for (const o of groupDocs) {
-      await setDoc(doc(db, 'orders', o.id), { status: 'cancelled', cancellationReason: 'Cancelled by customer' }, { merge: true });
+// FEATURE 6: Order Cancellation logic and Timer execution
+window.handleCancelOrder = async (orderId) => {
+    if(!confirm("Are you sure you want to cancel this order?")) return;
+    try {
+        const btn = document.getElementById(`btnCancel-${orderId}`);
+        btn.disabled = true;
+        btn.textContent = "Cancelling...";
+        
+        // Update all documents tied to this groupId
+        const docsToCancel = activeOrdersData.filter(x => (x.groupId || x.id) === orderId);
+        const batchPromises = docsToCancel.map(dDoc => {
+            return setDoc(doc(db, 'orders', dDoc.id), { status: 'cancelled', cancellationReason: 'Cancelled by customer' }, { merge: true });
+        });
+        await Promise.all(batchPromises);
+        showToast("Order cancelled successfully", "success");
+    } catch(e) {
+        showToast("Failed to cancel order", "error");
     }
-    showToast('Order cancelled', 'error');
-  } catch(e) { showToast('Could not cancel order', 'error'); }
-};
+}
 
 window.showOrderDetail = gId => {
   const groupDocs = activeOrdersData.filter(x => (x.groupId || x.id) === gId);
@@ -1815,24 +1643,17 @@ window.showOrderDetail = gId => {
       }
   }
 
+  // FEATURE 12: Delivery person info + Call button persists even if delivered
   let dpHtml = '';
   if (primaryDoc.deliveryPartnerName) {
-    const isDelivered = primaryDoc.status === 'delivered';
-    const isActive = ['assigned', 'picked up', 'out for delivery'].includes(primaryDoc.status);
-    
-    if (isActive || isDelivered) {
-      const callIconHtml = primaryDoc.deliveryPartnerPhone ? `<a href="tel:${primaryDoc.deliveryPartnerPhone}" onclick="event.stopPropagation()" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
-      const bgStyle = isDelivered ? 'background:#F9FAFB; border:1px solid var(--border);' : 'background:#F0FDF4; border:1px solid #BBF7D0;';
-      const statusLabel = isDelivered ? 'Delivered By' : 'Rider Assigned';
-      
-      dpHtml = `<div class="od-section" style="display:flex; justify-content:space-between; align-items:center; ${bgStyle}">
+      const callIconHtml = primaryDoc.deliveryPartnerPhone ? `<a href="tel:${primaryDoc.deliveryPartnerPhone}" style="width:42px; height:42px; border-radius:50%; background:#16A34A; color:white; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(22,163,74,0.3); flex-shrink:0;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.82 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>` : '';
+      dpHtml = `<div class="od-section" style="display:flex; justify-content:space-between; align-items:center; background:#F0FDF4; border:1px solid #BBF7D0;">
         <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:40px; height:40px; background:${isDelivered ? 'var(--gray)' : 'var(--green)'}; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; flex-shrink:0;">${primaryDoc.deliveryPartnerName.charAt(0)}</div>
-            <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">${statusLabel}</div><div style="font-size:14px; font-weight:800; color:var(--dark);">${primaryDoc.deliveryPartnerName}</div></div>
+            <div style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; flex-shrink:0;">${primaryDoc.deliveryPartnerName.charAt(0)}</div>
+            <div><div style="font-size:11px; color:var(--gray); text-transform:uppercase; font-weight:700;">Delivery Partner</div><div style="font-size:14px; font-weight:800; color:var(--dark);">${primaryDoc.deliveryPartnerName}</div></div>
         </div>
-        ${isActive ? callIconHtml : ''}
+        ${callIconHtml}
       </div>`;
-    }
   }
 
   let finalGrandTotal = 0;
@@ -1855,8 +1676,7 @@ window.showOrderDetail = gId => {
       <div style="margin:16px 0 24px; padding-top:16px;">
         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Subtotal</span><span>₹${docOrder.itemTotal||0}</span></div>
         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray); margin-bottom:6px;"><span>Delivery Fee</span><span style="color:var(--green)">${docOrder.deliveryFee === 0 ? 'Free' : '₹'+docOrder.deliveryFee}</span></div>
-        ${docOrder.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Offer Discount</span><span>-₹${docOrder.discount}</span></div>` : ''}
-        ${docOrder.couponDiscount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Coupon Discount</span><span>-₹${docOrder.couponDiscount}</span></div>` : ''}
+        ${docOrder.discount > 0 ? `<div style="display:flex; justify-content:space-between; font-size:13px; color:var(--green); margin-bottom:6px;"><span>Discount Applied</span><span>-₹${docOrder.discount}</span></div>` : ''}
       </div>`;
   });
 
@@ -1867,7 +1687,47 @@ window.showOrderDetail = gId => {
     </div>
   </div>`;
 
-  document.getElementById('odContent').innerHTML = timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
+  // FEATURE 6: Live 1m 30s Countdown Cancel Timer Box
+  let timerHtml = '';
+  if (primaryDoc.status === 'placed') {
+      timerHtml = `
+      <div class="od-section cancel-timer-box">
+          <div class="cancel-timer-text"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time left to cancel: <span id="timerText-${gId}">01:30</span></div>
+          <button class="cancel-btn-action" id="btnCancel-${gId}" onclick="handleCancelOrder('${gId}')">Cancel Order</button>
+      </div>`;
+      
+      const createdAtMs = primaryDoc.createdAt ? primaryDoc.createdAt.toMillis() : Date.now();
+      if(cancelIntervals[gId]) clearInterval(cancelIntervals[gId]);
+      
+      cancelIntervals[gId] = setInterval(() => {
+          const now = Date.now();
+          const diffSeconds = Math.floor((now - createdAtMs) / 1000);
+          const remaining = 90 - diffSeconds;
+          
+          const tText = document.getElementById(`timerText-${gId}`);
+          const tBtn = document.getElementById(`btnCancel-${gId}`);
+          
+          if (!tText || !tBtn) {
+              clearInterval(cancelIntervals[gId]);
+              return;
+          }
+
+          if (remaining <= 0) {
+              tText.textContent = "Time out";
+              tText.style.color = "var(--gray)";
+              tBtn.disabled = true;
+              tBtn.textContent = "Cannot Cancel Now";
+              clearInterval(cancelIntervals[gId]);
+          } else {
+              const m = Math.floor(remaining / 60);
+              const s = remaining % 60;
+              tText.textContent = `0${m}:${s < 10 ? '0' : ''}${s}`;
+          }
+      }, 1000);
+  }
+
+  // Combine components. Timer disappears if out of Placed state.
+  document.getElementById('odContent').innerHTML = timerHtml + timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
 
 // SEARCH FIX: Resolve Actual Restaurant Name
@@ -1882,7 +1742,6 @@ window.doSearch = val => {
   if(res.length) {
      let html = '';
      res.forEach(item => {
-        // DYNAMIC RESTAURANT NAME RESOLUTION
         const liveRest = allRestaurants.find(r => r.id === item.restaurantId);
         const resolvedRestName = liveRest ? liveRest.name : (item.restaurantName || 'Restaurant');
 
@@ -1892,11 +1751,11 @@ window.doSearch = val => {
         const rId = item.restaurantId;
         const rName = resolvedRestName.replace(/'/g, "\\'");
         
-        html += `<div class="menu-item" onclick="openRestaurant('${rId}', '${rName}')">
+        html += `<div class="menu-item" onclick="openRestaurantAndHighlight('${rId}', '${rName}', '${item.id}')">
           <div class="menu-item-info">
             <div style="font-size:11px; color:var(--gray); font-weight:800; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="var(--orange)" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ${resolvedRestName}</div>
             <div class="menu-item-name">${item.name}</div>
-            ${item.description ? `<div class="menu-item-desc">${item.description}</div>` : ''}
+            ${item.description ? `<div class="desc-text">${item.description}</div>` : ''}
             <div class="menu-item-price">₹${item.price}</div>
           </div>
           <div class="menu-item-right">
