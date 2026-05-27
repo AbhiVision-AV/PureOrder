@@ -1475,9 +1475,6 @@ function renderCart() {
   Object.keys(groupedCart).forEach(rId => {
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
       
-      
-  window.openCheckout = () => {
-    
       // LOGIC: Check if Admin set a required coupon code
       const reqCode = liveRest.couponCode ? liveRest.couponCode.trim().toUpperCase() : '';
       let rOfferDiscount = 0;
@@ -1497,7 +1494,6 @@ function renderCart() {
       numRestaurants++;
 
       if(rOfferDiscount > 0) {
-          // UI FIX: Removed (Code: XYZ) text
           dropdownDetails += `<div style="margin-bottom:8px; border-bottom:1px dashed #D1D5DB; padding-bottom:8px;">
             <b style="font-size:13px; color:var(--dark);">${liveRest.name}</b><br>`;
           dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Offer: ${liveRest.offerName || 'Discount'}</span><span style="color:var(--green)">-₹${rOfferDiscount}</span></span>`;
@@ -1512,16 +1508,6 @@ function renderCart() {
       dynDiscount += globalCouponDiscount;
       dropdownDetails += `<div style="margin-bottom:8px; padding-bottom:8px;">
         <span style="display:flex; justify-content:space-between;"><b style="font-size:13px; color:var(--dark);">Coupon: ${window.globalCoupon.code}</b><span style="color:var(--green)">-₹${globalCouponDiscount}</span></span>
-      </div>`;
-  }
-  });
-
-  let globalCouponDiscount = 0;
-  if(window.globalCoupon) {
-      globalCouponDiscount = window.globalCoupon.amt;
-      dynDiscount += globalCouponDiscount;
-      dropdownDetails += `<div style="margin-bottom:8px; padding-bottom:8px;">
-        <span style="display:flex; justify-content:space-between;"><b style="font-size:13px; color:var(--dark);">Global Coupon: ${window.globalCoupon.code}</b><span style="color:var(--green)">-₹${globalCouponDiscount}</span></span>
       </div>`;
   }
 
