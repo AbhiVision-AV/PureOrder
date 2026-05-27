@@ -990,11 +990,20 @@ window.saveOffer = async () => {
             renderRestOffers(document.getElementById('rsId').value);
         }
         
-        // Backward compatibility sync for older app architectures (sync primary offer directly to Rest Doc)
+        // YAHAN FIX KIYA HAI: Ab couponCode bhi restaurant database mein sahi se save hoga
         if(restId !== 'ALL') {
-            await updateDoc(doc(db, 'restaurants', restId), { offerName: offName, offerDiscount: offAmt, offerDesc: `Save ₹${offAmt} on your order.` });
+            await updateDoc(doc(db, 'restaurants', restId), { 
+                offerName: offName, 
+                offerDiscount: offAmt, 
+                offerDesc: `Save ₹${offAmt} on your order.`,
+                couponCode: offCode // <-- Yeh line miss thi!
+            });
             const ro = owners.find(x=>x.id===restId); 
-            if(ro) { ro.offerName = offName; ro.offerDiscount = offAmt; }
+            if(ro) { 
+                ro.offerName = offName; 
+                ro.offerDiscount = offAmt; 
+                ro.couponCode = offCode; 
+            }
         }
 
         closeModal('addOfferModal');
@@ -1003,6 +1012,7 @@ window.saveOffer = async () => {
     
     btn.innerHTML = 'Save Offer'; btn.style.pointerEvents = 'auto';
 };
+
 
 window.toggleOffer = async (id, val, isFromRestModal = false) => {
     try {
@@ -1015,11 +1025,26 @@ window.toggleOffer = async (id, val, isFromRestModal = false) => {
     } catch(e) { showToast('Failed', 'error'); }
 };
 
+
 window.deleteOffer = async (id, isFromRestModal = false) => {
     if(!confirm('Delete this offer?')) return;
     try {
+        // Find offer to check if it's tied to a restaurant
+        const offerToDelete = globalOffersList.find(o => o.id === id);
+        
         await deleteDoc(doc(db, 'globalOffers', id));
         globalOffersList = globalOffersList.filter(o => o.id !== id);
+        
+        // YAHAN FIX KIYA HAI: Agar offer kisi restaurant ka tha, toh uska data wahan se bhi saaf kar do
+        if (offerToDelete && offerToDelete.restaurantId && offerToDelete.restaurantId !== 'ALL') {
+            await updateDoc(doc(db, 'restaurants', offerToDelete.restaurantId), {
+                offerName: '',
+                offerDiscount: 0,
+                offerDesc: '',
+                couponCode: '' // <-- Ye fields ko reset kar dega
+            });
+        }
+
         renderMarketingOffers();
         if(isFromRestModal) renderRestOffers(document.getElementById('rsId').value);
         showToast('Offer removed', 'success');
