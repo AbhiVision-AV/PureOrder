@@ -1339,7 +1339,7 @@ window.updateCart = (id, name, price, imageUrl, delta, restId, restName) => {
   if(document.getElementById('pageCart').classList.contains('active')) renderCart();
 };
 
-window.applyGlobalCoupon = () => {
+window.applyGlobalCoupon = async () => {
     const inputField = document.getElementById('global-coupon-input');
     const input = inputField.value.trim().toUpperCase();
     
@@ -1351,16 +1351,67 @@ window.applyGlobalCoupon = () => {
     }
     
     if (input) { 
-        if(input.length >= 4) {
-             window.globalCoupon = { code: input, amt: 50 }; // Mock logic validation
-             showToast(`Coupon ${input} applied successfully!`, 'success');
-        } else {
-             showToast('Invalid or Expired Coupon Code', 'error');
-             window.globalCoupon = null;
+        const btn = document.querySelector('.coupon-btn');
+        btn.textContent = '...'; 
+        btn.disabled = true;
+
+        try {
+            // 1. Check Restaurant Specific Code First
+            let isRestCoupon = false;
+            Object.keys(cart).forEach(itemId => {
+                const liveRest = allRestaurants.find(r => r.id === cart[itemId].restaurantId);
+                if(liveRest && liveRest.couponCode && liveRest.couponCode.trim().toUpperCase() === input) {
+                    isRestCoupon = true;
+                }
+            });
+
+            if(isRestCoupon) {
+                 window.globalCoupon = { code: input, isRest: true, amt: 0 };
+                 showToast(`Coupon applied for restaurant!`, 'success');
+            } else {
+                 // 2. Fetch Global Marketing Coupons from Database
+                 const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+                 
+                 // Try fetching by couponCode or code
+                 let q = query(collection(db, 'coupons'), where('couponCode', '==', input));
+                 let snap = await getDocs(q);
+                 if(snap.empty) {
+                     q = query(collection(db, 'coupons'), where('code', '==', input));
+                     snap = await getDocs(q);
+                 }
+
+                 if(!snap.empty) {
+                     const data = snap.docs[0].data();
+                     let rawDisc = data.discount || data.discountDetails || data.discountAmount || 0;
+                     let calcAmt = 0;
+                     
+                     // Handle both "50% OFF" and "FLAT 100" logic smartly
+                     if (String(rawDisc).includes('%')) {
+                         let percent = parseFloat(String(rawDisc).replace(/[^0-9.]/g, ''));
+                         let totalItemVal = Object.values(cart).reduce((s, i) => s + i.price * i.qty, 0);
+                         calcAmt = Math.round(totalItemVal * (percent / 100));
+                     } else {
+                         calcAmt = parseFloat(String(rawDisc).replace(/[^0-9.]/g, '')) || 0;
+                     }
+
+                     window.globalCoupon = { code: input, isRest: false, amt: calcAmt };
+                     showToast(`Coupon applied successfully!`, 'success');
+                 } else {
+                     showToast('Invalid or Expired Coupon Code', 'error');
+                     window.globalCoupon = null;
+                 }
+            }
+        } catch (e) {
+            showToast('Error verifying coupon', 'error');
+            window.globalCoupon = null;
         }
+
+        btn.textContent = window.globalCoupon ? 'REMOVE' : 'APPLY';
+        btn.disabled = false;
+        renderCart(); 
     }
-    renderCart(); 
 };
+
 
 // CART PAGE
 function renderCart() {
@@ -1423,21 +1474,45 @@ function renderCart() {
   let numRestaurants = 0;
   
   let dropdownDetails = '';
-
   Object.keys(groupedCart).forEach(rId => {
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
-      const rOfferDiscount = liveRest.offerDiscount || 0;
+      
+      // LOGIC: Check if Admin set a required coupon code
+      const reqCode = liveRest.couponCode ? liveRest.couponCode.trim().toUpperCase() : '';
+      let rOfferDiscount = 0;
+
+      if (reqCode) {
+          // Requires code to be typed manually
+          if (window.globalCoupon && window.globalCoupon.code === reqCode) {
+              rOfferDiscount = liveRest.offerDiscount || 0;
+          }
+      } else {
+          // No code set by Admin, apply automatically
+          rOfferDiscount = liveRest.offerDiscount || 0;
+      }
       
       dynDeliveryFee += (liveRest.deliveryFee || 0);
       dynDiscount += rOfferDiscount;
       numRestaurants++;
 
       if(rOfferDiscount > 0) {
+          // UI FIX: Removed (Code: XYZ) text
           dropdownDetails += `<div style="margin-bottom:8px; border-bottom:1px dashed #D1D5DB; padding-bottom:8px;">
-            <b style="font-size:13px; color:var(--dark);">${liveRest.name} (Code: ${liveRest.restaurantCode || 'KPO-RES'})</b><br>`;
-          dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Offer: ${liveRest.offerName}</span><span style="color:var(--green)">-₹${rOfferDiscount}</span></span>`;
+            <b style="font-size:13px; color:var(--dark);">${liveRest.name}</b><br>`;
+          dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Offer: ${liveRest.offerName || 'Discount'}</span><span style="color:var(--green)">-₹${rOfferDiscount}</span></span>`;
           dropdownDetails += `</div>`;
       }
+  });
+
+  let globalCouponDiscount = 0;
+  // Apply Global Marketing Coupon (if it's not a restaurant specific one)
+  if(window.globalCoupon && !window.globalCoupon.isRest) {
+      globalCouponDiscount = window.globalCoupon.amt;
+      dynDiscount += globalCouponDiscount;
+      dropdownDetails += `<div style="margin-bottom:8px; padding-bottom:8px;">
+        <span style="display:flex; justify-content:space-between;"><b style="font-size:13px; color:var(--dark);">Coupon: ${window.globalCoupon.code}</b><span style="color:var(--green)">-₹${globalCouponDiscount}</span></span>
+      </div>`;
+  }
   });
 
   let globalCouponDiscount = 0;
@@ -1517,7 +1592,8 @@ window.placeOrder = async () => {
     const batchTime = serverTimestamp();
     const promises = [];
 
-        let remainingGlobalCoupon = window.globalCoupon ? window.globalCoupon.amt : 0;
+        
+    let remainingGlobalCoupon = (window.globalCoupon && !window.globalCoupon.isRest) ? window.globalCoupon.amt : 0;
 
     for (const [rId, rData] of Object.entries(groupedCart)) {
         const rItems = rData.items;
@@ -1525,12 +1601,23 @@ window.placeOrder = async () => {
         
         const liveRest = allRestaurants.find(r => r.id === rId);
         const rDelivery = liveRest ? (liveRest.deliveryFee || 0) : 0; 
-        const rOfferDiscount = liveRest ? (liveRest.offerDiscount || 0) : 0; 
+        
+        // Exact same validation as frontend render
+        const reqCode = (liveRest && liveRest.couponCode) ? liveRest.couponCode.trim().toUpperCase() : '';
+        let rOfferDiscount = 0;
+
+        if (reqCode) {
+            if (window.globalCoupon && window.globalCoupon.code === reqCode) {
+                rOfferDiscount = liveRest.offerDiscount || 0;
+            }
+        } else {
+            rOfferDiscount = liveRest ? (liveRest.offerDiscount || 0) : 0;
+        }
         
         let rCouponDiscount = 0;
         if (remainingGlobalCoupon > 0) {
-            rCouponDiscount = remainingGlobalCoupon;
-            remainingGlobalCoupon = 0; // consumed fully on the first order group
+            rCouponDiscount = Math.min(rItemTotal, remainingGlobalCoupon);
+            remainingGlobalCoupon -= rCouponDiscount;
         }
 
         const rDiscount = rOfferDiscount + rCouponDiscount;
