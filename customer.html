@@ -1412,7 +1412,6 @@ window.applyGlobalCoupon = async () => {
     }
 };
 
-
 // CART PAGE
 function renderCart() {
   const items = Object.values(cart);
@@ -1475,25 +1474,26 @@ function renderCart() {
   Object.keys(groupedCart).forEach(rId => {
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
       
-      // LOGIC: Check if Admin set a required coupon code
-      const reqCode = liveRest.couponCode ? liveRest.couponCode.trim().toUpperCase() : '';
+      // LOGIC: Check if Admin set a required coupon code. (String conversion added for numbers like 7008)
+      const reqCode = liveRest.couponCode ? String(liveRest.couponCode).trim().toUpperCase() : '';
       let rOfferDiscount = 0;
 
-      if (reqCode) {
-          // Requires code to be typed manually
+      if (reqCode !== '') {
+          // Rule 2: User MUST put the code to get the discount
           if (window.globalCoupon && window.globalCoupon.code === reqCode) {
-              rOfferDiscount = liveRest.offerDiscount || 0;
+              rOfferDiscount = liveRest.offerDiscount || liveRest.discountAmount || 0;
           }
       } else {
-          // No code set by Admin, apply automatically
-          rOfferDiscount = liveRest.offerDiscount || 0;
+          // Rule 1: No code set by Admin, apply automatically
+          rOfferDiscount = liveRest.offerDiscount || liveRest.discountAmount || 0;
       }
       
       dynDeliveryFee += (liveRest.deliveryFee || 0);
-      dynDiscount += rOfferDiscount;
+      dynDiscount += Number(rOfferDiscount);
       numRestaurants++;
 
       if(rOfferDiscount > 0) {
+          // Text ke side se (Code: ...) hata diya hai
           dropdownDetails += `<div style="margin-bottom:8px; border-bottom:1px dashed #D1D5DB; padding-bottom:8px;">
             <b style="font-size:13px; color:var(--dark);">${liveRest.name}</b><br>`;
           dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Offer: ${liveRest.offerName || 'Discount'}</span><span style="color:var(--green)">-₹${rOfferDiscount}</span></span>`;
@@ -1502,7 +1502,7 @@ function renderCart() {
   });
 
   let globalCouponDiscount = 0;
-  // Apply Global Marketing Coupon (if it's not a restaurant specific one)
+  // Apply Global Marketing Coupon
   if(window.globalCoupon && !window.globalCoupon.isRest) {
       globalCouponDiscount = window.globalCoupon.amt;
       dynDiscount += globalCouponDiscount;
@@ -1531,6 +1531,7 @@ function renderCart() {
   
   el.innerHTML = cartHtml;
 }
+
 
 window.openCheckout = () => {
   document.getElementById('coPhone').value = userData.phone || '';
@@ -1580,6 +1581,7 @@ window.placeOrder = async () => {
     const promises = [];
 
         
+    
     let remainingGlobalCoupon = (window.globalCoupon && !window.globalCoupon.isRest) ? window.globalCoupon.amt : 0;
 
     for (const [rId, rData] of Object.entries(groupedCart)) {
@@ -1589,16 +1591,18 @@ window.placeOrder = async () => {
         const liveRest = allRestaurants.find(r => r.id === rId);
         const rDelivery = liveRest ? (liveRest.deliveryFee || 0) : 0; 
         
-        // Exact same validation as frontend render
-        const reqCode = (liveRest && liveRest.couponCode) ? liveRest.couponCode.trim().toUpperCase() : '';
+        // LOGIC: String conversion fixes the bug if admin types '7008' instead of a text word
+        const reqCode = (liveRest && liveRest.couponCode) ? String(liveRest.couponCode).trim().toUpperCase() : '';
         let rOfferDiscount = 0;
 
-        if (reqCode) {
+        if (reqCode !== '') {
+            // User MUST put the code to get the discount
             if (window.globalCoupon && window.globalCoupon.code === reqCode) {
-                rOfferDiscount = liveRest.offerDiscount || 0;
+                rOfferDiscount = liveRest.offerDiscount || liveRest.discountAmount || 0;
             }
         } else {
-            rOfferDiscount = liveRest ? (liveRest.offerDiscount || 0) : 0;
+            // Auto apply
+            rOfferDiscount = liveRest ? (liveRest.offerDiscount || liveRest.discountAmount || 0) : 0;
         }
         
         let rCouponDiscount = 0;
@@ -1607,7 +1611,7 @@ window.placeOrder = async () => {
             remainingGlobalCoupon -= rCouponDiscount;
         }
 
-        const rDiscount = rOfferDiscount + rCouponDiscount;
+        const rDiscount = Number(rOfferDiscount) + Number(rCouponDiscount);
 
 
         const rTotal = Math.max(0, rItemTotal + rDelivery - rDiscount);
