@@ -1451,10 +1451,8 @@ function renderCart() {
             </div>
           </div>
         `).join('')}
-  
       </div>`;
-  
-    });
+  });
   cartHtml += '</div>';
 
   const existingGlobalCoupon = window.globalCoupon ? window.globalCoupon.code : '';
@@ -1469,14 +1467,70 @@ function renderCart() {
 
   const itemTotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   
-  dynDeliveryFee = 0;
-  dynDiscount = 0;
+  let dynDeliveryFee = 0;
+  let dynDiscount = 0;
   let numRestaurants = 0;
   
   let dropdownDetails = '';
   Object.keys(groupedCart).forEach(rId => {
       const liveRest = allRestaurants.find(r => r.id === rId) || {};
       
+      // LOGIC: Check if Admin set a required coupon code
+      const reqCode = liveRest.couponCode ? liveRest.couponCode.trim().toUpperCase() : '';
+      let rOfferDiscount = 0;
+
+      if (reqCode) {
+          // Requires code to be typed manually
+          if (window.globalCoupon && window.globalCoupon.code === reqCode) {
+              rOfferDiscount = liveRest.offerDiscount || 0;
+          }
+      } else {
+          // No code set by Admin, apply automatically
+          rOfferDiscount = liveRest.offerDiscount || 0;
+      }
+      
+      dynDeliveryFee += (liveRest.deliveryFee || 0);
+      dynDiscount += rOfferDiscount;
+      numRestaurants++;
+
+      if(rOfferDiscount > 0) {
+          dropdownDetails += `<div style="margin-bottom:8px; border-bottom:1px dashed #D1D5DB; padding-bottom:8px;">
+            <b style="font-size:13px; color:var(--dark);">${liveRest.name}</b><br>`;
+          dropdownDetails += `<span style="display:flex; justify-content:space-between;"><span>Offer: ${liveRest.offerName || 'Discount'}</span><span style="color:var(--green)">-₹${rOfferDiscount}</span></span>`;
+          dropdownDetails += `</div>`;
+      }
+  });
+
+  let globalCouponDiscount = 0;
+  // Apply Global Marketing Coupon (if it's not a restaurant specific one)
+  if(window.globalCoupon && !window.globalCoupon.isRest) {
+      globalCouponDiscount = window.globalCoupon.amt;
+      dynDiscount += globalCouponDiscount;
+      dropdownDetails += `<div style="margin-bottom:8px; padding-bottom:8px;">
+        <span style="display:flex; justify-content:space-between;"><b style="font-size:13px; color:var(--dark);">Coupon: ${window.globalCoupon.code}</b><span style="color:var(--green)">-₹${globalCouponDiscount}</span></span>
+      </div>`;
+  }
+
+  const finalTotal = itemTotal + dynDeliveryFee - dynDiscount;
+  
+  cartHtml += `
+  <div class="cart-summary">
+    <div class="summary-row"><span>Items Subtotal</span><span>₹${itemTotal}</span></div>
+    <div class="summary-row"><span>Delivery Fee (${numRestaurants} locations)</span><span style="color:var(--green)">${dynDeliveryFee === 0 ? 'Free' : '₹'+dynDeliveryFee}</span></div>
+    
+    ${dynDiscount > 0 ? `
+    <details class="dd-summary-container" style="border-top:1px dashed var(--border); margin-top:6px; padding-top:6px;">
+        <summary class="dd-summary"><span style="display:flex;align-items:center;gap:6px;"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg> Discounts Applied</span> <span>-₹${dynDiscount} ▼</span></summary>
+        <div class="dd-content">${dropdownDetails}</div>
+    </details>
+    ` : ''}
+    
+    <div class="summary-total"><span>Grand Total</span><span>₹${Math.max(0, finalTotal)}</span></div>
+  </div>
+  <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>`;
+  
+  el.innerHTML = cartHtml;
+}
       // LOGIC: Check if Admin set a required coupon code
       const reqCode = liveRest.couponCode ? liveRest.couponCode.trim().toUpperCase() : '';
       let rOfferDiscount = 0;
