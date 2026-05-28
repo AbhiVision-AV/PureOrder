@@ -449,15 +449,16 @@ body{
     <button class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div class="drawer-links">
-    <a href="mailto:contact.pureorder@gmail.com" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact</a>
+        <a href="https://abhivision.in" target="_blank" onclick="closeDrawer()" class="drawer-link"><svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>AV GIFT Frames</a>
+
     <a onclick="closeDrawer(); goPage('privacyPolicy')" class="drawer-link"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Privacy Policy</a>
     <a onclick="closeDrawer(); goPage('termsConditions')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Terms & Conditions</a>
     <a onclick="closeDrawer(); goPage('helpSupport')" class="drawer-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help & Support</a>
     <a onclick="closeDrawer(); goPage('aboutUs')" class="drawer-link"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>About Us</a>
   </div>
   <div class="drawer-footer">
-    <div class="df-text">PureOrder</div>
-    <div class="df-sub">Your Local Food Partner</div>
+    <div class="df-text" style="font-size:16px;">Pure<span style="color:var(--orange)">Order</span></div>
+    <div class="df-sub" style="color:var(--gray); font-weight:600; margin-top:2px;">Founded by Abhishek Sahoo</div>
   </div>
 </div>
 
@@ -488,7 +489,7 @@ body{
     
     <div class="search-bar" onclick="goPage('search')">
       <svg viewBox="0 0 24 24" width="20" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <span style="color:var(--gray);">Search dishes, restaurants...</span>
+      <span style="color:var(--gray);">Search your favorite dishes...</span>
     </div>
   </div>
 
@@ -507,7 +508,7 @@ body{
       </div>
 
       <div class="section" style="margin-bottom:0;">
-        <div class="section-header"><div class="section-title">Categories</div></div>
+        <div class="section-header"><div class="section-title">What's on your mind?</div></div>
       </div>
       <div class="category-row" id="homeCategories">
         <div style="text-align:center;color:#9CA3AF;font-size:12px;padding:10px 0;width:100%;">Loading categories...</div>
