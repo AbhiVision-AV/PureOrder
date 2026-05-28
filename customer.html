@@ -1705,6 +1705,7 @@ window.placeOrder = async () => {
 };
 
 function listenOrders() {
+  let isFirstLoad = true;
   const q = query(collection(db, 'orders'), where('customerId', '==', currentUser.uid));
   
   onSnapshot(q, snap => {
@@ -1712,9 +1713,11 @@ function listenOrders() {
     
     activeOrdersData.forEach(o => {
        const oldState = prevOrderStates[o.id];
-       if (oldState && oldState !== o.status) { triggerLocalOrderNotification(o); }
+       if (!isFirstLoad && oldState && oldState !== o.status) { triggerLocalOrderNotification(o); }
        prevOrderStates[o.id] = o.status;
     });
+
+    isFirstLoad = false;
 
     if(document.getElementById('pageOrders').classList.contains('active')) renderOrders();
     if(document.getElementById('pageOrderDetail').classList.contains('active')) {
