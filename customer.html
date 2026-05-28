@@ -1265,7 +1265,9 @@ function listenAllRestaurants() {
         autoSlide = setInterval(() => goToSlide(ci + 1), 2500);
       }, { passive: true });
     });
-
+    
+    });
+}
 let menuUnsub = null;
 function listenSpecificRestaurant(restId) {
   onSnapshot(doc(db, 'restaurants', restId), snap => {
