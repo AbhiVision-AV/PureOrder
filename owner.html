@@ -635,6 +635,7 @@ function renderOrders() {
       <div class="items-box">${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>₹${i.price*i.qty}</span></div>`).join('')}<div class="items-total"><span>Total</span><span style="color:var(--orange)">₹${total}</span></div></div>
       ${trackHtml}
       <div class="order-btns">${btns}</div>
+      </div>
     </div>`;
   }).join('');
 }
