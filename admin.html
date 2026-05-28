@@ -861,20 +861,49 @@ window.sendRealPushNotification = async () => {
   const btn = document.getElementById('sendPushBtn');
   btn.innerHTML = '<div class="spinner white"></div>'; btn.style.pointerEvents = 'none';
   
+  // Aapki OneSignal Details
+  const appId = "080f2f54-e119-4df6-a65e-8a7e2f8ec620"; 
+  const restApiKey = "Os_v2_app_bahs6vhbdfg7njs6rj7c7dwgecfyup7bppcufxvhtif3roctqo73op2wjhbovz6kenrsmniuqmbnzq4pqsi3vf55c3d435bi22mixcq"; 
+
+  // Message Ready Karna
+  const payload = {
+    app_id: appId,
+    included_segments: ['Subscribed Users'], // Sabko bhejega
+    headings: { "en": title },
+    contents: { "en": message }
+  };
+
+  // Agar user ne image dali hai, toh wo bhi add kar do (Android & Web dono ke liye)
+  if (image) {
+    payload.big_picture = image;
+    payload.chrome_web_image = image;
+  }
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Authorization': 'Basic ' + restApiKey
+    },
+    body: JSON.stringify(payload)
+  };
+
   try {
-    await addDoc(collection(db, 'notifications'), {
-      title: title, body: message, image: image, type: 'push_all', createdAt: serverTimestamp()
-    });
-    
-    showToast('Notification Sent via Cloud Function!', 'success');
+    // OneSignal ko bhej rahe hain
+    const response = await fetch('https://onesignal.com/api/v1/notifications', options);
+    const data = await response.json();
+    console.log("OneSignal Success:", data);
+
+    showToast('🚀 Boom! Notification Sent!', 'success');
     document.getElementById('pnTitle').value = '';
     document.getElementById('pnMessage').value = '';
     document.getElementById('pnImage').value = '';
     window.prevPushImg('');
   } catch(e) { 
-    showToast('Failed to send.', 'error'); 
+    console.error("OneSignal Error:", e);
+    showToast('Oops! Failed to send.', 'error'); 
   }
-  btn.innerHTML = 'Send via Cloud Function'; btn.style.pointerEvents = 'auto';
+  btn.innerHTML = 'Send Notification Now'; btn.style.pointerEvents = 'auto';
 };
 
 
