@@ -1240,8 +1240,29 @@ function listenAllRestaurants() {
         
         return `
         <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
-          <div class="rest-img-box">${r.imageUrl || r.restaurantImageUrl ? `<img src="${r.imageUrl || r.restaurantImageUrl}" loading="lazy" onerror="this.style.display='none'">` : `<span>${r.name}</span>`}
-            ${offerBadgeHtml}
+<div class="rest-img-box" style="position:relative;overflow:hidden;">
+          ${(() => {
+            const photos = r.photos || (r.imageUrl ? [r.imageUrl] : []);
+            if(photos.length > 1) return `
+              <div id="rslider-${r.id}" style="display:flex;width:${photos.length*100}%;height:100%;transition:transform 0.4s ease;">
+                ${photos.map(p=>`<img src="${p}" style="width:${100/photos.length}%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`).join('')}
+              </div>
+              <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3;">
+                ${photos.map((_,i)=>`<div class="rsdot-${r.id}" style="width:${i===0?'16':'6'}px;height:6px;border-radius:3px;background:rgba(255,255,255,${i===0?'1':'0.5'});transition:all 0.3s;"></div>`).join('')}
+              </div>
+              <script>
+                (function(){
+                  let ci=0;
+                  setInterval(()=>{
+                    ci=(ci+1)%${photos.length};
+                    document.getElementById('rslider-${r.id}').style.transform='translateX(-'+(ci*100/${photos.length})+'%)';
+                    document.querySelectorAll('.rsdot-${r.id}').forEach((d,i)=>{d.style.width=i===ci?'16px':'6px';d.style.background='rgba(255,255,255,'+(i===ci?'1':'0.5')+')';});
+                  },2500);
+                })();
+              </script>`;
+            else return photos[0] ? `<img src="${photos[0]}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : `<span>${r.name}</span>`;
+          })()}
+          ${offerBadgeHtml
             <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
           </div>
           <div class="rest-info">
