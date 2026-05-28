@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,30 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-  <!-- OneSignal Push Notification Code -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.oneSignalPlayerId = null; // Global variable
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "080f2f54-e119-4df6-a65e-8a7e2f8ec620",
-      notifyButton: {
-        enable: true,
-      },
-    });
-    OneSignal.Slidedown.promptPush();
-
-    // Customer ki ID store kar rahe hain
-    if (OneSignal.User && OneSignal.User.PushSubscription) {
-        window.oneSignalPlayerId = OneSignal.User.PushSubscription.id;
-        
-        OneSignal.User.PushSubscription.addEventListener("change", (event) => {
-            window.oneSignalPlayerId = event.current.id;
-        });
-    }
-  });
-</script>
+<!-- Push notifications handled via Firebase FCM only -->
 
 <style>
 :root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;}
@@ -787,7 +764,7 @@ body{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, onSnapshot, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA6yX_GnKJ_OiqG10DB4dguV-IM1v8wH9w",
@@ -928,21 +905,7 @@ async function setupPushNotifications() {
   } catch(e) { console.log("FCM Setup Skipped."); }
 }
 
-function listenAdminNotifications() {
-  const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(1));
-  let isFirstLoad = true;
-  onSnapshot(q, snap => {
-    if (isFirstLoad) { isFirstLoad = false; return; }
-    snap.docChanges().forEach(change => {
-      if (change.type === 'added') {
-        const data = change.doc.data();
-        saveNotifLocally(data.title, data.body);
-        playNotifSound();
-        showToast(data.title, 'success');
-      }
-    });
-  });
-}
+// Admin broadcast notifications removed (per policy)
 
 function saveNotifLocally(title, body) {
     let logs = JSON.parse(localStorage.getItem('notifLogs') || '[]');
@@ -1119,7 +1082,6 @@ async function initApp() {
     
     startTaglines();
     setupPushNotifications();
-    listenAdminNotifications();
     updateNotifBadge();
     listenOrders();
     loadBanners();
@@ -1237,32 +1199,25 @@ function listenAllRestaurants() {
     el.innerHTML = locFiltered.map(r => {
         const ratingHtml = r.rating ? `<div class="rest-rating"><i>★</i> ${r.rating}</div>` : `<div class="rest-rating"><i>★</i> New</div>`;
         const offerBadgeHtml = r.offerName ? `<div class="rest-top-badge">${r.offerName}</div>` : '';
+        const photos = r.photos || (r.imageUrl ? [r.imageUrl] : []);
+        let sliderHtml = '';
+        if (photos.length > 1) {
+          sliderHtml = `
+            <div id="rslider-${r.id}" style="display:flex;width:${photos.length*100}%;height:100%;transition:transform 0.4s ease;">
+              ${photos.map(p=>`<img src="${p}" style="width:${100/photos.length}%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`).join('')}
+            </div>
+            <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3;">
+              ${photos.map((_,i)=>`<div class="rsdot-${r.id}" style="width:${i===0?'16':'6'}px;height:6px;border-radius:3px;background:rgba(255,255,255,${i===0?'1':'0.5'});transition:all 0.3s;"></div>`).join('')}
+            </div>`;
+        } else {
+          sliderHtml = photos[0] ? `<img src="${photos[0]}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : `<span>${r.name}</span>`;
+        }
         
         return `
         <div class="rest-card" onclick="openRestaurant('${r.id}', '${(r.name||'').replace(/'/g, "\\'")}')">
-<div class="rest-img-box" style="position:relative;overflow:hidden;">
-          ${(() => {
-            const photos = r.photos || (r.imageUrl ? [r.imageUrl] : []);
-            if(photos.length > 1) return `
-              <div id="rslider-${r.id}" style="display:flex;width:${photos.length*100}%;height:100%;transition:transform 0.4s ease;">
-                ${photos.map(p=>`<img src="${p}" style="width:${100/photos.length}%;height:100%;object-fit:cover;" onerror="this.style.display='none'">`).join('')}
-              </div>
-              <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3;">
-                ${photos.map((_,i)=>`<div class="rsdot-${r.id}" style="width:${i===0?'16':'6'}px;height:6px;border-radius:3px;background:rgba(255,255,255,${i===0?'1':'0.5'});transition:all 0.3s;"></div>`).join('')}
-              </div>
-              <script>
-                (function(){
-                  let ci=0;
-                  setInterval(()=>{
-                    ci=(ci+1)%${photos.length};
-                    document.getElementById('rslider-${r.id}').style.transform='translateX(-'+(ci*100/${photos.length})+'%)';
-                    document.querySelectorAll('.rsdot-${r.id}').forEach((d,i)=>{d.style.width=i===ci?'16px':'6px';d.style.background='rgba(255,255,255,'+(i===ci?'1':'0.5')+')';});
-                  },2500);
-                })();
-              </script>`;
-            else return photos[0] ? `<img src="${photos[0]}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'">` : `<span>${r.name}</span>`;
-          })()}
-          ${offerBadgeHtml
+          <div class="rest-img-box" style="position:relative;overflow:hidden;" ${photos.length > 1 ? `data-slider="${r.id}" data-count="${photos.length}"` : ''}>
+            ${sliderHtml}
+            ${offerBadgeHtml}
             <div class="rest-status-badge ${r.isOpen !== false ? 'badge-open' : 'badge-closed'}">${r.isOpen !== false ? 'Open' : 'Closed'}</div>
           </div>
           <div class="rest-info">
@@ -1274,9 +1229,45 @@ function listenAllRestaurants() {
           </div>
         </div>`;
     }).join('');
-  });
-}
 
+
+    // Initialize photo sliders after DOM is set — with touch/swipe support
+    document.querySelectorAll('[data-slider]').forEach(box => {
+      const sid = box.getAttribute('data-slider');
+      const cnt = parseInt(box.getAttribute('data-count'));
+      let ci = 0;
+
+      function goToSlide(idx) {
+        ci = (idx + cnt) % cnt;
+        const slider = document.getElementById('rslider-' + sid);
+        if (slider) slider.style.transform = 'translateX(-' + (ci * 100 / cnt) + '%)';
+        box.querySelectorAll('.rsdot-' + sid).forEach((d, i) => {
+          d.style.width = i === ci ? '16px' : '6px';
+          d.style.background = 'rgba(255,255,255,' + (i === ci ? '1' : '0.5') + ')';
+        });
+      }
+
+      // Auto slide
+      let autoSlide = setInterval(() => goToSlide(ci + 1), 2500);
+
+      // Touch/swipe support
+      let touchStartX = 0;
+      box.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        clearInterval(autoSlide);
+      }, { passive: true });
+
+      box.addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 30) {
+          goToSlide(diff > 0 ? ci + 1 : ci - 1);
+        }
+        autoSlide = setInterval(() => goToSlide(ci + 1), 2500);
+      }, { passive: true });
+    });
+    
+    });
+}
 let menuUnsub = null;
 function listenSpecificRestaurant(restId) {
   onSnapshot(doc(db, 'restaurants', restId), snap => {
@@ -1619,8 +1610,7 @@ window.placeOrder = async () => {
        groupedCart[i.restaurantId].items.push(i);
     });
 
-    const freshPlayerId = (window.OneSignal?.User?.PushSubscription?.id) || window.oneSignalPlayerId || '';
-    await setDoc(doc(db, 'users', currentUser.uid), { phone, address, ...(freshPlayerId ? { oneSignalPlayerId: freshPlayerId } : {}) }, { merge: true });
+    await setDoc(doc(db, 'users', currentUser.uid), { phone, address }, { merge: true });
     userData.phone = phone; userData.address = address;
     
     const batchId = 'GRP_' + Date.now();
@@ -1671,7 +1661,6 @@ window.placeOrder = async () => {
   customerName: userData.name || 'Customer', 
   customerPhone: phone, 
   deliveryAddress: address,
-  oneSignalPlayerId: (window.OneSignal?.User?.PushSubscription?.id) || window.oneSignalPlayerId || '',
   restaurantId: rId, 
   restaurantName: rData.name,
   items: rItems.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
