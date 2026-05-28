@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FE724C">
+    <title>Delete Account - PureOrder</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --orange: #FE724C;
+            --dark: #1C1C1E;
+            --gray: #6B7280;
+            --light: #F5F5F7;
+            --border: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #fff7eb 50%, #ffedd5 100%);
+            background-attachment: fixed;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 24px;
+            padding: 36px 24px;
+            box-shadow: 0 12px 32px rgba(254, 114, 76, 0.15);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        /* --- New Logo and Brand Name Section --- */
+        .app-icon {
+            width: 76px;
+            height: 76px;
+            border-radius: 20px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+            object-fit: cover;
+        }
+
+        .brand-name {
+            font-family: 'Sora', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 30px; /* Space between logo and content */
+            letter-spacing: -0.5px;
+        }
+        
+        .brand-name span {
+            color: var(--orange);
+        }
+        /* --------------------------------------- */
+
+        h1 {
+            font-family: 'Sora', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .desc-text {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .note-box {
+            background: #FFF7ED;
+            border: 1px dashed #FFB74D;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+        }
+
+        .note-box p {
+            font-size: 12px;
+            color: #A16207;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .delete-btn {
+            background: var(--orange);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            width: 100%;
+            font-family: 'Sora', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(254, 114, 76, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .delete-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(254, 114, 76, 0.2);
+        }
+
+        /* Delete Icon Size Increased */
+        .delete-btn svg {
+            width: 22px; 
+            height: 22px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        .footer-text {
+            margin-top: 30px;
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .footer-text a {
+            color: var(--orange);
+            text-decoration: none;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- Inside Card: Logo and Brand Name -->
+        <img src="icon-192.png" alt="PureOrder Logo" class="app-icon" onerror="this.style.display='none'">
+        <div class="brand-name">Pure<span>Order</span></div>
+        
+        <h1>Request Account Deletion</h1>
+        
+        <p class="desc-text">
+            If you would like to delete your PureOrder account and associated data, you can submit a deletion request using the button below.
+        </p>
+        
+        <div class="note-box">
+            <p>Our support team will process your request within a few business days.</p>
+        </div>
+
+        <button class="delete-btn" onclick="sendDeletionEmail()">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+            Request To Delete My Account
+        </button>
+    </div>
+
+    <div class="footer-text">
+        For support contact: <br>
+        <a href="mailto:contact.pureorder@gmail.com">contact.pureorder@gmail.com</a>
+    </div>
+
+    <script>
+        function sendDeletionEmail() {
+            const email = "contact.pureorder@gmail.com";
+            const subject = encodeURIComponent("Request to Delete My PureOrder Account");
+            const bodyText = "Hello PureOrder Support,\n\nI would like to request deletion of my account and associated data.\n\nThank you.";
+            const body = encodeURIComponent(bodyText);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+    </script>
+</body>
+</html>
