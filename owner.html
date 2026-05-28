@@ -636,19 +636,44 @@ function renderOrders() {
 
 window.updateStatus = async (id, status) => {
   try {
-    // 1. Database mein status update
+    // 1. Database mein status update karo
     await updateDoc(doc(db,'orders',id), { status, updatedAt: serverTimestamp() });
     showToast(`Order ${status}!`, 'success');
 
     // 2. Memory se order nikal kar Player ID check karo
     const order = activeOrders.find(o => o.id === id);
-    
-    // 3. Agar ID mili, toh automatic notification bhej do
-    if (order && order.oneSignalPlayerId) {
-      triggerOneSignalNotification(order.oneSignalPlayerId, status, order.displayOrderId || id.slice(-5).toUpperCase());
+    if (!order) return;
+
+    const orderDisplayId = order.displayOrderId || id.slice(-5).toUpperCase();
+
+    // 3. Player ID directly order mein mile toh seedha bhej do
+    if (order.oneSignalPlayerId) {
+      triggerOneSignalNotification(order.oneSignalPlayerId, status, orderDisplayId);
+      return;
+    }
+
+    // 4. FALLBACK — Order mein Player ID nahi hai, Firestore se customer ka
+    //    saved Player ID fetch karo (customer.html login ke time save hota hai)
+    if (order.customerId) {
+      try {
+        const userSnap = await getDoc(doc(db, 'users', order.customerId));
+        if (userSnap.exists()) {
+          const savedPlayerId = userSnap.data().oneSignalPlayerId || '';
+          if (savedPlayerId) {
+            triggerOneSignalNotification(savedPlayerId, status, orderDisplayId);
+            // Future orders ke liye order document mein bhi save kar do
+            await updateDoc(doc(db,'orders',id), { oneSignalPlayerId: savedPlayerId });
+          } else {
+            console.warn(`OneSignal: No Player ID found for customer ${order.customerId}`);
+          }
+        }
+      } catch(fetchErr) {
+        console.error('OneSignal fallback fetch failed:', fetchErr);
+      }
     }
   } catch(e) { 
-    showToast('Failed','error'); 
+    showToast('Failed','error');
+    console.error('updateStatus error:', e);
   }
 };
 
