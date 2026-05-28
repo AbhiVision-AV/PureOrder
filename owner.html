@@ -628,7 +628,7 @@ function renderOrders() {
     else if (s==='ready') btns=`<button class="btn-assign" onclick="event.stopPropagation();openAssign('${o.id}')">Assign Delivery</button>`;
     else if (s==='assigned') btns=`<div class="assigned-label">Assigned to ${o.deliveryPartnerName||'Partner'}</div>`;
     return `<div class="order-card is-${s}" onclick="showDetail('${o.id}')">
-      <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
+      <div class="order-top"><div><div class="order-id">${o.displayOrderId || 'Order #'+o.id.slice(-5).toUpperCase()}</div>
       <div class="customer-row"><div class="cust-av">${(o.customerName||'C')[0].toUpperCase()}</div><div><div class="cust-name">${o.customerName||'Customer'}</div><div class="cust-phone">${o.customerPhone||''}</div></div></div>
       <div class="address-row"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${o.deliveryAddress||'No address'}</div>
       ${o.latitude ? `<a href="https://www.google.com/maps?q=${o.latitude},${o.longitude}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;color:#1D4ED8;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;text-decoration:none;margin-bottom:10px;border:1px solid #BFDBFE;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> See Location</a>` : ''}
