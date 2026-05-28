@@ -1718,17 +1718,18 @@ function triggerLocalOrderNotification(o) {
     let title = "Order Update";
     let body = `Your order ${o.displayOrderId || '#'+o.id.slice(-5).toUpperCase()} status changed to ${o.status}.`;
     
+    const oid = o.displayOrderId || ('#' + o.id.slice(-5).toUpperCase());
     switch(o.status) {
-        case 'accepted': title = "Order Accepted!"; body = `${o.restaurantName} has accepted your order and is preparing it.`; break;
+        case 'accepted': title = "✅ Order Accepted!"; body = `[${oid}] ${o.restaurantName} has accepted your order and is now preparing it.`; break;
         case 'rejected':
-        case 'cancelled': title = "Order Cancelled"; body = `Reason: ${o.cancellationReason || 'Rejected by restaurant'}`; break;
-        case 'preparing': title = "Food is Preparing"; body = "The chef is working their magic."; break;
-        case 'ready': title = "Order is Ready!"; body = "Waiting for the delivery partner to pick it up."; break;
-        case 'out for delivery': title = "Out for Delivery!"; body = "Track your order, your food is on the way!"; break;
-        case 'delivered': title = "Delivered!"; body = "Thanks for ordering with PureOrder. Enjoy your meal!"; break;
-        case 'assigned': title = "Delivery Partner Assigned"; body = `${o.deliveryPartnerName || 'A partner'} has been assigned to your order.`; break;
+        case 'cancelled': title = "❌ Order Cancelled"; body = `[${oid}] Reason: ${o.cancellationReason || 'Rejected by restaurant'}`; break;
+        case 'preparing': title = "👨‍🍳 Food is Being Prepared"; body = `[${oid}] The chef is working their magic. Hang tight!`; break;
+        case 'ready': title = "🎉 Order is Ready!"; body = `[${oid}] Your order is packed & waiting for the delivery partner.`; break;
+        case 'out for delivery': title = "🛵 Out for Delivery!"; body = `[${oid}] Your food is on the way. Track your order!`; break;
+        case 'delivered': title = "🥳 Order Delivered!"; body = `[${oid}] Enjoy your meal! Thanks for ordering with PureOrder.`; break;
+        case 'assigned': title = "🚴 Delivery Partner Assigned"; body = `[${oid}] ${o.deliveryPartnerName || 'A partner'} is picking up your order.`; break;
     }
-
+  
     saveNotifLocally(title, body);
     playNotifSound();
 }
@@ -1760,7 +1761,7 @@ function renderOrders() {
       if(!groupedOrders[gId]) {
           groupedOrders[gId] = {
               id: gId, status: o.status, createdAt: o.createdAt, totalAmount: 0, orderTimestampMs: o.orderTimestampMs,
-              restaurants: new Set(), itemsText: [], displayOrderId: o.displayOrderId || `POK-${o.id.slice(-5).toUpperCase()}`
+              restaurants: new Set(), itemsText: [], displayOrderId: o.displayOrderId || `KPO-${o.id.slice(-5).toUpperCase()}`
           };
       }
       groupedOrders[gId].totalAmount += (o.totalAmount || 0);
