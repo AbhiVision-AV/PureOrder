@@ -334,6 +334,9 @@ function renderActiveOrders() {
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '';
     const itemsText = (o.items||[]).map(i => `${i.qty}× ${i.name}`).join(', ');
     
+    // Exact short ID logic match with customer/owner dashboard
+    const displayId = (o.orderId || o.id).slice(-5).toUpperCase();
+
     // Map Button
     let mapBtn = '';
     if (o.latitude && o.longitude) {
@@ -361,7 +364,7 @@ function renderActiveOrders() {
       <div class="order-card">
         <div class="order-top">
           <div>
-            <div class="order-id">Order #${o.orderId || o.id}</div>
+            <div class="order-id">Order #${displayId}</div>
             <div class="order-time">${time}</div>
           </div>
           <div class="status-pill ${statusClasses[o.status]}">${statusLabels[o.status]}</div>
@@ -505,10 +508,13 @@ function renderHistory() {
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) : '';
     const itemsHTML = (o.items || []).map(i => `<div class="hist-item-row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('');
     
+    // Short ID for history tab too
+    const displayId = (o.orderId || o.id).slice(-5).toUpperCase();
+    
     return `
       <div class="history-card" onclick="toggleHistoryDetails('${o.id}')">
         <div class="hc-top">
-          <div class="hc-id">Order #${o.orderId || o.id}</div>
+          <div class="hc-id">Order #${displayId}</div>
           <div class="hc-date">${date}</div>
         </div>
         <div class="hc-cust">${o.customerName} · ${o.deliveryAddress?.substring(0, 25) || ''}...</div>
