@@ -1230,23 +1230,41 @@ function listenAllRestaurants() {
         </div>`;
     }).join('');
 
-    // Initialize photo sliders after DOM is set
+
+    // Initialize photo sliders after DOM is set — with touch/swipe support
     document.querySelectorAll('[data-slider]').forEach(box => {
       const sid = box.getAttribute('data-slider');
       const cnt = parseInt(box.getAttribute('data-count'));
       let ci = 0;
-      setInterval(() => {
-        ci = (ci + 1) % cnt;
+
+      function goToSlide(idx) {
+        ci = (idx + cnt) % cnt;
         const slider = document.getElementById('rslider-' + sid);
         if (slider) slider.style.transform = 'translateX(-' + (ci * 100 / cnt) + '%)';
         box.querySelectorAll('.rsdot-' + sid).forEach((d, i) => {
           d.style.width = i === ci ? '16px' : '6px';
           d.style.background = 'rgba(255,255,255,' + (i === ci ? '1' : '0.5') + ')';
         });
-      }, 2500);
+      }
+
+      // Auto slide
+      let autoSlide = setInterval(() => goToSlide(ci + 1), 2500);
+
+      // Touch/swipe support
+      let touchStartX = 0;
+      box.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        clearInterval(autoSlide);
+      }, { passive: true });
+
+      box.addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 30) {
+          goToSlide(diff > 0 ? ci + 1 : ci - 1);
+        }
+        autoSlide = setInterval(() => goToSlide(ci + 1), 2500);
+      }, { passive: true });
     });
-  });
-}
 
 let menuUnsub = null;
 function listenSpecificRestaurant(restId) {
