@@ -391,8 +391,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
   </div>
 </div>
 
-<div class="overlay" id="detailModal">
-  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="detailTitle">Order Details</div><div id="detailContent"></div><button class="btn-cancel" style="width:100%;margin-top:8px;" onclick="closeModal('detailModal')">Close</button></div>
+<div class="overlay" id="restImgModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Restaurant Photos</div>
+    <div id="photoUrlList" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;"></div>
+    <button onclick="addPhotoField()" style="width:100%;background:var(--light);border:1.5px dashed var(--border);border-radius:12px;padding:12px;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;margin-bottom:14px;">+ Add Another Photo URL</button>
+    <div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('restImgModal')">Cancel</button><button class="btn-save" onclick="saveRestImg()">Save All</button></div>
+  </div>
 </div>
 
 <div class="overlay" id="restImgModal">
@@ -627,6 +631,7 @@ function renderOrders() {
       <div class="order-top"><div><div class="order-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="order-time">${time}</div></div><div class="status-pill ${cls}">${s}</div></div>
       <div class="customer-row"><div class="cust-av">${(o.customerName||'C')[0].toUpperCase()}</div><div><div class="cust-name">${o.customerName||'Customer'}</div><div class="cust-phone">${o.customerPhone||''}</div></div></div>
       <div class="address-row"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${o.deliveryAddress||'No address'}</div>
+      ${o.latitude ? `<a href="https://www.google.com/maps?q=${o.latitude},${o.longitude}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;color:#1D4ED8;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;text-decoration:none;margin-bottom:10px;border:1px solid #BFDBFE;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> See Location</a>` : ''}
       <div class="items-box">${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>₹${i.price*i.qty}</span></div>`).join('')}<div class="items-total"><span>Total</span><span style="color:var(--orange)">₹${total}</span></div></div>
       ${trackHtml}
       <div class="order-btns">${btns}</div>
@@ -803,7 +808,7 @@ function buildCatTabs() {
   if (sel) sel.innerHTML = categories.map(c=>`<option value="${c}">${c}</option>`).join('');
   document.getElementById('catScroll').innerHTML =
     `<button class="cat-tab active" onclick="filterCat('all',this)">All</button>` +
-    categories.map(c=>`<button class="cat-tab" onclick="filterCat('${c.toLowerCase()}',this)">${c}</button>`).join('') +
+    categories.map(c=>`<div style="display:inline-flex;align-items:center;gap:4px;background:var(--light);border-radius:20px;padding:2px 4px 2px 12px;border:1px solid var(--border);flex-shrink:0;"><button class="cat-tab" style="background:none;border:none;box-shadow:none;padding:5px 0;" onclick="filterCat('${c.toLowerCase()}',this)">${c}</button><button onclick="removeCategory('${c}')" style="background:#FEE2E2;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" title="Remove"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="var(--red)" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>`).join('') +
     `<button class="cat-add-btn" onclick="openAddCat()">+ Category</button>`;
 }
 window.filterCat = (cat, el) => {
@@ -913,6 +918,12 @@ window.saveCategory = async () => {
   try{await setDoc(doc(db,'restaurants',restaurantId),{categories},{merge:true});}catch(e){}
   buildCatTabs();closeModal('addCatModal');showToast('Category added!','success');
 };
+window.removeCategory = async (name) => {
+  if(!confirm(`Remove "${name}" category?`)) return;
+  categories = categories.filter(c => c !== name);
+  try{ await setDoc(doc(db,'restaurants',restaurantId),{categories},{merge:true}); }catch(e){}
+  buildCatTabs(); showToast('Category removed','success');
+};
 
 // DELIVERY PARTNERS
 async function loadDeliveryBoys() {
@@ -962,16 +973,33 @@ function renderProfile() {
   loadRestStatus();
   renderDeliveryPartners();
 }
-window.openRestImg = () => { document.getElementById('restImgUrl').value=userData?.restaurantImageUrl||''; document.getElementById('restImgPrev').style.display='none'; document.getElementById('restImgModal').classList.add('open'); };
-window.prevRestImg = url => { const img=document.getElementById('restImgPrev'); if(url){img.src=url;img.style.display='block';img.onerror=()=>img.style.display='none';}else img.style.display='none'; };
+window.openRestImg = () => {
+  const existing = userData?.restaurantPhotos || (userData?.restaurantImageUrl ? [userData.restaurantImageUrl] : ['']);
+  const list = document.getElementById('photoUrlList');
+  list.innerHTML = '';
+  existing.forEach((url, i) => addPhotoField(url));
+  if(!existing.length) addPhotoField('');
+  document.getElementById('restImgModal').classList.add('open');
+};
+window.addPhotoField = (val='') => {
+  const list = document.getElementById('photoUrlList');
+  const idx = list.children.length;
+  const div = document.createElement('div');
+  div.style = 'display:flex;gap:8px;align-items:center;';
+  div.innerHTML = `<input type="url" value="${val}" placeholder="https://image-url.com/photo.jpg" style="flex:1;background:var(--light);border:1.5px solid transparent;border-radius:10px;padding:11px 12px;font-size:13px;outline:none;" oninput="this.style.borderColor='var(--yellow)'" /><button onclick="this.parentElement.remove()" style="width:34px;height:34px;background:#FEE2E2;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="14" fill="none" stroke="var(--red)" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>`;
+  list.appendChild(div);
+};
 window.saveRestImg = async () => {
-  const url=document.getElementById('restImgUrl').value.trim();
+  const inputs = document.querySelectorAll('#photoUrlList input');
+  const urls = Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+  if(!urls.length){ showToast('Add at least one photo URL','error'); return; }
   try{
-    await setDoc(doc(db,'users',currentUser.uid),{restaurantImageUrl:url},{merge:true});
-    await setDoc(doc(db,'restaurants',restaurantId),{imageUrl:url},{merge:true});
-    userData.restaurantImageUrl=url;
-    renderProfile();closeModal('restImgModal');showToast('Photo updated!','success');
-  }catch(e){showToast('Failed','error');}
+    await setDoc(doc(db,'users',currentUser.uid),{restaurantImageUrl: urls[0], restaurantPhotos: urls},{merge:true});
+    await setDoc(doc(db,'restaurants',restaurantId),{imageUrl: urls[0], photos: urls},{merge:true});
+    userData.restaurantImageUrl = urls[0];
+    userData.restaurantPhotos = urls;
+    renderProfile(); closeModal('restImgModal'); showToast('Photos saved!','success');
+  }catch(e){ showToast('Failed','error'); }
 };
 
 window.doLogout = async () => { try{await signOut(auth);window.location.href='index.html';}catch(e){showToast('Logout failed','error');} };
