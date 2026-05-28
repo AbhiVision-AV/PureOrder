@@ -958,13 +958,13 @@ async function triggerOneSignalNotification(playerId, status, orderDisplayId) {
   let heading = "PureOrder Update! 🛵";
   let message = "";
 
-  // Status ke hisaab se automatic message
+  // Order ID ke saath professional message
   if (status === 'accepted') message = `Aapka Order #${orderDisplayId} accept ho gaya hai! 🎉`;
-  else if (status === 'preparing') message = `Chef aapka khana prepare kar rahe hain! 🍳`;
-  else if (status === 'ready') message = `Khana ready hai! Delivery partner jald pick up karega. 🛵`;
-  else if (status === 'assigned') message = `Delivery partner aapka order lekar nikal chuka hai.`;
-  else if (status === 'delivered') message = `Enjoy your meal! Aapka khana deliver ho gaya hai. 🥰`;
-  else return; // Baaki status pe msg nahi jayega
+  else if (status === 'preparing') message = `Order #${orderDisplayId} kitchen mein prepare ho raha hai! 🍳`;
+  else if (status === 'ready') message = `Order #${orderDisplayId} ready hai! Pickup ke liye taiyaar. 🛵`;
+  else if (status === 'assigned') message = `Delivery partner Order #${orderDisplayId} lekar nikal chuka hai!`;
+  else if (status === 'delivered') message = `Order #${orderDisplayId} deliver ho gaya hai. Enjoy your meal! 🥰`;
+  else return; 
 
   try {
     await fetch("https://onesignal.com/api/v1/notifications", {
@@ -977,14 +977,15 @@ async function triggerOneSignalNotification(playerId, status, orderDisplayId) {
         app_id: ONESIGNAL_APP_ID,
         include_player_ids: [playerId],
         headings: { en: heading },
-        contents: { en: message }
+        contents: { en: message } // Ab customer ko saaf dikhega ki kaunsa order hai
       })
     });
-    console.log("Automatic notification sent!");
+    console.log("Automatic notification sent for: " + orderDisplayId);
   } catch (error) {
     console.error("OneSignal Error:", error);
   }
 }
+
 
 </script>
 
