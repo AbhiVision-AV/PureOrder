@@ -1846,41 +1846,60 @@ window.showOrderDetail = gId => {
   // 90s Cancel Timer UI
   let timerHtml = '';
   if (primaryDoc.status === 'placed' && primaryDoc.orderTimestampMs) {
-      timerHtml = `
-      <div class="od-section cancel-timer-box">
-          <div class="cancel-timer-text"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time left to cancel: <span id="timerText-${gId}">01:30</span></div>
-          <button class="cancel-btn-action" id="btnCancel-${gId}" onclick="cancelOrderGlobal('${gId}')">Cancel Order</button>
-      </div>`;
-      
       const createdAtMs = primaryDoc.orderTimestampMs;
-      if(cancelIntervals[gId]) clearInterval(cancelIntervals[gId]);
-      
-      cancelIntervals[gId] = setInterval(() => {
-          const now = Date.now();
-          const diffSeconds = Math.floor((now - createdAtMs) / 1000);
-          const remaining = 90 - diffSeconds;
-          
-          const tText = document.getElementById(`timerText-${gId}`);
-          const tBtn = document.getElementById(`btnCancel-${gId}`);
-          
-          if (!tText || !tBtn) {
-              clearInterval(cancelIntervals[gId]);
-              return;
-          }
+      const now = Date.now();
+      const diffSeconds = Math.floor((now - createdAtMs) / 1000);
+      const remaining = 90 - diffSeconds;
 
-          if (remaining <= 0) {
-              tText.textContent = "Time out";
-              tText.style.color = "var(--gray)";
-              tBtn.disabled = true;
-              tBtn.textContent = "Cannot Cancel Now";
-              clearInterval(cancelIntervals[gId]);
-          } else {
-              const m = Math.floor(remaining / 60);
-              const s = remaining % 60;
-              tText.textContent = `0${m}:${s < 10 ? '0' : ''}${s}`;
-          }
-      }, 1000);
+      // Agar time bacha hai, tabhi active timer dikhao
+      if (remaining > 0) {
+          const m = Math.floor(remaining / 60);
+          const s = remaining % 60;
+          const initialTimeStr = `0${m}:${s < 10 ? '0' : ''}${s}`;
+
+          timerHtml = `
+          <div class="od-section cancel-timer-box">
+              <div class="cancel-timer-text"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time left to cancel: <span id="timerText-${gId}">${initialTimeStr}</span></div>
+              <button class="cancel-btn-action" id="btnCancel-${gId}" onclick="cancelOrderGlobal('${gId}')">Cancel Order</button>
+          </div>`;
+          
+          if(cancelIntervals[gId]) clearInterval(cancelIntervals[gId]);
+          
+          cancelIntervals[gId] = setInterval(() => {
+              const currentNow = Date.now();
+              const currentDiff = Math.floor((currentNow - createdAtMs) / 1000);
+              const currentRemaining = 90 - currentDiff;
+              
+              const tText = document.getElementById(`timerText-${gId}`);
+              const tBtn = document.getElementById(`btnCancel-${gId}`);
+              
+              if (!tText || !tBtn) {
+                  clearInterval(cancelIntervals[gId]);
+                  return;
+              }
+
+              if (currentRemaining <= 0) {
+                  tText.textContent = "Time out";
+                  tText.style.color = "var(--gray)";
+                  tBtn.disabled = true;
+                  tBtn.textContent = "Cannot Cancel Now";
+                  clearInterval(cancelIntervals[gId]);
+              } else {
+                  const cm = Math.floor(currentRemaining / 60);
+                  const cs = currentRemaining % 60;
+                  tText.textContent = `0${cm}:${cs < 10 ? '0' : ''}${cs}`;
+              }
+          }, 1000);
+      } else {
+          // Agar order kholte hi 90s cross ho chuke hain, toh direct disabled mode dikhao
+          timerHtml = `
+          <div class="od-section cancel-timer-box">
+              <div class="cancel-timer-text" style="color:var(--gray);"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Time left to cancel: <span>Time out</span></div>
+              <button class="cancel-btn-action" disabled style="background:var(--gray); opacity:0.6; box-shadow:none;">Cannot Cancel Now</button>
+          </div>`;
+      }
   }
+
 
   document.getElementById('odContent').innerHTML = timerHtml + timelineHtml + trackBtnHtml + dpHtml + itemsHtml;
 };
