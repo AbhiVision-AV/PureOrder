@@ -1598,7 +1598,8 @@ window.placeOrder = async () => {
        groupedCart[i.restaurantId].items.push(i);
     });
 
-    await setDoc(doc(db, 'users', currentUser.uid), { phone, address }, { merge: true });
+    const freshPlayerId = (window.OneSignal?.User?.PushSubscription?.id) || window.oneSignalPlayerId || '';
+    await setDoc(doc(db, 'users', currentUser.uid), { phone, address, ...(freshPlayerId ? { oneSignalPlayerId: freshPlayerId } : {}) }, { merge: true });
     userData.phone = phone; userData.address = address;
     
     const batchId = 'GRP_' + Date.now();
@@ -1649,7 +1650,7 @@ window.placeOrder = async () => {
   customerName: userData.name || 'Customer', 
   customerPhone: phone, 
   deliveryAddress: address,
-  oneSignalPlayerId: window.oneSignalPlayerId || '', // 👈 Nayi line yahan set ho gayi
+  oneSignalPlayerId: (window.OneSignal?.User?.PushSubscription?.id) || window.oneSignalPlayerId || '',
   restaurantId: rId, 
   restaurantName: rData.name,
   items: rItems.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, imageUrl: i.imageUrl || '' })),
