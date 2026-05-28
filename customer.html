@@ -8,6 +8,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
+  <!-- OneSignal Push Notification Code -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "080f2f54-e119-4df6-a65e-8a7e2f8ec620",
+      notifyButton: {
+        enable: true,
+      },
+    });
+    OneSignal.Slidedown.promptPush();
+  });
+</script>
+
 <style>
 :root{--yellow:#FFC529;--orange:#FE724C;--dark:#1C1C1E;--gray:#6B7280;--light:#F5F5F7;--border:#E5E7EB;--white:#fff;--green:#34C759;--red:#FF3B30;--blue:#007AFF;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
