@@ -417,6 +417,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+  // OneSignal Credentials
+const ONESIGNAL_APP_ID = "080f2f54-e119-4df6-a65e-8a7e2f8ec620";
+const ONESIGNAL_REST_KEY = "os_v2_app_bahs6vhbdfg7njs6rj7c7dwgecfyup7bppcufxvhtif3roctqo73op2wjhbovz6kenrsmniuqmbnzq4pqsi3vf55c3d435bi22mixcq"; 
+
 
 let currentUser = null, userData = null;
 let activeOrders = [], historyOrders = [], menuItems = [], deliveryBoys = [];
@@ -632,10 +636,22 @@ function renderOrders() {
 
 window.updateStatus = async (id, status) => {
   try {
+    // 1. Database mein status update
     await updateDoc(doc(db,'orders',id), { status, updatedAt: serverTimestamp() });
     showToast(`Order ${status}!`, 'success');
-  } catch(e) { showToast('Failed','error'); }
+
+    // 2. Memory se order nikal kar Player ID check karo
+    const order = activeOrders.find(o => o.id === id);
+    
+    // 3. Agar ID mili, toh automatic notification bhej do
+    if (order && order.oneSignalPlayerId) {
+      triggerOneSignalNotification(order.oneSignalPlayerId, status, order.displayOrderId || id.slice(-5).toUpperCase());
+    }
+  } catch(e) { 
+    showToast('Failed','error'); 
+  }
 };
+
 
 window.openReject = id => {
   rejectOrderId = id;
@@ -935,7 +951,41 @@ window.saveRestImg = async () => {
 
 window.doLogout = async () => { try{await signOut(auth);window.location.href='index.html';}catch(e){showToast('Logout failed','error');} };
 
+
 document.querySelectorAll('.overlay').forEach(o=>{ o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}); });
+
+async function triggerOneSignalNotification(playerId, status, orderDisplayId) {
+  let heading = "PureOrder Update! 🛵";
+  let message = "";
+
+  // Status ke hisaab se automatic message
+  if (status === 'accepted') message = `Aapka Order #${orderDisplayId} accept ho gaya hai! 🎉`;
+  else if (status === 'preparing') message = `Chef aapka khana prepare kar rahe hain! 🍳`;
+  else if (status === 'ready') message = `Khana ready hai! Delivery partner jald pick up karega. 🛵`;
+  else if (status === 'assigned') message = `Delivery partner aapka order lekar nikal chuka hai.`;
+  else if (status === 'delivered') message = `Enjoy your meal! Aapka khana deliver ho gaya hai. 🥰`;
+  else return; // Baaki status pe msg nahi jayega
+
+  try {
+    await fetch("https://onesignal.com/api/v1/notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": `Basic ${ONESIGNAL_REST_KEY}`
+      },
+      body: JSON.stringify({
+        app_id: ONESIGNAL_APP_ID,
+        include_player_ids: [playerId],
+        headings: { en: heading },
+        contents: { en: message }
+      })
+    });
+    console.log("Automatic notification sent!");
+  } catch (error) {
+    console.error("OneSignal Error:", error);
+  }
+}
+
 </script>
 
   <script>
@@ -944,10 +994,9 @@ document.querySelectorAll('.overlay').forEach(o=>{ o.addEventListener('click',e=
         navigator.serviceWorker.register('firebase-messaging-sw.js');
       });
     }
-  </script>
+    
 
-</body>
-</html>
+  </script>
 
 </body>
 </html>
