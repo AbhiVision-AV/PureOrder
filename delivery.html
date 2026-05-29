@@ -111,8 +111,9 @@ body{
 .empty-box p{font-size:14px;color:var(--gray);}
 
 /* CLICKABLE HISTORY CARD */
-.history-card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--border); cursor: pointer; transition: background 0.2s;}
+.history-card{background:white;border-radius:14px;padding:14px;margin-bottom:10px;border:2px solid var(--border); cursor: pointer; transition: all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.04);}
 .history-card:active{background: var(--light);}
+.history-card.expanded{border-color:var(--orange);box-shadow:0 4px 16px rgba(254,114,76,0.12);}
 .hc-top{display:flex;justify-content:space-between;margin-bottom:6px;}
 .hc-id{font-weight:700;font-size:14px;}
 .hc-date{font-size:12px;color:var(--gray);}
@@ -150,9 +151,12 @@ body{
 <body>
 
 <div id="loadingScreen">
-  <div class="loader-logo">Pure<span>Order</span></div>
-  <div class="loader-sub">Delivery Partner</div>
-  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;">
+    <img src="icon-512.png" style="width:100px;height:100px;border-radius:24px;box-shadow:0 8px 32px rgba(254,114,76,0.18);margin-bottom:20px;">
+    <div class="loader-logo">Pure<span>Order</span></div>
+    <div class="loader-sub">Delivery Partner</div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+  </div>
 </div>
 
 <div id="pageOrders" class="page active">
@@ -334,8 +338,8 @@ function renderActiveOrders() {
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '';
     const itemsText = (o.items||[]).map(i => `${i.qty}× ${i.name}`).join(', ');
     
-    // Exact short ID logic match with customer/owner dashboard
-    const displayId = (o.orderId || o.id).slice(-5).toUpperCase();
+    // Use displayOrderId — same as owner/customer dashboard
+    const displayId = o.displayOrderId || ('KPO-' + (o.id.slice(-6).toUpperCase()));
 
     // Map Button
     let mapBtn = '';
@@ -491,8 +495,10 @@ async function loadHistory() {
 // TOGGLE HISTORY DETAILS (Accordion)
 window.toggleHistoryDetails = (id) => {
   const detailsBox = document.getElementById(`hist_details_${id}`);
+  const card = document.getElementById(`hist_card_${id}`);
   if (detailsBox) {
     detailsBox.classList.toggle('active');
+    if (card) card.classList.toggle('expanded');
   }
 };
 
@@ -508,13 +514,13 @@ function renderHistory() {
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}) : '';
     const itemsHTML = (o.items || []).map(i => `<div class="hist-item-row"><span>${i.qty}x ${i.name}</span><span>₹${i.price * i.qty}</span></div>`).join('');
     
-    // Short ID for history tab too
-    const displayId = (o.orderId || o.id).slice(-5).toUpperCase();
+    // Use displayOrderId — same as owner/customer dashboard
+    const displayId = o.displayOrderId || ('KPO-' + (o.id.slice(-6).toUpperCase()));
     
     return `
-      <div class="history-card" onclick="toggleHistoryDetails('${o.id}')">
+      <div class="history-card" id="hist_card_${o.id}" onclick="toggleHistoryDetails('${o.id}')">
         <div class="hc-top">
-          <div class="hc-id">Order #${displayId}</div>
+          <div class="hc-id">${displayId}</div>
           <div class="hc-date">${date}</div>
         </div>
         <div class="hc-cust">${o.customerName} · ${o.deliveryAddress?.substring(0, 25) || ''}...</div>
@@ -523,10 +529,17 @@ function renderHistory() {
         <div class="hist-details" id="hist_details_${o.id}">
           <div style="font-weight:700; margin-bottom:10px; font-size:13px; color:var(--dark);">Order Items</div>
           ${itemsHTML}
+          <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px dashed var(--border);margin-top:8px;">
+            <span style="font-size:13px;color:var(--gray);">Total Collected</span>
+            <span style="font-weight:800;font-size:15px;color:var(--orange);">₹${o.totalAmount || 0}</span>
+          </div>
           <div class="hist-meta">
-            <div><b>Delivered at:</b> ${time}</div>
-            <div><b>Payment Mode:</b> ${o.paymentType || 'Not specified'}</div>
-            <div><b>Status:</b> Delivered Successfully</div>
+            <div><b>Order ID:</b> ${displayId}</div>
+            <div><b>Delivered at:</b> ${time} · ${date}</div>
+            <div><b>Address:</b> ${o.deliveryAddress || 'N/A'}</div>
+            <div><b>Payment:</b> ${o.paymentType || 'Not specified'}</div>
+            <div><b>Customer:</b> ${o.customerName || 'N/A'} ${o.customerPhone ? '· ' + o.customerPhone : ''}</div>
+            <div style="margin-top:6px;color:var(--green);font-weight:700;">✓ Delivered Successfully</div>
           </div>
         </div>
       </div>
