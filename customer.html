@@ -1061,7 +1061,7 @@ window.useGpsLocation = () => {
     btn.classList.remove('success');
     document.getElementById('errGps').textContent = 'Failed to capture GPS. Enable location.';
     document.getElementById('errGps').style.display = 'block';
-  }, { timeout: 10000 });
+  }, { timeout: 15000, enableHighAccuracy: false, maximumAge: 60000 });
 };
 
 // AUTH
