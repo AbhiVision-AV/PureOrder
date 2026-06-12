@@ -1045,24 +1045,43 @@ window.openRestaurantAndHighlight = (restId, restName, itemId) => {
 }
 
 // CHECKOUT LOCATION
-window.useGpsLocation = () => {
+window.useGpsLocation = async () => {
   const btn = document.getElementById('btnGps');
+  const errEl = document.getElementById('errGps');
+
   btn.innerHTML = '<div class="spinner" style="border-top-color:var(--dark);"></div>';
-  document.getElementById('errGps').style.display = 'none';
-  
-  navigator.geolocation.getCurrentPosition(pos => {
-    capturedLat = pos.coords.latitude;
-    capturedLng = pos.coords.longitude;
-    btn.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor" stroke-width="2"/></svg> Location Captured';
-    btn.classList.add('success');
-    document.getElementById('placeBtn').disabled = false;
-  }, () => {
+  errEl.style.display = 'none';
+  errEl.innerHTML = 'Please capture your current location';
+
+  // Check permission FIRST before even calling GPS
+  const perm = await navigator.permissions.query({ name: 'geolocation' });
+
+  if (perm.state === 'denied') {
+    // Permission already denied — no point calling getCurrentPosition
     btn.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg> Use Current Location';
-    btn.classList.remove('success');
-    document.getElementById('errGps').innerHTML = 'GPS blocked. <a href="javascript:void(0)" onclick="window.location.href=window.location.href" style="color:var(--orange);font-weight:700;">Tap here to refresh & allow location</a>';
-document.getElementById('errGps').style.display = 'block';
-document.getElementById('placeBtn').disabled = false;
-  }, { timeout: 15000, enableHighAccuracy: false, maximumAge: 60000 });
+    errEl.innerHTML = 'GPS blocked. <a href="javascript:void(0)" onclick="window.location.href=window.location.href" style="color:var(--orange);font-weight:700;">Tap here to refresh & allow location</a>';
+    errEl.style.display = 'block';
+    return; // 🛑 Stop here
+  }
+
+  // Permission is granted or prompt — now call GPS
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      capturedLat = pos.coords.latitude;
+      capturedLng = pos.coords.longitude;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor" stroke-width="2"/></svg> Location Captured';
+      btn.classList.add('success');
+    },
+    (error) => {
+      btn.innerHTML = '<svg viewBox="0 0 24 24" width="16"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="2"/></svg> Use Current Location';
+      btn.classList.remove('success');
+      errEl.innerHTML = error.code === error.TIMEOUT
+        ? 'Location timed out. Please try again.'
+        : 'GPS blocked. <a href="javascript:void(0)" onclick="window.location.href=window.location.href" style="color:var(--orange);font-weight:700;">Tap here to refresh & allow location</a>';
+      errEl.style.display = 'block';
+    },
+    { timeout: 15000, enableHighAccuracy: false, maximumAge: 60000 }
+  );
 };
 
 // AUTH
