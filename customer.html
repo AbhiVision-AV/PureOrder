@@ -1720,6 +1720,8 @@ window.placeOrder = async () => {
     window.globalCoupon = null;
     localStorage.removeItem('po_cart'); 
     updateMiniCartStrip();
+    btn.innerHTML = 'Place Order';
+    btn.style.pointerEvents = 'auto';
     closeModal('checkoutModal');
     
     document.getElementById('orderSuccessScreen').style.display = 'flex';
