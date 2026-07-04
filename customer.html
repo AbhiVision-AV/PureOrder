@@ -487,7 +487,7 @@ body{
 
     <div class="tagline-wrap"><div class="tagline" id="tagline">Fresh food, delivered.</div></div>
     
-    <div class="search-bar" onclick="goPage('search')">
+<div class="search-bar" id="homeSearchBar" onclick="goPage('search')">
       <svg viewBox="0 0 24 24" width="20" fill="none" stroke="var(--orange)" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <span style="color:var(--gray);">Search your favorite dishes...</span>
     </div>
@@ -854,10 +854,12 @@ window.changeLocation = (loc) => {
         if(activeLocation.toLowerCase() !== 'kesinga') {
             mainContent.style.display = 'none';
             emptyState.style.display = 'block';
+            document.getElementById('homeSearchBar').style.display = 'none';
             setTimeout(() => emptyState.style.opacity = '1', 50);
         } else {
             mainContent.style.display = 'block';
             emptyState.style.display = 'none';
+            document.getElementById('homeSearchBar').style.display = 'flex';
             listenAllRestaurants(); 
             setTimeout(() => mainContent.style.opacity = '1', 50);
         }
