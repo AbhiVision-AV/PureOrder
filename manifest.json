@@ -4,7 +4,7 @@
   "description": "Fresh food, delivered fast in Kesinga.",
   "start_url": "/customer.html",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#FE724C",
   "theme_color": "#FE724C",
   "icons": [
     {
