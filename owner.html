@@ -277,6 +277,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
       <div>
         <h2 style="display:flex;align-items:center;">Orders<span class="sound-wave" id="soundWave"><div class="sw-bar"></div><div class="sw-bar"></div><div class="sw-bar"></div><div class="sw-bar"></div></span></h2>
         <p id="restNameLabel">Loading...</p>
+        <p id="orderDateLabel" style="font-size:12px;color:var(--gray);margin-top:2px;font-weight:600;"></p>
       </div>
       <div class="live-pill"><div class="live-dot"></div>Live</div>
     </div>
@@ -356,6 +357,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--dark);
 
 <div class="overlay" id="rejectModal">
   <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title">Reason for Rejection</div><div class="field"><label>Reason (optional)</label><textarea id="rejectReason" placeholder="e.g. Item not available, restaurant closing soon..."></textarea></div><div class="sheet-btns"><button class="btn-cancel" onclick="closeModal('rejectModal')">Cancel</button><button class="btn-save danger" onclick="confirmReject()">Reject Order</button></div></div>
+</div>
+
+<div class="overlay" id="detailModal">
+  <div class="sheet"><div class="sheet-handle"></div><div class="sheet-title" id="detailTitle">Order Details</div><div id="detailContent"></div><button class="btn-cancel" style="width:100%;margin-top:10px;" onclick="closeModal('detailModal')">Close</button></div>
 </div>
 
 <div class="overlay" id="addDishModal">
@@ -500,7 +505,27 @@ async function initApp() {
   await loadDeliveryBoys();
   startOrderListener();
   loadRestStatus();
+  scheduleMidnightRefresh();
   setTimeout(() => document.getElementById('loadingScreen').classList.add('hide'), 900);
+}
+
+// DATE LABEL + AUTO MIDNIGHT REFRESH (resets "Today" stats automatically at 12 AM)
+function updateOrderDateLabel() {
+  const el = document.getElementById('orderDateLabel');
+  if (!el) return;
+  const now = new Date();
+  el.textContent = now.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+function scheduleMidnightRefresh() {
+  updateOrderDateLabel();
+  const now = new Date();
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
+  const msUntilMidnight = nextMidnight - now;
+  setTimeout(() => {
+    updateOrderDateLabel();
+    updateStats();
+    scheduleMidnightRefresh();
+  }, msUntilMidnight);
 }
 
 // RESTAURANT STATUS
@@ -610,6 +635,7 @@ function renderOrders() {
   el.innerHTML = activeOrders.map(o => {
     const s = o.status || 'placed', cls = sMap[s] || 'sp-placed';
     const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : 'Now';
+    const dateTimeStr = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Just now';
     const total = o.totalAmount || 0;
     const stepIdx = STEPS.indexOf(s);
     // Tracking
@@ -630,28 +656,27 @@ function renderOrders() {
 
     return `<div class="order-card is-${s}" onclick="showDetail('${o.id}')">
       <div class="order-top">
+        <div class="order-id">${o.displayOrderId || 'Order #'+o.id.slice(-5).toUpperCase()}</div>
+        <div class="order-time">${dateTimeStr}</div>
+      </div>
+      <div class="customer-row">
+        <div class="cust-av">${(o.customerName||'C')[0].toUpperCase()}</div>
         <div>
-          <div class="order-id">${o.displayOrderId || 'Order #'+o.id.slice(-5).toUpperCase()}</div>
-          <div class="customer-row">
-            <div class="cust-av">${(o.customerName||'C')[0].toUpperCase()}</div>
-            <div>
-              <div class="cust-name">${o.customerName||'Customer'}</div>
-              <div class="cust-phone">${o.customerPhone||''}</div>
-            </div>
-          </div>
-          <div class="address-row">
-            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            ${o.deliveryAddress||'No address'}
-          </div>
-          ${o.latitude ? `<a href="https://www.google.com/maps?q=${o.latitude},${o.longitude}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;color:#1D4ED8;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;text-decoration:none;margin-bottom:10px;border:1px solid #BFDBFE;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> See Location</a>` : ''}
-          <div class="items-box">
-            ${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>₹${i.price*i.qty}</span></div>`).join('')}
-            <div class="items-total"><span>Total</span><span style="color:var(--orange)">₹${total}</span></div>
-          </div>
-          ${trackHtml}
-          <div class="order-btns">${btns}</div>
+          <div class="cust-name">${o.customerName||'Customer'}</div>
+          <div class="cust-phone">${o.customerPhone||''}</div>
         </div>
       </div>
+      <div class="address-row">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${o.deliveryAddress||'No address'}
+      </div>
+      ${o.latitude ? `<a href="https://www.google.com/maps?q=${o.latitude},${o.longitude}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#EFF6FF;color:#1D4ED8;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;text-decoration:none;margin-bottom:10px;border:1px solid #BFDBFE;"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> See Location</a>` : ''}
+      <div class="items-box">
+        ${(o.items||[]).map(i=>`<div class="item-row"><span>${i.qty}&times; ${i.name}</span><span>₹${i.price*i.qty}</span></div>`).join('')}
+        <div class="items-total"><span>Total</span><span style="color:var(--orange)">₹${total}</span></div>
+      </div>
+      ${trackHtml}
+      <div class="order-btns">${btns}</div>
     </div>`;
   }).join('');
 }
