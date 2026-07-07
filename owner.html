@@ -757,7 +757,7 @@ window.assignDB = async (dbId, dbName) => {
 window.showDetail = id => {
   const o = activeOrders.find(x=>x.id===id) || historyOrders.find(x=>x.id===id);
   if (!o) return;
-  document.getElementById('detailTitle').textContent = `Order #${o.id.slice(-5).toUpperCase()}`;
+ document.getElementById('detailTitle').textContent = `Order #${o.id.slice(-5).toUpperCase()}`;
   const time = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString('en-IN') : 'Unknown';
   document.getElementById('detailContent').innerHTML = `
     <div class="detail-sec"><div class="detail-lbl">Customer</div><div class="detail-box">
@@ -825,7 +825,7 @@ function renderHistory() {
     html+=`<div style="font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;padding:12px 0 8px;">${date}</div>`;
     orders.forEach(o=>{
       html+=`<div class="history-card" onclick="showDetail('${o.id}')">
-        <div class="hc-top"><div class="hc-id">Order #${o.id.slice(-5).toUpperCase()}</div><div class="status-pill ${sMap[o.status]||'sp-delivered'}">${o.status}</div></div>
+        <div class="hc-top"><div class="hc-id">${o.displayOrderId || 'Order #'+o.id.slice(-5).toUpperCase()}</div><div class="status-pill ${sMap[o.status]||'sp-delivered'}">${o.status}</div></div>
         <div class="hc-customer">${o.customerName||'Customer'} &middot; ${o.customerPhone||''}</div>
         <div class="hc-bottom"><span style="font-size:13px;color:var(--gray)">${(o.items||[]).length} item(s)</span><div class="hc-total">₹${o.totalAmount||0}</div></div>
       </div>`;
